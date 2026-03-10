@@ -41993,4 +41993,3 @@ var PIXI = (function (exports) {
 
 }({}));
 PIXI.useDeprecated();
-//# sourceMappingURL=pixi.js.map
