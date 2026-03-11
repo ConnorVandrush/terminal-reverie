@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ServerManager = require('./modules/ServerManager.js');
+const ServerManager = require('./ServerManager.js');
 
 const serverManager = new ServerManager();
 

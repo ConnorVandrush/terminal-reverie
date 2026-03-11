@@ -5,10 +5,10 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/socket.io': {
-        target: 'http://localhost:15987',
+        target: 'http://46.110.113.183:15987',
         ws: true
       },
-      '/api': 'http://localhost:15987'
+      '/api': 'http://46.110.113.183:15987'
     }
   }
 })

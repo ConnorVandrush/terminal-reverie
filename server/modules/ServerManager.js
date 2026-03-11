@@ -53,20 +53,18 @@ class ServerManager
             },
         });
 
-        this.publicNamespace = this.io.of('/public');
-
-        this.privateNamespace = this.io.of('/private');
+        this.publicNamespace = this.io.of('/login');
 
         this.publicNamespace.on('connection', (socket) =>
         {
-        console.log('A user connected to public namespace');
-        socket.on('disconnect', () =>
+            console.log('A user connected to login namespace');
+            socket.on('disconnect', () =>
             {
-                console.log('A user disconnected from public namespace');
+                console.log('A user disconnected from login namespace');
             });
         });
 
-        this.privateNamespace.use(async (socket, next) =>
+        this.io.use(async (socket, next) =>
         {
             const token = socket.handshake.query.token;
             if (!token)
@@ -84,13 +82,13 @@ class ServerManager
                 return next(new Error('Invalid token'));
             }
         });
-        
-        this.privateNamespace.on('connection', (socket) =>
+
+        this.io.on('connection', (socket) =>
         {
-            console.log('A user connected to private namespace');
+            console.log('A user connected to server');
             socket.on('disconnect', () =>
             {
-                console.log('A user disconnected from private namespace');
+                console.log('A user disconnected from server');
             });
         });
     }
