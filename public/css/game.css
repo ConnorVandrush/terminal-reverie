@@ -1,8 +1,35 @@
+html {
+    height: 100%;
+}
 body {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#root {
+    height: 100%;
+}
+#layout {
+    display: flex;
+    height: 100%;
+}
+#leftPanel,
+#rightPanel {
+    display: flex;
+    flex-grow: 1;
+    background-color: #f0f0f0;
+}
+#gameWrapper {
+    display: flex;
+}
+#gameCanvas {
+  position: static !important;
+  height: 100vh !important;
+  width: auto !important;  
 }
 #errorPrinter {
     position: absolute;
