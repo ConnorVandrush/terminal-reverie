@@ -57,5 +57,5 @@
   }
 
   // Global instance
-  window.ClientGlobalManager.clientInputManager = new ClientInputManager();
+  window.clientGlobalManager.clientInputManager = new ClientInputManager();
 })();

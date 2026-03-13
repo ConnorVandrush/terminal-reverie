@@ -1,4 +1,5 @@
-window.ClientGlobalManager.clientInputManager.enableDomMode();
+window.clientGlobalManager.publicNamespace = io('/login');
+window.clientGlobalManager.clientInputManager.enableDomMode();
 
 // Move the RPG Maker canvas into a stable wrapper element
 const _Graphics_createCanvas = Graphics._createCanvas;
@@ -17,7 +18,7 @@ Graphics._createCanvas = function() {
 const _Scene_Title_createCommandWindow = Scene_Title.prototype.createCommandWindow;
 Scene_Title.prototype.createCommandWindow = function() {
     _Scene_Title_createCommandWindow.call(this);
-    
+
     // Optional: hide window completely
     this._commandWindow.hide();
 };

@@ -22,6 +22,10 @@ body {
     font-family: 'Press Start 2P', cursive;
     font-size: clamp(12px, 1.5vw, 24px);
 }
+#layout input {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(12px, 1.5vw, 24px);
+}
 #leftPanel, #rightPanel {
     display: flex;
     flex: 1;

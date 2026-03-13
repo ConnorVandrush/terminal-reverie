@@ -1,14 +1,25 @@
 import { defineConfig } from 'vite'
-export default defineConfig({
+export default defineConfig(
+{
   publicDir: 'public',
-  server: {
+  server: 
+  {
     port: 5173,
-    proxy: {
-      '/socket.io': {
+    proxy: 
+    {
+      '/socket.io': 
+      {
         target: 'http://46.110.113.183:15987',
         ws: true
       },
       '/api': 'http://46.110.113.183:15987'
+    }
+  },
+  resolve:
+  {
+    alias:
+    {
+      '@': '/src'
     }
   }
 })

@@ -2,8 +2,9 @@ class ClientGlobalManager
 {
     constructor()
     {
+        this.publicNamespace = null;
         this.clientInputManager = null;
     }
 }
 
-window.ClientGlobalManager = new ClientGlobalManager();
+window.clientGlobalManager = new ClientGlobalManager();

@@ -10,6 +10,7 @@ class ServerManager
     {
         this.app = express();
         this.io;
+        this.publicNamespace;
         this.expressServer;
         // define in host when time comes to deploy
         this.uri = "mongodb+srv://connorvandrush_db_user:Uhrj0QS9SM6itCLT@terminalreverie.uyq0cfb.mongodb.net/?appName=TerminalReverie";
@@ -41,7 +42,7 @@ class ServerManager
         });
     }
 
-    startSocketIOListeners = () =>
+    startSocketIOServer = () =>
     {
         this.io = socketio(this.expressServer,
         {

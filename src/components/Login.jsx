@@ -2,25 +2,24 @@ import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
 
 import styles from './Login.module.css';
+import { clientLogin } from "../store/loginSlice";
 
 export default function Login()
 {
+    const dispatch = useDispatch();
+
     const emailRef = useRef();
     const passwordRef = useRef();
-
-    const dispatch = useDispatch();
 
     const handleLogin = () =>
     {
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
-        dispatch({ type: 'LOGIN', payload: { email, password } });
+        dispatch(clientLogin({ email, password }));
     };
 
     const handleRegister = () =>
     {
-        const email = emailRef.current.value;
-        const password = passwordRef.current.value;
         dispatch({ type: 'REGISTER', payload: { email, password } });
     };
 
