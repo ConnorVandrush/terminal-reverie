@@ -14,7 +14,7 @@ export const middleware = (store) =>
 
         if (window.clientGlobalManager && !globalManagerInitialized)
         {
-         publicNamespace = window.clientGlobalManager.publicNamespace;
+            publicNamespace = window.clientGlobalManager.publicNamespace;
             globalManagerInitialized = true;
         }
 

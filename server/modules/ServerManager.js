@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const socketio = require('socket.io');
-const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
 class ServerManager 
@@ -55,43 +54,6 @@ class ServerManager
         });
 
         this.publicNamespace = this.io.of('/login');
-
-        this.publicNamespace.on('connection', (socket) =>
-        {
-            console.log('A user connected to login namespace');
-            socket.on('disconnect', () =>
-            {
-                console.log('A user disconnected from login namespace');
-            });
-        });
-
-        this.io.use(async (socket, next) =>
-        {
-            const token = socket.handshake.query.token;
-            if (!token)
-            {
-                return next(new Error('Unauthorized'));
-            }
-            try
-            {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                socket.decoded = decoded;
-                next();
-            }
-            catch (error)
-            {
-                return next(new Error('Invalid token'));
-            }
-        });
-
-        this.io.on('connection', (socket) =>
-        {
-            console.log('A user connected to server');
-            socket.on('disconnect', () =>
-            {
-                console.log('A user disconnected from server');
-            });
-        });
     }
 }
 

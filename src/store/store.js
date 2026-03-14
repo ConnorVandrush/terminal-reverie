@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { middleware } from "../../server/socketIO/middleware";
+import { middleware } from "../socketIO/middleware";
 import leftPanelReducer from "./leftPanelSlice";
 import loginReducer from "./loginSlice";
 

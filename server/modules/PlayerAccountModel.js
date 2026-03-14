@@ -13,6 +13,7 @@ const playerAccountSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     userId: { type: Number, unique: true },
+    JWT: { type: String },
     characterData: { type: Object, default: {} },
     characterStats: { type: Object, default: () => new CharacterStats() },
     location: { type: Object, default: {} },
