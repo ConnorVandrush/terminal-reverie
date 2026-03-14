@@ -20,11 +20,11 @@ body {
 }
 #layout button {
     font-family: 'Press Start 2P', cursive;
-    font-size: clamp(12px, 1.5vw, 24px);
+    font-size: clamp(12px, 1.5vw, 20px);
 }
 #layout input {
     font-family: 'Press Start 2P', cursive;
-    font-size: clamp(12px, 1.5vw, 24px);
+    font-size: clamp(12px, 1.5vw, 20px);
 }
 #leftPanel, #rightPanel {
     display: flex;
@@ -33,10 +33,11 @@ body {
     border: .3vw solid #ffffff;
     box-shadow: inset 0 0 0 .25vw #0a0a6a;
     font-family: 'Press Start 2P', cursive;
-    font-size: clamp(12px, 1.5vw, 24px);
+    font-size: clamp(12px, 1.5vw, 20px);
     color: #ffffff;
     text-shadow: 1px 1px 3px #000000;
     overflow: hidden;
+    padding: 0 1% 0 1%;
 }
 #leftPanel {
     border-radius: 4vw 0 0 4vw;

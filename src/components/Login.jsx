@@ -1,12 +1,15 @@
 import React, { useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import styles from './Login.module.css';
-import { clientLogin } from "../store/loginSlice";
+import { clientLogin, clientRegister } from "../store/loginSlice";
 
 export default function Login()
 {
     const dispatch = useDispatch();
+
+    const errorMessage = useSelector((state) => state.login.errorMessage);
+    const successMessage = useSelector((state) => state.login.successMessage);
 
     const emailRef = useRef();
     const passwordRef = useRef();
@@ -16,11 +19,15 @@ export default function Login()
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
         dispatch(clientLogin({ email, password }));
+        passwordRef.current.value = '';
     };
 
     const handleRegister = () =>
     {
-        dispatch({ type: 'REGISTER', payload: { email, password } });
+        const email = emailRef.current.value;
+        const password = passwordRef.current.value;
+        dispatch(clientRegister({ email, password }));
+        passwordRef.current.value = '';
     };
 
     return (
@@ -37,6 +44,10 @@ export default function Login()
                 </div>
                 <button type="button" id="loginButton" onClick={handleLogin} >Login</button>
                 <button type="button" id="registerButton" onClick={handleRegister} >Register</button>
+            </div>
+            <div className={styles.messages}>
+                {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+                {successMessage && <p className={styles.success}>{successMessage}</p>}
             </div>
         </div>
     );

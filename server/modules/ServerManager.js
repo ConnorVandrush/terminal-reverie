@@ -12,7 +12,7 @@ class ServerManager
         this.io;
         this.publicNamespace;
         this.expressServer;
-        // define in host when time comes to deploy
+        // FIXME define in host when time comes to deploy 
         this.uri = "mongodb+srv://connorvandrush_db_user:Uhrj0QS9SM6itCLT@terminalreverie.uyq0cfb.mongodb.net/?appName=TerminalReverie";
     }
 

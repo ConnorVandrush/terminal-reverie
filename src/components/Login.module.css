@@ -1,5 +1,6 @@
 .login {
-    margin: 0 10% 0 10%;   
+    display: flex;
+    flex-direction: column;
 }
 
 .login h3 {
@@ -22,4 +23,21 @@
 .login button {
     align-self: center;
     width: auto;
+}
+
+.messages {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login .error {
+    color: red;
+    text-align: center;
+}
+
+.login .success {
+    color: green;
+    text-align: center;
 }
