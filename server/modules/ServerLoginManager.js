@@ -47,12 +47,23 @@ class ServerLoginManager
                     }
                     
                     // FIXME - secret key should be stored in env variable
-                    const userId = existingUser.userId;
-                    const JWT = jwt.sign({ userId }, 'SECRET', { expiresIn: '30d' });
+                    const playerId = existingUser.playerId;
+                    const JWT = jwt.sign({ playerId }, 'SECRET', { expiresIn: '30d' });
                     existingUser.JWT = JWT;
                     await existingUser.save();
 
-                    const playerData = new PlayerData(existingUser.userId, existingUser.characterStats, existingUser.characterData, existingUser.location);
+                    if (existingUser.isDead)
+                    {
+                        const reponse = await socket.emitWithAck('serverCreateCharacter', { playerId });
+                        if (reponse.error)
+                        {
+                            return cb({ error: 'An error occurred during character creation' });
+                        }
+                        existingUser.isDead = false;
+                        await existingUser.save();
+                    }
+
+                    const playerData = new PlayerData(existingUser.playerId, existingUser.characterStats, existingUser.characterData, existingUser.location);
                     this.serverPlayerManager.playersOnline.set(socket.id, playerData);
 
                     return cb({ success: true, JWT });
@@ -121,8 +132,8 @@ class ServerLoginManager
                 try
                 {
                     const decoded = jwt.verify(JWT, 'SECRET'); // FIXME - secret key should be stored in env variable
-                    const userId = decoded.userId;
-                    const existingUser = await PlayerAccount.findOne({ userId });
+                    const playerId = decoded.playerId;
+                    const existingUser = await PlayerAccount.findOne({ playerId });
                     if (!existingUser || existingUser.JWT !== JWT) 
                     {
                         return next(new Error('Unauthorized'));
@@ -141,36 +152,36 @@ class ServerLoginManager
             console.log('A user connected to authenticated server');
 
             const decoded = jwt.verify(socket.handshake.auth.JWT, 'SECRET'); // FIXME - secret key should be stored in env variable
-            const userId = decoded.userId;
-            socket.userId = userId;
+            const playerId = decoded.playerId;
+            socket.playerId = playerId;
 
-            if (this.serverPlayerManager.tokenTimeouts.has(userId))
+            if (this.serverPlayerManager.tokenTimeouts.has(playerId))
             {
-                clearTimeout(this.serverPlayerManager.tokenTimeouts.get(userId));
-                this.serverPlayerManager.tokenTimeouts.delete(userId);
+                clearTimeout(this.serverPlayerManager.tokenTimeouts.get(playerId));
+                this.serverPlayerManager.tokenTimeouts.delete(playerId);
             }
 
             socket.on('disconnect', async () => 
             {
                 console.log('A user disconnected from authenticated server');
 
-                const userId = socket.userId;
-                if (!userId) return;
+                const playerId = socket.playerId;
+                if (!playerId) return;
 
                 this.serverPlayerManager.playersOnline.delete(socket.id);
 
                 const timeout = setTimeout(async () => 
                 {
-                    const existingUser = await PlayerAccount.findOne({ userId });
+                    const existingUser = await PlayerAccount.findOne({ playerId });
                     if (existingUser) 
                     {
                         existingUser.JWT = null;
                         await existingUser.save();
-                        console.log(`Token for user ${userId} invalidated after disconnect grace period`);
+                        console.log(`Token for user ${playerId} invalidated after disconnect grace period`);
                     }
                 }, 3 * 60 * 1000);
 
-                this.serverPlayerManager.tokenTimeouts.set(userId, timeout);
+                this.serverPlayerManager.tokenTimeouts.set(playerId, timeout);
             });
         });
     }

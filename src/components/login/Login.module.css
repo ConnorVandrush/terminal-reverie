@@ -5,10 +5,11 @@
 
 .login h3 {
     text-align: center;
+    margin: 0;
 }
 
 .loginForm {
-    height: 50%;
+    height: 70%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

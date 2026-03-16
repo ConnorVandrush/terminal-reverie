@@ -19,7 +19,8 @@ export default defineConfig(
   {
     alias:
     {
-      '@': '/src'
+      '@': '/src',
+      '@store': '/src/store',
     }
   }
 })

@@ -7,7 +7,8 @@ const leftPanelSlice = createSlice(
     {
         leftPanel: 'login',
     },
-    reducers: {
+    reducers: 
+    {
         setLeftPanel: (state, action) => 
         {
             state.leftPanel = action.payload;
@@ -16,5 +17,4 @@ const leftPanelSlice = createSlice(
 });
 
 export const { setLeftPanel } = leftPanelSlice.actions;
-
 export default leftPanelSlice.reducer;

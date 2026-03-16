@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import styles from './Login.module.css';
-import { clientLogin, clientRegister } from "../store/loginSlice";
+import { clientLogin, clientRegister } from "@store/loginSlice";
 
 export default function Login()
 {
@@ -32,8 +32,8 @@ export default function Login()
 
     return (
         <div className={styles.login}>
-            <h3>Login</h3>
             <div className={styles.loginForm}>
+                <h3>Login</h3>
                 <div>
                     <label htmlFor="email">Email:</label>
                     <input type="email" id="email" name="email" className={styles.input} ref={emailRef} />

@@ -21,6 +21,7 @@
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
         "react-redux": "^9.2.0",
+        "sharp": "^0.34.5",
         "socket.io": "^4.8.3"
     },
     "devDependencies": {
@@ -28,7 +29,7 @@
     },
     "scripts": {
         "dev": "vite --host",
-        "dev:server": "nodemon server/modules/ServerMain.js",
+        "dev:server": "nodemon server/ServerMain.js",
         "build": "vite build",
         "preview": "vite preview"
     }

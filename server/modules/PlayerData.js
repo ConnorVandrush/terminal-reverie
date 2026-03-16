@@ -1,8 +1,8 @@
 class PlayerData
 {
-    constructor(userId, characterStats, characterData, location)
+    constructor(playerId, characterStats, characterData, location)
     {
-        this.userId = userId;
+        this.playerId = playerId;
         this.characterStats = characterStats;
         this.characterData = characterData;
         this.location = location;

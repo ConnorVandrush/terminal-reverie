@@ -1,7 +1,9 @@
 import { clientLogin, clientRegister } from "@/store/loginSlice.js";
 
-export default async function loginEmitters(publicNamespace, store, action)
+export default async function loginEmitters(store, action)
 {
+    const publicNamespace = window.clientGlobalManager.publicNamespace;
+    
     if (action.type === clientLogin.type)
     {
         const response = await publicNamespace.emitWithAck('clientLogin', action.payload);
@@ -11,12 +13,12 @@ export default async function loginEmitters(publicNamespace, store, action)
             store.dispatch({ type: 'login/setErrorMessage', payload: response.error });
             store.dispatch({ type: 'login/setSuccessMessage', payload: false });
         }
-
         else if (response.success)
         {
             const { JWT } = response;
             localStorage.setItem('JWT', JWT);
             window.clientGlobalManager.initAuthenticatedSocket();
+            window.clientGlobalManager.publicNamespace.disconnect();
         }
     }
 

@@ -28,7 +28,6 @@ const loginSlice = createSlice(
         {
             state.successMessage = action.payload;
         }
-
     }
 });
 

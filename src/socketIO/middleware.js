@@ -1,24 +1,25 @@
 import loginEmitters from "./emitters/loginEmitters";
 
+import { createCharacterListeners } from "./listeners/createCharacterListeners";
+
 export const middleware = (store) => 
 {
     let globalManagerInitialized = false;
-    let publicNamespace;
     let initialized = false;
     return (next) => (action) =>
     {
         if (!initialized)
         {
             initialized = true;
+            createCharacterListeners(store);
         }
 
         if (window.clientGlobalManager && !globalManagerInitialized)
         {
-            publicNamespace = window.clientGlobalManager.publicNamespace;
             globalManagerInitialized = true;
         }
 
-        loginEmitters(publicNamespace, store, action);
+        loginEmitters(store, action);
 
         return next(action);
     }

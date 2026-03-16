@@ -6,6 +6,7 @@ class ClientGlobalManager
         this.io = null;
         this.clientInputManager = null;
         this.refreshTokenTimeout = null;
+        this.spriteColorer = null;
     }
 
     initAuthenticatedSocket()

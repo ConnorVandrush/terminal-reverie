@@ -1,0 +1,27 @@
+.createCharacter {
+    display: flex;
+    flex-direction: column;
+}
+
+.createCharacter h3 {
+    text-align: center;
+    margin: 0;
+}
+
+.createCharacterForm {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.createCharacter input {
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 5%;
+}
+
+.createCharacter select {
+    width: 95%;
+    margin: 0 auto;
+}

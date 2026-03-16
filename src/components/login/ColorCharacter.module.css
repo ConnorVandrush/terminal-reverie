@@ -1,0 +1,16 @@
+.colorCharacter {
+    display: flex;
+    flex-direction: column;
+}
+
+.colorCharacterForm {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.colorCharacter select {
+    width: 95%;
+    margin: 0 auto;
+}

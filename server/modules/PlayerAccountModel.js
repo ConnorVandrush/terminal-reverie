@@ -12,7 +12,7 @@ const playerAccountSchema = new mongoose.Schema(
 {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    userId: { type: Number, unique: true },
+    playerId: { type: Number, unique: true },
     JWT: { type: String },
     characterData: { type: Object, default: {} },
     characterStats: { type: Object, default: () => new CharacterStats() },
@@ -24,14 +24,14 @@ playerAccountSchema.pre('save', async function () {
   if (this.isNew) {
     try {
       const counter = await Counter.findByIdAndUpdate(
-        { _id: 'userId' },          // counter name
+        { _id: 'playerId' },          // counter name
         { $inc: { seq: 1 } },            // increment by 1
         { new: true, upsert: true }      // create if not exists
       );
 
-      this.userId = counter.seq;
+      this.playerId = counter.seq;
     } catch (err) {
-      console.error('Error generating userId:', err);
+      console.error('Error generating playerId:', err);
       throw err;
     }
   } else {
