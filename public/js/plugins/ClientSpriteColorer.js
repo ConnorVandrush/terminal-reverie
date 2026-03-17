@@ -1,106 +1,123 @@
 class ClientSpriteColorer {
     constructor() {
-        this.spriteRanges = null;
-        this.loadingRanges = false;
+        this.spriteRanges = null;       // templateName -> pixel ranges for each option
+        this.colors = null;             // colorName -> { primary, secondary }
+        this.defaultColors = null;      // templateName -> defaultColors object
+        this.loading = false;           // prevents duplicate fetches
     }
 
-    async loadSpriteRanges() {
-        if (this.spriteRanges) {
-            console.log("Sprite ranges already loaded.");
-            return this.spriteRanges;
-        }
-
-        if (this.loadingRanges) {
-            console.log("Waiting for sprite ranges to finish loading...");
-            while (this.loadingRanges) await new Promise(r => setTimeout(r, 50));
-            return this.spriteRanges;
-        }
-
-        console.log("Loading sprite ranges from /data/Appearance.json...");
-        this.loadingRanges = true;
+    /** Load JSON once and populate ranges, colors, and defaults */
+    async loadAppearanceData() {
         try {
             const res = await fetch("/data/Appearance.json");
-            this.spriteRanges = await res.json();
-            console.log("Sprite ranges loaded successfully:", this.spriteRanges);
+            const json = await res.json();
+
+            // Store templates separately for pixel recolor
+            this.spriteRanges = json.templates || {};
+
+            // Store color table
+            this.colors = json.colors || {};
+
+            // Build Map for template -> defaultColors
+            this.defaultColors = new Map(
+                Object.entries(this.spriteRanges).map(
+                    ([name, data]) => [name, data.defaultColors || {}]
+                )
+            );
+
+            console.log("Appearance data loaded successfully.");
+            console.log("Available colors:", Object.keys(this.colors));
+            console.log("Loaded templates:", Object.keys(this.spriteRanges));
+
         } catch (err) {
-            console.error("Failed to load sprite ranges:", err);
+            console.error("Failed to load appearance data:", err);
             throw err;
         } finally {
-            this.loadingRanges = false;
+            this.loading = false;
         }
-
-        return this.spriteRanges;
     }
 
-    async recolorSprite(imageSrc, spriteKey, option, primaryColor, secondaryColor) {
-        console.log("RecolorSprite called with:", {
-            imageSrc,
-            spriteKey,
-            option,
-            primaryColor,
-            secondaryColor
-        });
-
-        const rangesJSON = await this.loadSpriteRanges();
-        const ranges = rangesJSON[spriteKey]?.[option];
-
-        if (!ranges) {
-            console.error(`No ranges found for ${spriteKey} -> ${option}`);
-            throw new Error(`No ranges found for ${spriteKey} -> ${option}`);
-        }
-        console.log("Using sprite ranges:", ranges);
-
+    /** Normalize image input: path, base64, or HTMLImageElement */
+    async loadImage(srcOrImg) {
         return new Promise((resolve, reject) => {
+            if (srcOrImg instanceof HTMLImageElement) {
+                if (srcOrImg.complete) return resolve(srcOrImg);
+                srcOrImg.onload = () => resolve(srcOrImg);
+                srcOrImg.onerror = reject;
+                return;
+            }
+
             const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = imageSrc;
+            if (typeof srcOrImg === "string" && !srcOrImg.startsWith("data:")) {
+                img.crossOrigin = "Anonymous";
+            }
+            img.src = srcOrImg;
 
-            img.onload = () => {
-                console.log("Image loaded successfully:", { width: img.width, height: img.height });
-
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                canvas.width = img.width;
-                canvas.height = img.height;
-
-                ctx.drawImage(img, 0, 0);
-                console.log("Image drawn to offscreen canvas.");
-
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-
-                const recolorRanges = (pixelRanges, color, type) => {
-                    if (!pixelRanges || !color) {
-                        console.warn(`Skipping recolor for ${type}, no pixels or color`);
-                        return;
-                    }
-                    console.log(`Recoloring ${type} pixels, ${pixelRanges.length} ranges`);
-                    for (const { start, end } of pixelRanges) {
-                        for (let i = start; i <= end; i++) {
-                            const idx = i * 4;
-                            data[idx] = color.r;
-                            data[idx + 1] = color.g;
-                            data[idx + 2] = color.b;
-                        }
-                    }
-                };
-
-                recolorRanges(ranges.primary, primaryColor, "primary");
-                recolorRanges(ranges.secondary, secondaryColor, "secondary");
-
-                ctx.putImageData(imageData, 0, 0);
-                console.log("ImageData applied to canvas.");
-
-                const result = canvas.toDataURL("image/png");
-                console.log("Recolor complete, returning base64 PNG.");
-                resolve(result);
-            };
-
-            img.onerror = (err) => {
-                console.error("Image failed to load:", err, "Src:", imageSrc);
-                reject(err);
-            };
+            img.onload = () => resolve(img);
+            img.onerror = reject;
         });
+    }
+
+    /**
+     * Recolor a sprite
+     * @param {string|HTMLImageElement} imageSrcOrImg - path, base64, or image element
+     * @param {string} templateName - e.g., "grasslandswarriormalehair1style1"
+     * @param {string} option - "hair", "eyes", etc.
+     * @param {string} colorName - key from colors table
+     * @returns {Promise<string>} base64 PNG
+     */
+    async recolorSprite(imageSrcOrImg, templateName, option, colorName) {
+        console.log("RecolorSprite called with:", { imageSrcOrImg, templateName, option, colorName });
+
+        // Ensure appearance data is loaded
+        await this.loadAppearanceData();
+
+        const ranges = this.spriteRanges?.[templateName]?.[option];
+        if (!ranges) {
+            throw new Error(`No pixel ranges found for ${templateName} -> ${option}`);
+        }
+
+        const colorEntry = this.colors?.[colorName];
+        if (!colorEntry) {
+            throw new Error(`Color "${colorName}" not found in color table`);
+        }
+
+        const img = await this.loadImage(imageSrcOrImg);
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        const recolorRanges = (pixelRanges, color) => {
+            if (!pixelRanges || !color) return;
+            for (const { start, end } of pixelRanges) {
+                for (let i = start; i <= end; i++) {
+                    const idx = i * 4;
+                    data[idx] = color.r;
+                    data[idx + 1] = color.g;
+                    data[idx + 2] = color.b;
+                }
+            }
+        };
+
+        recolorRanges(ranges.primary, colorEntry.primary);
+        recolorRanges(ranges.secondary, colorEntry.secondary);
+
+        ctx.putImageData(imageData, 0, 0);
+
+        return canvas.toDataURL("image/png");
+    }
+
+    /** Get default colors for a template */
+    getDefaultColors(templateName) {
+        if (!this.defaultColors) return {};
+        return this.defaultColors.get(templateName) || {};
     }
 }
 

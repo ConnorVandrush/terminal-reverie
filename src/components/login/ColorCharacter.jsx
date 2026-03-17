@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './ColorCharacter.module.css';
-import { setHairColor, recolorHair, setEyeColor, setSkinColor, setShirtColor, setPantsColor } from '@store/createCharacterSlice';
+import { setHairColor, recolorSprite, setEyeColor, setSkinColor, setShirtColor, setPantsColor } from '@store/createCharacterSlice';
 
 export default function ColorCharacter()
 {
@@ -19,11 +19,35 @@ export default function ColorCharacter()
         // Implementation for creating character
     };
 
-    const handleRecolorHair = (e) =>
+    const handleRecolorSprite = (e) =>
     {
-        const hairColor = e.target.value;
-        dispatch(setHairColor(hairColor));
-        dispatch(recolorHair());
+        let option;
+        switch (e.target.name)
+        {
+            case "hairColor":
+                dispatch(setHairColor(e.target.value));
+                option = "hair";
+                break;
+            case "eyeColor":
+                dispatch(setEyeColor(e.target.value));
+                option = "eyes";
+                break;
+            case "skinColor":
+                dispatch(setSkinColor(e.target.value));
+                option = "skin";
+                break;
+            case "shirtColor":
+                dispatch(setShirtColor(e.target.value));
+                option = "shirt";
+                break;
+            case "pantsColor":
+                dispatch(setPantsColor(e.target.value));
+                option = "pants";
+                break;
+            default:
+                break;
+        }
+        dispatch(recolorSprite(option));
     };
 
     return (
@@ -32,48 +56,50 @@ export default function ColorCharacter()
 
                 <div>
                     <label htmlFor="hairColor">Hair Color:</label>
-                    <select id="hairColor" name="hairColor" value={hairColor} className={styles.input} onChange={handleRecolorHair}>
-                        <option value="blonde">Blonde</option>
-                        <option value="brown">Brown</option>
-                        <option value="black">Black</option>
-                        <option value="red">Red</option>
+                    <select id="hairColor" name="hairColor" value={hairColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="blondeHair">Blonde</option>
+                        <option value="blackHair">Black</option>
+                        <option value="brownHair">Brown</option>
+                        <option value="redHair">Red</option>
+                        <option value="greyHair">Grey</option>
                     </select>
                 </div>
 
                 <div>
                     <label htmlFor="eyeColor">Eye Color:</label>
-                    <select id="eyeColor" name="eyeColor" value={eyeColor} className={styles.input} onChange={(e) => dispatch(setEyeColor(e.target.value))}>
-                        <option value="blue">Blue</option>
-                        <option value="green">Green</option>
-                        <option value="brown">Brown</option>
+                    <select id="eyeColor" name="eyeColor" value={eyeColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="blueEyes">Blue</option>
+                        <option value="darkBrownEyes">Dark Brown</option>
+                        <option value="brownEyes">Brown</option>
+                        <option value="greenEyes">Green</option>
                     </select>
                 </div>
                 
                 <div>
                     <label htmlFor="skinColor">Skin Color:</label>
-                    <select id="skinColor" name="skinColor" value={skinColor} className={styles.input} onChange={(e) => dispatch(setSkinColor(e.target.value))}>
-                        <option value="rosy">Rosy</option>
-                        <option value="fair">Fair</option>
-                        <option value="tan">Tan</option>
-                        <option value="rich">Rich</option>
+                    <select id="skinColor" name="skinColor" value={skinColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="rosySkin">Rosy</option>
+                        <option value="richSkin">Rich</option>
+                        <option value="tanSkin">Tan</option>
+                        <option value="fairSkin">Fair</option>
                     </select>
                 </div>
 
                 <div>
                     <label htmlFor="shirtColor">Shirt Color:</label>
-                    <select id="shirtColor" name="shirtColor" value={shirtColor} className={styles.input} onChange={(e) => dispatch(setShirtColor(e.target.value))}>
-                        <option value="blue">Blue</option>
-                        <option value="green">Green</option>
-                        <option value="red">Red</option>
+                    <select id="shirtColor" name="shirtColor" value={shirtColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="greenShirt">Green</option>
+                        <option value="redShirt">Red</option>
+                        <option value="blueShirt">Blue</option>
                     </select>
                 </div>
 
                 <div>
                     <label htmlFor="pantsColor">Pants Color:</label>
-                    <select id="pantsColor" name="pantsColor" value={pantsColor} className={styles.input} onChange={(e) => dispatch(setPantsColor(e.target.value))}>
-                        <option value="blue">Blue</option>
-                        <option value="green">Green</option>
-                        <option value="red">Red</option>
+                    <select id="pantsColor" name="pantsColor" value={pantsColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="greenPants">Green</option>
+                        <option value="redPants">Red</option>
+                        <option value="bluePants">Blue</option>
                     </select>
                 </div>
 

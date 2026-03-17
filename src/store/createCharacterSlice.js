@@ -4,23 +4,84 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 /* ASYNC SPRITE RECOLOR                             */
 /* ------------------------------------------------ */
 
-export const recolorHair = createAsyncThunk(
-    "createCharacter/recolorHair",
-    async (_, { getState }) =>
+export const recolorSprite = createAsyncThunk(
+    "createCharacter/recolorSprite",
+    async (option, { getState }) =>
     {
         const state = getState().createCharacter;
 
-        console.log("Recoloring hair with color:", state.hairColor);
+        let img = state.img; // current character sprite (base64)
+        if (!img) 
+        {
+            console.log("No base sprite found. Using default.");
+            img = "/img/characters/$grasslandswarriormalehair1style1.png"; // default sprite
+        }
+
+        const template = state.origin + state.job + state.gender + state.hairStyle + state.clothingStyle; // e.g. "grasslandswarriormalehair1style1"
+        
+        let color;
+        switch (option)
+        {
+            case "hair":
+                color = state.hairColor;
+                break;
+            case "eyes":
+                color = state.eyeColor;
+                break;
+            case "skin":
+                color = state.skinColor;
+                break;
+            case "shirt":
+                color = state.shirtColor;
+                break;
+            case "pants":
+                color = state.pantsColor;
+                break;
+            default:
+                throw new Error(`Unknown option: ${option}`);
+        }
+
+        console.log(`Recoloring ${option} with color:`, color);
         const result = await window.clientGlobalManager.spriteColorer.recolorSprite(
-            "/img/characters/$Grasslander.png",
-            "grasslandswarriormalehair1style1",
-            "hair",
-            { r:255, g:0, b:0 },   // primary hair color
-            { r:0, g:0, b:0 }      // secondary hair color
+            img,
+            template,
+            option,
+            color
         );
-        console.log("Recolor result:", result);
 
         return result; // base64 sprite
+    }
+);
+
+export const newSpriteTemplate = createAsyncThunk(
+    "createCharacter/newSpriteTemplate",
+    async (_, { getState }) => {
+        const state = getState().createCharacter;
+        const template = state.origin + state.job + state.gender + state.hairStyle + state.clothingStyle;
+        const imgPath = `/img/characters/$${template}.png`;
+
+        console.log("Generating new sprite template with:", { template, imgPath });
+
+        // Convert image path to base64
+        const base64 = await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // needed for canvas -> base64
+            img.src = imgPath;
+
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL("image/png");
+                resolve(dataURL);
+            };
+
+            img.onerror = (err) => reject(err);
+        });
+
+        return base64; // now you can store this in Redux
     }
 );
 
@@ -37,14 +98,14 @@ const createCharacterSlice = createSlice({
         origin: "grasslands",
         job: "warrior",
         gender: "male",
-        hairStyle: "1",
-        clothingStyle: "1",
+        hairStyle: "hair1",
+        clothingStyle: "style1",
         hairColor: "blonde",
         eyeColor: "blue",
         skinColor: "rosy",
         shirtColor: "green",
         pantsColor: "green",
-        img: null
+        img: false
     },
 
     reducers:
@@ -102,14 +163,31 @@ const createCharacterSlice = createSlice({
         setPantsColor: (state, action) =>
         {
             state.pantsColor = action.payload;
+        },
+
+        setImg: (state, action) =>
+        {
+            state.img = action.payload;
         }
     },
 
     extraReducers: (builder) =>
     {
-        builder.addCase(recolorHair.fulfilled, (state, action) =>
+        builder.addCase(recolorSprite.fulfilled, (state, action) =>
         {
             state.img = action.payload;
+        });
+
+        builder.addCase(newSpriteTemplate.fulfilled, (state, action) =>
+        {
+            state.img = action.payload;
+            const template = state.origin + state.job + state.gender + state.hairStyle + state.clothingStyle; // e.g. "grasslandswarriormalehair1style1"
+            const defaultColors = window.clientGlobalManager.spriteColorer.defaultColors.get(template) || {};
+            state.hairColor = defaultColors.hair || state.hairColor;
+            state.eyeColor = defaultColors.eyes || state.eyeColor;
+            state.skinColor = defaultColors.skin || state.skinColor;
+            state.shirtColor = defaultColors.shirt || state.shirtColor;
+            state.pantsColor = defaultColors.pants || state.pantsColor;
         });
     }
 });
@@ -129,7 +207,8 @@ export const {
     setEyeColor,
     setSkinColor,
     setShirtColor,
-    setPantsColor
+    setPantsColor,
+    setImg
 } = createCharacterSlice.actions;
 
 export default createCharacterSlice.reducer;

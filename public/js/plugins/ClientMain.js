@@ -1,5 +1,6 @@
 window.clientGlobalManager.publicNamespace = io('/login');
 window.clientGlobalManager.clientInputManager.enableDomMode();
+window.clientGlobalManager.spriteColorer.loadAppearanceData(); // Preload appearance data on client start
 
 // Move the RPG Maker canvas into a stable wrapper element
 const _Graphics_createCanvas = Graphics._createCanvas;

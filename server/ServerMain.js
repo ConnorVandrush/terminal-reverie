@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+// FIXME 
 // const { saveWhitePixelRangesToJson } = require('./modules/SharpColorFinder.js');
 // // Example usage
 // saveWhitePixelRangesToJson(
