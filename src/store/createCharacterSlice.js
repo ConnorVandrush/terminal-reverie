@@ -41,7 +41,6 @@ export const recolorSprite = createAsyncThunk(
                 throw new Error(`Unknown option: ${option}`);
         }
 
-        console.log(`Recoloring ${option} with color:`, color);
         const result = await window.clientGlobalManager.spriteColorer.recolorSprite(
             img,
             template,
@@ -59,8 +58,6 @@ export const newSpriteTemplate = createAsyncThunk(
         const state = getState().createCharacter;
         const template = state.origin + state.job + state.gender + state.hairStyle + state.clothingStyle;
         const imgPath = `/img/characters/$${template}.png`;
-
-        console.log("Generating new sprite template with:", { template, imgPath });
 
         // Convert image path to base64
         const base64 = await new Promise((resolve, reject) => {
@@ -100,12 +97,13 @@ const createCharacterSlice = createSlice({
         gender: "male",
         hairStyle: "hair1",
         clothingStyle: "style1",
-        hairColor: "blonde",
-        eyeColor: "blue",
-        skinColor: "rosy",
-        shirtColor: "green",
-        pantsColor: "green",
-        img: false
+        hairColor: "blondeHair",
+        eyeColor: "blueEyes",
+        skinColor: "rosySkin",
+        shirtColor: "greenShirt",
+        pantsColor: "greenPants",
+        img: false,
+        createCharacterCB: null
     },
 
     reducers:
@@ -168,6 +166,11 @@ const createCharacterSlice = createSlice({
         setImg: (state, action) =>
         {
             state.img = action.payload;
+        },
+
+        setCreateCharacterCB: (state, action) =>
+        {
+            state.createCharacterCB = action.payload;
         }
     },
 
@@ -208,7 +211,8 @@ export const {
     setSkinColor,
     setShirtColor,
     setPantsColor,
-    setImg
+    setImg,
+    setCreateCharacterCB
 } = createCharacterSlice.actions;
 
 export default createCharacterSlice.reducer;

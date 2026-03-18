@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const CharacterStats = require('./CharacterStats.js');
+const CharacterData = require('./CharacterData.js');
 
 const counterSchema = new mongoose.Schema({
   _id: { type: String, required: true }, // name of the counter, e.g. "characterId"
@@ -14,8 +14,7 @@ const playerAccountSchema = new mongoose.Schema(
     password: { type: String, required: true },
     playerId: { type: Number, unique: true },
     JWT: { type: String },
-    characterData: { type: Object, default: {} },
-    characterStats: { type: Object, default: () => new CharacterStats() },
+    characterData: { type: Object, default: () => new CharacterData() },
     location: { type: Object, default: {} },
     isDead: { type: Boolean, default: true }
 });

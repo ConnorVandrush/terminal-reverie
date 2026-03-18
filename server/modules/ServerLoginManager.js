@@ -6,11 +6,12 @@ const PlayerData = require('./PlayerData.js');
 
 class ServerLoginManager
 {
-    constructor(publicNamespace, io, serverPlayerManager)
+    constructor(publicNamespace, io, serverPlayerManager, serverMapManager)
     {
         this.publicNamespace = publicNamespace;
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
+        this.serverMapManager = serverMapManager;
     }
 
     isValidEmail = (email) => 
@@ -54,19 +55,28 @@ class ServerLoginManager
 
                     if (existingUser.isDead)
                     {
-                        const reponse = await socket.emitWithAck('serverCreateCharacter', { playerId });
-                        if (reponse.error)
+                        const response = await socket.emitWithAck('serverCreateCharacter', {});
+                        if (response.error)
                         {
                             return cb({ error: 'An error occurred during character creation' });
                         }
-                        existingUser.isDead = false;
+
+                        existingUser.characterData.name = response.name;
+                        existingUser.characterData.appearance = response.appearance;
+                        existingUser.characterData.location.x = 128;
+                        existingUser.characterData.location.y = 128;
+                        existingUser.characterData.location.map = 'Town1';
+                        existingUser.characterData.isDead = false;
+                        existingUser.markModified('characterData');
                         await existingUser.save();
                     }
 
-                    const playerData = new PlayerData(existingUser.playerId, existingUser.characterStats, existingUser.characterData, existingUser.location);
+                    const playerData = new PlayerData(existingUser.playerId, existingUser.characterData);
                     this.serverPlayerManager.playersOnline.set(socket.id, playerData);
+                    const mapData = this.serverMapManager.maps.get(existingUser.characterData.location.map);
 
-                    return cb({ success: true, JWT });
+                    console.log('Login successful for playerId:', playerId);
+                    return cb({ success: true, JWT, characterData: existingUser.characterData, mapData });
                 }
                 catch (error)
                 {

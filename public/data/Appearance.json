@@ -19,7 +19,7 @@
         "redHair":
         {
             "primary": {"r":227, "g":81, "b":0},
-            "secondary": {"r":255, "g":121, "b":48}
+            "secondary": {"r":162, "g":48, "b":0}
         },
         "greyHair":
         {

@@ -25,10 +25,6 @@ class ClientSpriteColorer {
                 )
             );
 
-            console.log("Appearance data loaded successfully.");
-            console.log("Available colors:", Object.keys(this.colors));
-            console.log("Loaded templates:", Object.keys(this.spriteRanges));
-
         } catch (err) {
             console.error("Failed to load appearance data:", err);
             throw err;
@@ -67,7 +63,6 @@ class ClientSpriteColorer {
      * @returns {Promise<string>} base64 PNG
      */
     async recolorSprite(imageSrcOrImg, templateName, option, colorName) {
-        console.log("RecolorSprite called with:", { imageSrcOrImg, templateName, option, colorName });
 
         // Ensure appearance data is loaded
         await this.loadAppearanceData();
@@ -118,6 +113,14 @@ class ClientSpriteColorer {
     getDefaultColors(templateName) {
         if (!this.defaultColors) return {};
         return this.defaultColors.get(templateName) || {};
+    }
+
+    recolorSpritesheet(imageSrcOrImg, templateName, colorChoices) {
+        return this.recolorSprite(imageSrcOrImg, templateName, "hair", colorChoices.hair)
+            .then(recoloredHair => this.recolorSprite(recoloredHair, templateName, "eyes", colorChoices.eyes))
+            .then(recoloredEyes => this.recolorSprite(recoloredEyes, templateName, "skin", colorChoices.skin))
+            .then(recoloredSkin => this.recolorSprite(recoloredSkin, templateName, "shirt", colorChoices.shirt))
+            .then(recoloredShirt => this.recolorSprite(recoloredShirt, templateName, "pants", colorChoices.pants));
     }
 }
 

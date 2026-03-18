@@ -2,21 +2,46 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './ColorCharacter.module.css';
-import { setHairColor, recolorSprite, setEyeColor, setSkinColor, setShirtColor, setPantsColor } from '@store/createCharacterSlice';
+import { setHairColor, recolorSprite, setEyeColor, setSkinColor, setShirtColor, setPantsColor, setCreateCharacterCB } from '@store/createCharacterSlice';
 
 export default function ColorCharacter()
 {
     const dispatch = useDispatch();
 
+    const name = useSelector((state) => state.createCharacter.name);
+    const origin = useSelector((state) => state.createCharacter.origin);
+    const job = useSelector((state) => state.createCharacter.job);
+    const gender = useSelector((state) => state.createCharacter.gender);
+    const hairStyle = useSelector((state) => state.createCharacter.hairStyle);
+    const clothingStyle = useSelector((state) => state.createCharacter.clothingStyle);
     const hairColor = useSelector((state) => state.createCharacter.hairColor);
     const eyeColor = useSelector((state) => state.createCharacter.eyeColor);
     const skinColor = useSelector((state) => state.createCharacter.skinColor);
     const shirtColor = useSelector((state) => state.createCharacter.shirtColor);
     const pantsColor = useSelector((state) => state.createCharacter.pantsColor);
+    const createCharacterCB = useSelector((state) => state.createCharacter.createCharacterCB);
+    const template = origin + job + gender + hairStyle + clothingStyle;
 
     const handleCreateCharacter = () => 
     {
-        // Implementation for creating character
+        if (createCharacterCB)
+        {
+            const appearance = 
+            {
+                template: template,
+                colors: 
+                {
+                    hair: hairColor,
+                    eyes: eyeColor,
+                    skin: skinColor,
+                    shirt: shirtColor,
+                    pants: pantsColor
+                }
+            };
+
+            createCharacterCB({ success: true, appearance: appearance, name: name });
+            dispatch(setCreateCharacterCB(null)); // Clear the callback after use
+        }
     };
 
     const handleRecolorSprite = (e) =>
@@ -76,7 +101,7 @@ export default function ColorCharacter()
                 </div>
                 
                 <div>
-                    <label htmlFor="skinColor">Skin Color:</label>
+                    <label htmlFor="skinColor">Skin Tone:</label>
                     <select id="skinColor" name="skinColor" value={skinColor} className={styles.input} onChange={handleRecolorSprite}>
                         <option value="rosySkin">Rosy</option>
                         <option value="richSkin">Rich</option>

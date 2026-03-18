@@ -17,7 +17,15 @@ export const store = configureStore(
         rightPanel: rightPanelReducer,
     },
     middleware: (getDefault) =>
-    getDefault().concat(middleware),
+    getDefault(
+        {
+            serializableCheck:
+            {
+                ignoredActions: ['createCharacter/setCreateCharacterCB'], // Ignore the createCharacterCB action for serializability checks
+                ignoredPaths: ['createCharacter.createCharacterCB'], // Ignore the createCharacterCB field in the state for serializability checks
+            }
+        }
+    ).concat(middleware),
 });
 
 export default store;

@@ -1,14 +1,9 @@
 class PlayerData
 {
-    constructor(playerId, characterStats, characterData, location)
+    constructor(playerId, characterData)
     {
         this.playerId = playerId;
-        this.characterStats = characterStats;
         this.characterData = characterData;
-        this.location = location;
-        this.isPartyLeader = false;
-        this.isPartyFollower = false;
-        this.partyLeaderId = null;
     }
 }
 

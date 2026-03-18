@@ -7,9 +7,22 @@ class ClientGlobalManager
         this.clientInputManager = null;
         this.refreshTokenTimeout = null;
         this.spriteColorer = null;
+        this.characterData = null;
+
+        Game_Character.prototype.setCharacterBitmap = function(bitmap) 
+        {
+            this._customBitmap = bitmap;
+            this._characterName = "";
+            this._characterIndex = 0;
+        };
     }
 
-    initAuthenticatedSocket()
+    bitmapFromBase64 = (base64) => 
+    {
+        return ImageManager.loadBitmapFromUrl(base64); // Use RPG Maker's built-in method to create a bitmap from a Base64 string
+    }
+
+    async login(characterData, { mapData, tileset })
     {
         const JWT = localStorage.getItem('JWT');
         if (!JWT) return null;
@@ -23,6 +36,26 @@ class ClientGlobalManager
         });
 
         this.io = socket;
+
+        DataManager.setupNewGame();
+        this.characterData = characterData;
+        
+        const appearance = await this.spriteColorer.recolorSpritesheet('/img/characters/$' + characterData.appearance.template + '.png', characterData.appearance.template, characterData.appearance.colors);
+        // create bitmap from base64
+        const bitmap = this.bitmapFromBase64(appearance);
+        // ✅ THIS is the important part
+        $gamePlayer.setCharacterBitmap(bitmap);
+        // force refresh
+        $gamePlayer.refresh();
+        
+        $dataTilesets[mapData.tilesetId] = structuredClone(tileset);
+        const map = structuredClone(mapData);
+        map.id = Date.now(); // Unique ID forces reload, if we reuse the same map id it doesn't load properly
+        $dataMap = map;
+
+        $gameParty.gainGold(characterData.gold);
+        $gamePlayer.reserveTransfer(map.id, characterData.location.x, characterData.location.y);
+        SceneManager.goto(Scene_Map);
     }
 }
 

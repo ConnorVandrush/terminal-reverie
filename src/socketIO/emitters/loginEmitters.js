@@ -17,14 +17,16 @@ export default async function loginEmitters(store, action)
         {
             const { JWT } = response;
             localStorage.setItem('JWT', JWT);
-            window.clientGlobalManager.initAuthenticatedSocket();
+            window.clientGlobalManager.login(response.characterData, response.mapData);
             window.clientGlobalManager.publicNamespace.disconnect();
+            store.dispatch({ type: 'leftPanel/setLeftPanel', payload: null });
+            store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
+            store.dispatch({ type: 'rightPanel/setRightPanel', payload: null });
         }
     }
 
     if (action.type === clientRegister.type)
     {
-        console.log("Emitting clientRegister with payload:", action.payload);
         const response = await publicNamespace.emitWithAck('clientRegister', action.payload);
 
         if (response.error)
