@@ -3,8 +3,10 @@
 var $plugins =
 [
 {"name":"EngineOverrides","status":true,"description":"","parameters":{}},
+{"name":"IdlePlugin","status":true,"description":"[RPG Maker MZ] [Version 1.0]","parameters":{}},
 {"name":"ClientGlobalManager","status":true,"description":"","parameters":{}},
 {"name":"ClientInputManager","status":true,"description":"Allows Backspace to work in React inputs by bypassing RPG Maker's Input handler.","parameters":{}},
+{"name":"ClientPlayerManager","status":true,"description":"","parameters":{}},
 {"name":"ClientSpriteColorer","status":true,"description":"","parameters":{}},
 {"name":"ClientMapManager","status":true,"description":"","parameters":{}},
 {"name":"ClientMain","status":true,"description":"","parameters":{}}

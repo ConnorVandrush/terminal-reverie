@@ -2,7 +2,7 @@ import { clientLogin, clientRegister } from "@/store/loginSlice.js";
 
 export default async function loginEmitters(store, action)
 {
-    const publicNamespace = window.clientGlobalManager.publicNamespace;
+    const publicNamespace = window.clientGlobalManager.clientPlayerManager.publicNamespace;
     
     if (action.type === clientLogin.type)
     {
@@ -17,8 +17,8 @@ export default async function loginEmitters(store, action)
         {
             const { JWT } = response;
             localStorage.setItem('JWT', JWT);
-            window.clientGlobalManager.login(response.characterData, response.mapData);
-            window.clientGlobalManager.publicNamespace.disconnect();
+            window.clientGlobalManager.clientPlayerManager.login(response.characterData, response.mapData, response.playersOnMap);
+            window.clientGlobalManager.clientPlayerManager.publicNamespace.disconnect();
             store.dispatch({ type: 'leftPanel/setLeftPanel', payload: null });
             store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
             store.dispatch({ type: 'rightPanel/setRightPanel', payload: null });

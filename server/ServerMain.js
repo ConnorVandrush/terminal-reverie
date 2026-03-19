@@ -18,7 +18,7 @@ serverManager.startExpressListeners(process.env.EXPRESS_PORT);
 serverManager.startSocketIOServer();
 
 const ServerPlayerManager = require('./modules/ServerPlayerManager.js');
-const serverPlayerManager = new ServerPlayerManager();
+const serverPlayerManager = new ServerPlayerManager(serverManager.io);
 
 const ServerMapManager = require('./modules/ServerMapManager.js');
 const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager);

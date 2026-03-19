@@ -2,8 +2,9 @@ class CharacterData
 {
     constructor() 
     {
+        this.playerId = null;
         this.isDead = false;
-        this.location = { x: 0, y: 0, map: '' };
+        this.location = { x: 0, y: 0, d: 0, map: '' };
         this.name = '';
         this.freeSteps = 0;
         this.level = 1;

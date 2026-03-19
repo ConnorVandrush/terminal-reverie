@@ -65,7 +65,6 @@ async function findWhitePixelRanges(imagePath, tolerance = 12) {
 async function saveWhitePixelRangesToJson(imagePath, outputJsonPath) {
     const ranges = await findWhitePixelRanges(imagePath, 12);
     fs.writeFileSync(outputJsonPath, JSON.stringify(ranges)); // no pretty print
-    console.log(`Saved ${ranges.length} white pixel ranges to ${outputJsonPath}`);
 }
 
 module.exports = {

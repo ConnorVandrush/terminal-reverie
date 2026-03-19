@@ -5,7 +5,7 @@ import { setCreateCharacterCB } from "@store/createCharacterSlice";
 
 export function createCharacterListeners(store)
 {
-    window.clientGlobalManager.publicNamespace.on('serverCreateCharacter', async (data, cb) =>
+    window.clientGlobalManager.clientPlayerManager.publicNamespace.on('serverCreateCharacter', async (data, cb) =>
     {
         {
             store.dispatch(setLeftPanel('createCharacter'));

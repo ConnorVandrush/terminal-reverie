@@ -16,7 +16,6 @@ const _Scene_Title_createCommandWindow = Scene_Title.prototype.createCommandWind
 Scene_Title.prototype.createCommandWindow = function() {
     _Scene_Title_createCommandWindow.call(this);
 
-    // Optional: hide window completely
     this._commandWindow.hide();
 };
 
@@ -30,22 +29,16 @@ DataManager.loadMapData = function(mapId) {
     _DataManager_loadMapData.call(this, mapId);
 };
 
-//Override ImageManager.loadCharacter to prevent loading character sprites from disk, since we will be injecting recolored sprites directly into $gamePlayer._customBitmap.
-const _loadCharacter = ImageManager.loadCharacter;
-ImageManager.loadCharacter = function(filename) {
-    if (filename.startsWith("$")) {
-        return $gamePlayer._customBitmap; // FIXME This is the player's custom bitmap, might have to do something else to find remote player bitmaps
-    }
-    return _loadCharacter.call(this, filename);
-};
-
 // Override Sprite_Character to use the custom bitmap if it exists
 const _setBitmap = Sprite_Character.prototype.setCharacterBitmap;
-Sprite_Character.prototype.setCharacterBitmap = function(character) {
+Sprite_Character.prototype.setCharacterBitmap = function() {
+    const character = this._character;
+
     if (character && character._customBitmap) {
         this.bitmap = character._customBitmap;
+        this._isBigCharacter = true;
     } else {
-        _setBitmap.call(this, character);
+        _setBitmap.call(this);
     }
 };
 
@@ -67,11 +60,68 @@ Game_Player.prototype.moveByInput = async function (reactDirection)
         this.moveStraight(direction);
         mapManager.requestMove(direction, oldLoc);
     }
+};
 
-    // // Party movement
-    // if (window.isPartyLeader) 
-    // {
-    //     // Server will move all party members at once
-    //     mapManager.requestMove(this, direction, oldLoc);
-    // }
+// Extend Game_Event to handle networked movement
+const _Game_Event_update = Game_Event.prototype.update;
+Game_Event.prototype.update = function() {
+    _Game_Event_update.call(this);
+    this.updateNetMovement();
+};
+Game_CharacterBase.prototype.updateNetMovement = function() {
+    if (this._netTargetX == null) return;
+
+    // ✅ Reached destination
+    if (this.x === this._netTargetX && this.y === this._netTargetY) {
+        this._netTargetX = null;
+        this._netTargetY = null;
+
+        return;
+    }
+
+    // ➡️ Still needs to move
+    const dir = this.findDirectionTo(this._netTargetX, this._netTargetY);
+    if (dir > 0) {
+        this.moveStraight(dir);
+    }
+};
+
+// Save original SceneManager.pop function, it's disabled during battles
+window._pop = SceneManager.pop;
+// Hook into Scene_Map to create remote players when the map is loaded
+const _Scene_Map_onMapLoaded = Scene_Map.prototype.onMapLoaded;
+Scene_Map.prototype.onMapLoaded = function() {
+    _Scene_Map_onMapLoaded.call(this);
+    window.rmmzPlayer = $gamePlayer;
+    SceneManager.pop = window._pop;
+
+    for (const [playerId, player] of window.clientGlobalManager.clientPlayerManager.playersOnMap.entries()) 
+    {
+        // enqueue for creation
+        window.clientGlobalManager.clientPlayerManager.pendingRemotePlayers.set(playerId, { characterData: player.characterData, });
+    }
+
+    window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
+};
+
+// Look for pending player changes (new players, disconnects) on each update and process them
+const _Scene_Map_update = Scene_Map.prototype.update;
+Scene_Map.prototype.update = function() {
+    _Scene_Map_update.call(this);   // correct `this`
+
+    // your logic
+    window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
+};
+
+const _updateBitmap = Sprite_Character.prototype.updateBitmap;
+Sprite_Character.prototype.updateBitmap = function() {
+    const oldBitmap = this.bitmap;
+
+    _updateBitmap.call(this);
+
+    // Only override when the engine actually changed the bitmap
+    if (this._character._customBitmap) {
+        this.bitmap = this._character._customBitmap;
+        this._isBigCharacter = true;
+    }
 };

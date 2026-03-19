@@ -19,7 +19,6 @@ class ServerManager
         try
         {
             await mongoose.connect(this.uri);
-            console.log("Connected to database");
         }
         catch (error)
         {
@@ -36,7 +35,6 @@ class ServerManager
     {
         this.expressServer = this.app.listen(port, '0.0.0.0', () =>
         {
-            console.log(`Server is running on port ${port}`);
         });
     }
 

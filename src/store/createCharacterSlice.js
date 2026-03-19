@@ -13,7 +13,6 @@ export const recolorSprite = createAsyncThunk(
         let img = state.img; // current character sprite (base64)
         if (!img) 
         {
-            console.log("No base sprite found. Using default.");
             img = "/img/characters/$grasslandswarriormalehair1style1.png"; // default sprite
         }
 
@@ -41,7 +40,7 @@ export const recolorSprite = createAsyncThunk(
                 throw new Error(`Unknown option: ${option}`);
         }
 
-        const result = await window.clientGlobalManager.spriteColorer.recolorSprite(
+        const result = await window.clientGlobalManager.clientPlayerManager.spriteColorer.recolorSprite(
             img,
             template,
             option,
@@ -185,7 +184,7 @@ const createCharacterSlice = createSlice({
         {
             state.img = action.payload;
             const template = state.origin + state.job + state.gender + state.hairStyle + state.clothingStyle; // e.g. "grasslandswarriormalehair1style1"
-            const defaultColors = window.clientGlobalManager.spriteColorer.defaultColors.get(template) || {};
+            const defaultColors = window.clientGlobalManager.clientPlayerManager.spriteColorer.defaultColors.get(template) || {};
             state.hairColor = defaultColors.hair || state.hairColor;
             state.eyeColor = defaultColors.eyes || state.eyeColor;
             state.skinColor = defaultColors.skin || state.skinColor;

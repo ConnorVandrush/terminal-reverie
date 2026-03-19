@@ -12,6 +12,7 @@ class ServerLoginManager
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
         this.serverMapManager = serverMapManager;
+        this.tokenTimeouts = new Map(); // playerId -> timeoutId for token invalidation after disconnect
     }
 
     isValidEmail = (email) => 
@@ -29,7 +30,6 @@ class ServerLoginManager
     {
         this.publicNamespace.on('connection', (socket) =>
         {
-            console.log('A user connected to login namespace');
 
             socket.on('clientLogin', async ({ email, password }, cb) =>
             {
@@ -60,10 +60,12 @@ class ServerLoginManager
                             return cb({ error: 'An error occurred during character creation' });
                         }
 
+                        existingUser.characterData.playerId = playerId;
                         existingUser.characterData.name = response.name;
                         existingUser.characterData.appearance = response.appearance;
                         existingUser.characterData.location.x = 128;
                         existingUser.characterData.location.y = 128;
+                        existingUser.characterData.location.d = 2;
                         existingUser.characterData.location.map = 'Town1';
                         existingUser.characterData.isDead = false;
                         existingUser.isDead = false;
@@ -72,9 +74,12 @@ class ServerLoginManager
                     }
 
                     const mapData = this.serverMapManager.maps.get(existingUser.characterData.location.map);
-
-                    console.log('Login successful for playerId:', playerId);
-                    return cb({ success: true, JWT, characterData: existingUser.characterData, mapData });
+                    let playersOnMap = [];
+                    if (this.serverPlayerManager.playersOnMaps.has(existingUser.characterData.location.map))
+                    {
+                        playersOnMap = Array.from(this.serverPlayerManager.playersOnMaps.get(existingUser.characterData.location.map)?.entries()) || [];
+                    }
+                    return cb({ success: true, JWT, characterData: existingUser.characterData, mapData, playersOnMap });
                 }
                 catch (error)
                 {
@@ -118,7 +123,6 @@ class ServerLoginManager
 
             socket.on('disconnect', () =>
             {
-                console.log('A user disconnected from login namespace');
             });
         });
 
@@ -157,7 +161,6 @@ class ServerLoginManager
 
         this.io.on('connection', async (socket) => 
         {
-            console.log('A user connected to authenticated server');
 
             const decoded = jwt.verify(socket.handshake.auth.JWT, process.env.JWT_SECRET);
             const playerId = decoded.playerId;
@@ -168,21 +171,23 @@ class ServerLoginManager
                 const existingUser = await PlayerAccount.findOne({ playerId });
                 const playerData = new PlayerData(existingUser.characterData);
                 this.serverPlayerManager.playersOnline.set(playerId, playerData);
+                this.serverPlayerManager.playerJoinMap(socket, playerId, existingUser.characterData.location.map);
             }
 
-            if (this.serverPlayerManager.tokenTimeouts.has(playerId))
+            if (this.tokenTimeouts.has(playerId))
             {
-                clearTimeout(this.serverPlayerManager.tokenTimeouts.get(playerId));
-                this.serverPlayerManager.tokenTimeouts.delete(playerId);
+                clearTimeout(this.tokenTimeouts.get(playerId));
+                this.tokenTimeouts.delete(playerId);
             }
 
             socket.on('disconnect', async () => 
             {
-                console.log('A user disconnected from authenticated server');
 
                 const playerId = socket.playerId;
                 if (!playerId) return;
+                const characterData = this.serverPlayerManager.playersOnline.get(playerId)?.characterData;
 
+                this.serverPlayerManager.playerLeftMap(socket, playerId, characterData?.location.map); // FIXME remove after testing
                 this.serverPlayerManager.playersOnline.delete(playerId); // FIXME remove after testing
 
                 const timeout = setTimeout(async () => 
@@ -193,11 +198,10 @@ class ServerLoginManager
                         existingUser.JWT = null;
                         await existingUser.save();
                         this.serverPlayerManager.playersOnline.delete(playerId);
-                        console.log(`Token for user ${playerId} invalidated after disconnect grace period`);
                     }
                 }, 3 * 60 * 1000);
 
-                this.serverPlayerManager.tokenTimeouts.set(playerId, timeout);
+                this.tokenTimeouts.set(playerId, timeout);
             });
         });
     }

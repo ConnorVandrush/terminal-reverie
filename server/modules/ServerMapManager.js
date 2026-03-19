@@ -124,6 +124,7 @@ class ServerMapManager
             socket.on('clientPlayerMove', async (direction, cb) =>
             {
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                playerData.characterData.location.d = direction;
 
                 if (!playerData || playerData.isTransferring || playerData.isBattling)
                 {
@@ -155,6 +156,7 @@ class ServerMapManager
                 }
 
                 playerData.characterData.location = newLocation;
+                this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation });
                 return cb({ success: true, newLocation: newLocation });
             });
         });

@@ -125,4 +125,4 @@ class ClientSpriteColorer {
 }
 
 // Assign globally
-window.clientGlobalManager.spriteColorer = new ClientSpriteColorer();
+window.clientGlobalManager.clientPlayerManager.spriteColorer = new ClientSpriteColorer();
