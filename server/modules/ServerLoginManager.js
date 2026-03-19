@@ -49,7 +49,7 @@ class ServerLoginManager
                     
                     // FIXME - secret key should be stored in env variable
                     const playerId = existingUser.playerId;
-                    const JWT = jwt.sign({ playerId }, 'SECRET', { expiresIn: '30d' });
+                    const JWT = jwt.sign({ playerId }, process.env.JWT_SECRET, { expiresIn: '30d' });
                     existingUser.JWT = JWT;
                     await existingUser.save();
 
@@ -141,7 +141,7 @@ class ServerLoginManager
 
                 try
                 {
-                    const decoded = jwt.verify(JWT, 'SECRET'); // FIXME - secret key should be stored in env variable
+                    const decoded = jwt.verify(JWT, process.env.JWT_SECRET); // FIXME - secret key should be stored in env variable
                     const playerId = decoded.playerId;
                     const existingUser = await PlayerAccount.findOne({ playerId });
                     if (!existingUser || existingUser.JWT !== JWT) 
@@ -161,7 +161,7 @@ class ServerLoginManager
         {
             console.log('A user connected to authenticated server');
 
-            const decoded = jwt.verify(socket.handshake.auth.JWT, 'SECRET'); // FIXME - secret key should be stored in env variable
+            const decoded = jwt.verify(socket.handshake.auth.JWT, process.env.JWT_SECRET); // FIXME - secret key should be stored in env variable
             const playerId = decoded.playerId;
             socket.playerId = playerId;
 

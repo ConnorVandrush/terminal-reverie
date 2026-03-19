@@ -17,11 +17,6 @@ class ClientGlobalManager
         };
     }
 
-    bitmapFromBase64 = (base64) => 
-    {
-        return ImageManager.loadBitmapFromUrl(base64); // Use RPG Maker's built-in method to create a bitmap from a Base64 string
-    }
-
     async login(characterData, { mapData, tileset })
     {
         const JWT = localStorage.getItem('JWT');
@@ -41,11 +36,8 @@ class ClientGlobalManager
         this.characterData = characterData;
         
         const appearance = await this.spriteColorer.recolorSpritesheet('/img/characters/$' + characterData.appearance.template + '.png', characterData.appearance.template, characterData.appearance.colors);
-        // create bitmap from base64
-        const bitmap = this.bitmapFromBase64(appearance);
-        // ✅ THIS is the important part
+        const bitmap = ImageManager.loadBitmapFromUrl(appearance);
         $gamePlayer.setCharacterBitmap(bitmap);
-        // force refresh
         $gamePlayer.refresh();
         
         $dataTilesets[mapData.tilesetId] = structuredClone(tileset);

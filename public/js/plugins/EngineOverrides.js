@@ -30,16 +30,17 @@ DataManager.loadMapData = function(mapId) {
     _DataManager_loadMapData.call(this, mapId);
 };
 
-//Override ImageManager.loadCharacter to prevent loading character sprites from disk, since we will be injecting recolored sprites as base64 strings into the cache.
+//Override ImageManager.loadCharacter to prevent loading character sprites from disk, since we will be injecting recolored sprites directly into $gamePlayer._customBitmap.
 const _loadCharacter = ImageManager.loadCharacter;
 ImageManager.loadCharacter = function(filename) {
     console.log("loadCharacter called with filename:", filename);
     if (filename.startsWith("$")) {
-        return $gamePlayer._customBitmap;
+        return $gamePlayer._customBitmap; // This is the player's custom bitmap, might have to do something else to find remote player bitmaps
     }
     return _loadCharacter.call(this, filename);
 };
 
+// Override Sprite_Character to use the custom bitmap if it exists
 const _setBitmap = Sprite_Character.prototype.setCharacterBitmap;
 Sprite_Character.prototype.setCharacterBitmap = function(character) {
     if (character && character._customBitmap) {
