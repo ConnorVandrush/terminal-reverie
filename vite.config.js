@@ -4,15 +4,15 @@ export default defineConfig(
   publicDir: 'public',
   server: 
   {
-    port: 5173,
+    port: 5173, // Vite dev server port
     proxy: 
     {
       '/socket.io': 
       {
-        target: 'http://46.110.113.183:15987',
+        target: "http://localhost:15987", // Socket.IO server address
         ws: true
       },
-      '/api': 'http://46.110.113.183:15987'
+      '/api': "http://localhost:15987" // API server address
     }
   },
   resolve:

@@ -14,15 +14,16 @@ const ServerManager = require('./modules/ServerManager.js');
 const serverManager = new ServerManager();
 serverManager.connectToDatabase();
 serverManager.serveStaticFiles('public');
-serverManager.startExpressListeners(15987);
+serverManager.startExpressListeners(process.env.EXPRESS_PORT);
 serverManager.startSocketIOServer();
-
-const ServerMapManager = require('./modules/ServerMapManager.js');
-const serverMapManager = new ServerMapManager();
-serverMapManager.loadMaps();
 
 const ServerPlayerManager = require('./modules/ServerPlayerManager.js');
 const serverPlayerManager = new ServerPlayerManager();
+
+const ServerMapManager = require('./modules/ServerMapManager.js');
+const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager);
+serverMapManager.loadMaps();
+serverMapManager.startListeners();
 
 const ServerLoginManager = require('./modules/ServerLoginManager.js');
 const serverLoginManager = new ServerLoginManager(serverManager.publicNamespace, serverManager.io, serverPlayerManager, serverMapManager);

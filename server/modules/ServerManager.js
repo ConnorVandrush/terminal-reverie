@@ -11,7 +11,6 @@ class ServerManager
         this.io;
         this.publicNamespace;
         this.expressServer;
-        // FIXME define in host when time comes to deploy 
         this.uri = process.env.API_KEY;
     }
 
@@ -47,7 +46,7 @@ class ServerManager
         {
             cors: 
             {
-                origin: "http://46.110.113.183:5173", // Vite dev URL
+                origin: process.env.VITE_ORIGIN_ADDRESS, // Vite dev URL
                 methods: ["GET", "POST"],
                 credentials: true
             },

@@ -47,7 +47,6 @@ class ServerLoginManager
                         return cb({ error: 'Invalid email or password' });
                     }
                     
-                    // FIXME - secret key should be stored in env variable
                     const playerId = existingUser.playerId;
                     const JWT = jwt.sign({ playerId }, process.env.JWT_SECRET, { expiresIn: '30d' });
                     existingUser.JWT = JWT;
@@ -67,12 +66,11 @@ class ServerLoginManager
                         existingUser.characterData.location.y = 128;
                         existingUser.characterData.location.map = 'Town1';
                         existingUser.characterData.isDead = false;
+                        existingUser.isDead = false;
                         existingUser.markModified('characterData');
                         await existingUser.save();
                     }
 
-                    const playerData = new PlayerData(existingUser.playerId, existingUser.characterData);
-                    this.serverPlayerManager.playersOnline.set(socket.id, playerData);
                     const mapData = this.serverMapManager.maps.get(existingUser.characterData.location.map);
 
                     console.log('Login successful for playerId:', playerId);
@@ -131,7 +129,7 @@ class ServerLoginManager
                 return next(); // allow login namespace
             }
 
-            if (!this.serverPlayerManager.playersOnline.has(socket.id))
+            if (!this.serverPlayerManager.playersOnline.has(socket.playerId))
             {
                 const JWT = socket.handshake.auth?.JWT;
                 if (!JWT)
@@ -141,7 +139,7 @@ class ServerLoginManager
 
                 try
                 {
-                    const decoded = jwt.verify(JWT, process.env.JWT_SECRET); // FIXME - secret key should be stored in env variable
+                    const decoded = jwt.verify(JWT, process.env.JWT_SECRET);
                     const playerId = decoded.playerId;
                     const existingUser = await PlayerAccount.findOne({ playerId });
                     if (!existingUser || existingUser.JWT !== JWT) 
@@ -157,13 +155,20 @@ class ServerLoginManager
             }
         });
 
-        this.io.on('connection', (socket) => 
+        this.io.on('connection', async (socket) => 
         {
             console.log('A user connected to authenticated server');
 
-            const decoded = jwt.verify(socket.handshake.auth.JWT, process.env.JWT_SECRET); // FIXME - secret key should be stored in env variable
+            const decoded = jwt.verify(socket.handshake.auth.JWT, process.env.JWT_SECRET);
             const playerId = decoded.playerId;
-            socket.playerId = playerId;
+
+            if (!this.serverPlayerManager.playersOnline.has(playerId))
+            {
+                socket.playerId = playerId;
+                const existingUser = await PlayerAccount.findOne({ playerId });
+                const playerData = new PlayerData(existingUser.characterData);
+                this.serverPlayerManager.playersOnline.set(playerId, playerData);
+            }
 
             if (this.serverPlayerManager.tokenTimeouts.has(playerId))
             {
@@ -178,7 +183,7 @@ class ServerLoginManager
                 const playerId = socket.playerId;
                 if (!playerId) return;
 
-                this.serverPlayerManager.playersOnline.delete(socket.id);
+                this.serverPlayerManager.playersOnline.delete(playerId); // FIXME remove after testing
 
                 const timeout = setTimeout(async () => 
                 {
@@ -187,6 +192,7 @@ class ServerLoginManager
                     {
                         existingUser.JWT = null;
                         await existingUser.save();
+                        this.serverPlayerManager.playersOnline.delete(playerId);
                         console.log(`Token for user ${playerId} invalidated after disconnect grace period`);
                     }
                 }, 3 * 60 * 1000);

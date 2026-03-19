@@ -24,9 +24,6 @@ class CharacterData
                 pants: null
             }
         };
-        this.isPartyLeader = false;
-        this.isPartyFollower = false;
-        this.partyLeaderId = null;
     }
 }
 

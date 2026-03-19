@@ -4,7 +4,8 @@ var $plugins =
 [
 {"name":"EngineOverrides","status":true,"description":"","parameters":{}},
 {"name":"ClientGlobalManager","status":true,"description":"","parameters":{}},
-{"name":"ClientSpriteColorer","status":true,"description":"","parameters":{}},
 {"name":"ClientInputManager","status":true,"description":"Allows Backspace to work in React inputs by bypassing RPG Maker's Input handler.","parameters":{}},
+{"name":"ClientSpriteColorer","status":true,"description":"","parameters":{}},
+{"name":"ClientMapManager","status":true,"description":"","parameters":{}},
 {"name":"ClientMain","status":true,"description":"","parameters":{}}
 ];

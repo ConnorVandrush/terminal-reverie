@@ -1,9 +1,13 @@
 class PlayerData
 {
-    constructor(playerId, characterData)
+    constructor(characterData)
     {
-        this.playerId = playerId;
         this.characterData = characterData;
+        this.isTransferring = false;
+        this.isBattling = false;
+        this.isPartyLeader = false;
+        this.isPartyFollower = false;
+        this.partyLeaderId = null;
     }
 }
 

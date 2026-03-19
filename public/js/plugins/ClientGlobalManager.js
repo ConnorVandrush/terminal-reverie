@@ -3,11 +3,12 @@ class ClientGlobalManager
     constructor()
     {
         this.publicNamespace = null;
-        this.io = null;
+        this.socket = null;
         this.clientInputManager = null;
         this.refreshTokenTimeout = null;
         this.spriteColorer = null;
         this.characterData = null;
+        this.clientMapManager = null;
 
         Game_Character.prototype.setCharacterBitmap = function(bitmap) 
         {
@@ -22,15 +23,13 @@ class ClientGlobalManager
         const JWT = localStorage.getItem('JWT');
         if (!JWT) return null;
 
-        const socket = io('http://46.110.113.183:15987', 
+        this.socket = io('http://localhost:15987', 
         {
             auth: { JWT },
             reconnection: true,
             reconnectionAttempts: Infinity,
             reconnectionDelay: 1000,
         });
-
-        this.io = socket;
 
         DataManager.setupNewGame();
         this.characterData = characterData;

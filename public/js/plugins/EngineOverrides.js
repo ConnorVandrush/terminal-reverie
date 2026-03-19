@@ -33,9 +33,8 @@ DataManager.loadMapData = function(mapId) {
 //Override ImageManager.loadCharacter to prevent loading character sprites from disk, since we will be injecting recolored sprites directly into $gamePlayer._customBitmap.
 const _loadCharacter = ImageManager.loadCharacter;
 ImageManager.loadCharacter = function(filename) {
-    console.log("loadCharacter called with filename:", filename);
     if (filename.startsWith("$")) {
-        return $gamePlayer._customBitmap; // This is the player's custom bitmap, might have to do something else to find remote player bitmaps
+        return $gamePlayer._customBitmap; // FIXME This is the player's custom bitmap, might have to do something else to find remote player bitmaps
     }
     return _loadCharacter.call(this, filename);
 };
@@ -48,4 +47,31 @@ Sprite_Character.prototype.setCharacterBitmap = function(character) {
     } else {
         _setBitmap.call(this, character);
     }
+};
+
+// Client-side movement with server reconciliation and client prediction
+Game_Player.prototype.moveByInput = async function (reactDirection) 
+{
+    const mapManager = window.clientGlobalManager.clientMapManager;
+    const direction = reactDirection ?? Input.dir4;
+    
+    if (direction <= 0 || mapManager.isMoving || window.isPartyFollower) return;
+    
+    mapManager.isMoving = true;
+    
+    const oldLoc = {x: this.x, y: this.y, d: direction};
+    
+    // Solo movement with client prediction
+    if (!window.isPartyLeader && !window.isPartyFollower)
+    {
+        this.moveStraight(direction);
+        mapManager.requestMove(direction, oldLoc);
+    }
+
+    // // Party movement
+    // if (window.isPartyLeader) 
+    // {
+    //     // Server will move all party members at once
+    //     mapManager.requestMove(this, direction, oldLoc);
+    // }
 };
