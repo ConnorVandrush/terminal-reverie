@@ -159,6 +159,62 @@ class ServerMapManager
                 this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation });
                 return cb({ success: true, newLocation: newLocation });
             });
+
+            socket.on('clientRequestMapTransfer', async (cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                playerData.isTransferring = true;
+                if (!playerData) return cb({ success: false });
+
+                const event = this.getEventData(playerData.characterData.location.map, playerData.characterData.location.x, playerData.characterData.location.y);
+                if (!event) return cb({ success: false });
+
+                if (event.name.startsWith('Transfer'))
+                {
+                    const start = event.name.indexOf("(") + 1;
+                    const end = event.name.indexOf(")");
+                    const destinationMap = event.name.slice(start, end);
+
+                    let transferCommand = null;
+                    for (const p of event.pages) {
+                        transferCommand = p.list.find(c => c.code === 201);
+                        if (transferCommand) break;
+                    }
+
+                    const x = transferCommand?.parameters[2] ?? 0;
+                    const y = transferCommand?.parameters[3] ?? 0;
+                    const d = transferCommand?.parameters[4] ?? 2;
+
+                    const mapData = this.maps.get(destinationMap)?.mapData;
+                    const tileset = this.maps.get(destinationMap)?.tileset;
+                    const playersOnMap = this.serverPlayerManager.playersOnMaps.get(destinationMap) || new Map();
+
+                    if (!mapData || !tileset) return cb({ success: false });
+
+                    // this.serverPlayerManager.playersOnMaps.get(playerData.characterData.location.map)?.delete(socket.playerId);
+                    // this.serverPlayerManager.playersOnMaps.get(destinationMap)?.set(socket.playerId, playerData.characterData);
+                    // 
+                    // socket.leave(playerData.characterData.location.map);
+                    // socket.join(destinationMap);
+                    // this.io.to(playerData.characterData.location.map).except(socket.id).emit('serverPlayerLeftMap', socket.playerId);
+                    // this.io.to(destinationMap).emit('serverPlayerJoinedMap', { playerId: socket.playerId, characterData: playerData.characterData });
+
+                    this.serverPlayerManager.playerLeftMap(socket, socket.playerId, playerData.characterData.location.map);
+                    playerData.characterData.location = { x, y, d, map: destinationMap };
+                    this.serverPlayerManager.playerJoinMap(socket, socket.playerId, destinationMap);
+   
+                    return cb({ success: true, x, y, d, mapData, tileset, playersOnMap: Array.from(playersOnMap.entries()) });
+                }
+            });
+
+            socket.on('clientMapTransferComplete', () =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                if (playerData)                
+                {
+                    playerData.isTransferring = false;
+                }
+            });
         });
     }
 }

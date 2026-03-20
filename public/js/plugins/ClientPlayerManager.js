@@ -76,11 +76,18 @@ class ClientPlayerManager
         }
 
         // --- Handle new players ---
+        console.log('Processing pending remote players: ', this.pendingRemotePlayers);
         for (const [playerId, characterData] of this.pendingRemotePlayers) 
         {
-            if (playerId == this.characterData.playerId) continue;
+            if (playerId == this.characterData.playerId)
+            {
+                this.pendingRemotePlayers.delete(playerId);
+                continue;
+            }
             this.createRemotePlayer(playerId, characterData);
             this.pendingRemotePlayers.delete(playerId);
+            console.log("pending")
+            console.log(this.pendingRemotePlayers);
         }
     }
 
@@ -97,6 +104,8 @@ class ClientPlayerManager
     {
         if (!SceneManager._scene?._spriteset) return;
 
+        console.log('Creating remote player ', playerId, ' with character data: ', characterData);
+
         const eventId = this.getNextFreeEventId();
 
         const eventData = 
@@ -108,7 +117,7 @@ class ClientPlayerManager
             pages: 
             [{
                 conditions: { actorValid: false, itemValid: false, selfSwitchValid: false, switchValid: false },
-                image: { characterName: String('$' + characterData.playerId), characterIndex: 0, direction: characterData.location.d, pattern: 0, tileId: 0, pattern: 1 },
+                image: { characterName: String('$' + characterData.playerId), characterIndex: 0, direction: characterData.location.d, pattern: 0, tileId: 0, pattern: 1},
                 list: [{ code: 0, indent: 0, parameters: [] }], // empty event list, we just want the sprite
                 moveFrequency: 3,
                 moveSpeed: 4,

@@ -29,6 +29,14 @@ DataManager.loadMapData = function(mapId) {
     _DataManager_loadMapData.call(this, mapId);
 };
 
+// Override Game_Interpreter command 201 (Transfer Player) to use MMO transfer
+const _command201 = Game_Interpreter.prototype.command201;
+Game_Interpreter.prototype.command201 = function() 
+{
+    window.clientGlobalManager.clientMapManager.requestMapTransfer();
+    return true;
+};
+
 // Override Sprite_Character to use the custom bitmap if it exists
 const _setBitmap = Sprite_Character.prototype.setCharacterBitmap;
 Sprite_Character.prototype.setCharacterBitmap = function() {
@@ -95,6 +103,9 @@ Scene_Map.prototype.onMapLoaded = function() {
     window.rmmzPlayer = $gamePlayer;
     SceneManager.pop = window._pop;
 
+    window.clientGlobalManager.clientPlayerManager.socket.emit('clientMapTransferComplete');
+    window.clientGlobalManager.clientMapManager.isTransferring = false;
+    window.clientGlobalManager.clientMapManager.isMoving = false;
     for (const [playerId, player] of window.clientGlobalManager.clientPlayerManager.playersOnMap.entries()) 
     {
         // enqueue for creation
@@ -111,17 +122,4 @@ Scene_Map.prototype.update = function() {
 
     // your logic
     window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
-};
-
-const _updateBitmap = Sprite_Character.prototype.updateBitmap;
-Sprite_Character.prototype.updateBitmap = function() {
-    const oldBitmap = this.bitmap;
-
-    _updateBitmap.call(this);
-
-    // Only override when the engine actually changed the bitmap
-    if (this._character._customBitmap) {
-        this.bitmap = this._character._customBitmap;
-        this._isBigCharacter = true;
-    }
 };

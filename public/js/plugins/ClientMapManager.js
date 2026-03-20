@@ -4,7 +4,6 @@ class ClientMapManager
     {
         this.isMoving = false;
         this.isTransferring = false;
-        this.idleTimeout = null;
     }
 
     // called by ClientInputManager when player initiates movement see engine overrides
@@ -47,13 +46,6 @@ class ClientMapManager
             if (!player.isMoving()) 
             {
                 this.isMoving = false;
-
-                if (this.idleTimeout) clearTimeout(this.idleTimeout);
-
-                this.idleTimeout = setTimeout(() => 
-                {
-                    player._pattern = 1; // idle stance
-                }, 500);
             } 
             else 
             {
@@ -63,13 +55,45 @@ class ClientMapManager
         unlock();
     }
 
+    async requestMapTransfer()
+    {
+        this.isMoving = true;
+        this.isTransferring = true;
+
+        const response = await window.clientGlobalManager.clientPlayerManager.socket.emitWithAck('clientRequestMapTransfer');
+
+        if (response?.success)
+        {
+            this.transferToMap(response.mapData, response.tileset, response.x, response.y, response.d, response.playersOnMap);
+        }
+    }
+
+    transferToMap(mapData, tileset, x, y, d, playersOnMap)
+    {
+        const loc = window.clientGlobalManager.clientPlayerManager.characterData.location;
+        loc.x = x;
+        loc.y = y;
+        loc.d = d;
+        loc.map = mapData.name;
+
+        window.clientGlobalManager.clientPlayerManager.playersOnMap.clear();
+        window.clientGlobalManager.clientPlayerManager.pendingRemotePlayers = new Map(playersOnMap);
+
+        $dataTilesets[mapData.tilesetId] = structuredClone(tileset);
+        const map = structuredClone(mapData);
+        map.id = Date.now();
+        $dataMap = map;
+        $gamePlayer.reserveTransfer(map.id, x, y, d);
+        SceneManager.goto(Scene_Map);
+    }
+
     startListeners()
     {
         window.clientGlobalManager.clientPlayerManager.socket.on('serverPlayerMoved', ({ playerId, newLocation }) =>
         {
+            if (this.isTransferring) return; // ignore movements during transfer
             const eventId = window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId;
             const gameEvent = $gameMap._events[eventId];
-            console.log('Player ' + playerId + ' moved to ', newLocation, ' with eventId ', eventId, ' gameEvent: ', gameEvent);
             if (gameEvent) 
             {
                 gameEvent._netTargetX = newLocation.x;
