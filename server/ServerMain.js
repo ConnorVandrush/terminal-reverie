@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../variables.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 // FIXME 
 // const { saveWhitePixelRangesToJson } = require('./modules/SharpColorFinder.js');

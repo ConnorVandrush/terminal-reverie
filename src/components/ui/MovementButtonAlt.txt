@@ -1,0 +1,72 @@
+import React, { useState, useEffect, useRef } from 'react';
+import styles from './MovementButton.module.css';
+
+export default function MovementButton({ direction }) {
+    const [pressed, setPressed] = useState(false);
+    const btnRef = useRef(null);
+
+    // Movement loop while button is held
+    useEffect(() => {
+        let frame;
+
+        const loop = () => {
+            if (pressed && !$gamePlayer.isMoving()) {
+                const dirMap = {
+                    Up: 8,
+                    Down: 2,
+                    Left: 4,
+                    Right: 6
+                };
+
+                $gamePlayer.moveByInput(dirMap[direction]);
+            }
+
+            if (pressed) frame = requestAnimationFrame(loop);
+        };
+
+        if (pressed) frame = requestAnimationFrame(loop);
+
+        return () => cancelAnimationFrame(frame);
+    }, [pressed, direction]);
+
+    // Touch sliding detection
+    useEffect(() => {
+        const handleMove = (e) => {
+            const touch = e.touches[0];
+            if (!touch) return;
+
+            const el = btnRef.current;
+            if (!el) return;
+
+            const rect = el.getBoundingClientRect();
+
+            const inside =
+                touch.clientX >= rect.left &&
+                touch.clientX <= rect.right &&
+                touch.clientY >= rect.top &&
+                touch.clientY <= rect.bottom;
+
+            if (inside && !pressed) {
+                setPressed(true);
+            } else if (!inside && pressed) {
+                setPressed(false);
+            }
+        };
+
+        window.addEventListener("touchmove", handleMove);
+        return () => window.removeEventListener("touchmove", handleMove);
+    }, [pressed]);
+
+    return (
+        <button
+            ref={btnRef}
+            className={`${styles.arrow} ${styles[`arrow${direction}`]} ${pressed ? styles.pressed : ""}`}
+            onTouchStart={() => setPressed(true)}
+            onTouchEnd={() => setPressed(false)}
+            onTouchCancel={() => setPressed(false)}
+            onMouseDown={() => setPressed(true)}
+            onMouseUp={() => setPressed(false)}
+            onMouseLeave={() => setPressed(false)}
+        />
+    );
+}

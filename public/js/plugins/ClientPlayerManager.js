@@ -2,6 +2,7 @@ class ClientPlayerManager
 {
     constructor()
     {
+        this.gamePlayer = null;
         this.publicNamespace = null;
         this.socket = null;
         this.spriteColorer = null;
@@ -17,7 +18,7 @@ class ClientPlayerManager
         const JWT = localStorage.getItem('JWT');
         if (!JWT) return null;
 
-        window.clientGlobalManager.clientPlayerManager.socket = io('http://localhost:15987', 
+        window.clientGlobalManager.clientPlayerManager.socket = io(window.clientGlobalManager.SERVER_CONFIG.IO_URL, 
         {
             auth: { JWT },
             reconnection: true,
@@ -43,7 +44,9 @@ class ClientPlayerManager
         $dataMap = map;
 
         $gameParty.gainGold(characterData.gold);
-        $gamePlayer.reserveTransfer(map.id, characterData.location.x, characterData.location.y);
+        $gamePlayer.reserveTransfer(map.id, characterData.location.x, characterData.location.y, characterData.location.d, 0);
+        this.gamePlayer = $gamePlayer;
+        AudioManager.stopBgm();
         SceneManager.goto(Scene_Map);
     }
 
@@ -55,6 +58,7 @@ class ClientPlayerManager
         // --- Handle disconnects ---
         for (const playerId of this.pendingRemotePlayerDisconnects) 
         {
+            if (!this.playersOnMap.get(playerId)) continue; // already removed, possibly due to map transfer
             const eventId = this.playersOnMap.get(playerId).eventId;
             if (!eventId) continue;
 
@@ -76,7 +80,6 @@ class ClientPlayerManager
         }
 
         // --- Handle new players ---
-        console.log('Processing pending remote players: ', this.pendingRemotePlayers);
         for (const [playerId, characterData] of this.pendingRemotePlayers) 
         {
             if (playerId == this.characterData.playerId)
@@ -86,8 +89,6 @@ class ClientPlayerManager
             }
             this.createRemotePlayer(playerId, characterData);
             this.pendingRemotePlayers.delete(playerId);
-            console.log("pending")
-            console.log(this.pendingRemotePlayers);
         }
     }
 
@@ -103,8 +104,6 @@ class ClientPlayerManager
     createRemotePlayer(playerId, characterData)
     {
         if (!SceneManager._scene?._spriteset) return;
-
-        console.log('Creating remote player ', playerId, ' with character data: ', characterData);
 
         const eventId = this.getNextFreeEventId();
 

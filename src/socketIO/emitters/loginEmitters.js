@@ -19,7 +19,7 @@ export default async function loginEmitters(store, action)
             localStorage.setItem('JWT', JWT);
             window.clientGlobalManager.clientPlayerManager.login(response.characterData, response.mapData, response.playersOnMap);
             window.clientGlobalManager.clientPlayerManager.publicNamespace.disconnect();
-            store.dispatch({ type: 'leftPanel/setLeftPanel', payload: null });
+            store.dispatch({ type: 'leftPanel/setLeftPanel', payload: 'userInterface' });
             store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
             store.dispatch({ type: 'rightPanel/setRightPanel', payload: null });
         }

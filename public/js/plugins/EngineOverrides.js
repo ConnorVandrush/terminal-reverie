@@ -77,19 +77,12 @@ Game_Event.prototype.update = function() {
     this.updateNetMovement();
 };
 Game_CharacterBase.prototype.updateNetMovement = function() {
-    if (this._netTargetX == null) return;
+    if (!this._netMovementQueue || this._netMovementQueue.length === 0) return;
 
-    // ✅ Reached destination
-    if (this.x === this._netTargetX && this.y === this._netTargetY) {
-        this._netTargetX = null;
-        this._netTargetY = null;
+    if (!this.isMoving()) {
+        const next = this._netMovementQueue.shift();
 
-        return;
-    }
-
-    // ➡️ Still needs to move
-    const dir = this.findDirectionTo(this._netTargetX, this._netTargetY);
-    if (dir > 0) {
+        const dir = this.findDirectionTo(next.x, next.y);
         this.moveStraight(dir);
     }
 };
@@ -121,5 +114,6 @@ Scene_Map.prototype.update = function() {
     _Scene_Map_update.call(this);   // correct `this`
 
     // your logic
+    if (window.clientGlobalManager?.clientMapManager.isTransferring) return; // don't process pending changes during transfer
     window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
 };

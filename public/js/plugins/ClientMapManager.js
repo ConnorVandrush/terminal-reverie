@@ -83,7 +83,7 @@ class ClientMapManager
         const map = structuredClone(mapData);
         map.id = Date.now();
         $dataMap = map;
-        $gamePlayer.reserveTransfer(map.id, x, y, d);
+        $gamePlayer.reserveTransfer(map.id, x, y, d, 0);
         SceneManager.goto(Scene_Map);
     }
 
@@ -96,8 +96,13 @@ class ClientMapManager
             const gameEvent = $gameMap._events[eventId];
             if (gameEvent) 
             {
-                gameEvent._netTargetX = newLocation.x;
-                gameEvent._netTargetY = newLocation.y;
+                gameEvent._netMovementQueue = gameEvent._netMovementQueue || [];
+
+                gameEvent._netMovementQueue.push({
+                    x: newLocation.x,
+                    y: newLocation.y,
+                    direction: newLocation.direction
+                });
             }
         });
     }

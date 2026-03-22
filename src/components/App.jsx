@@ -5,6 +5,7 @@ import Login from './login/Login';
 import CreateCharacter from './login/CreateCharacter';
 import SpritesheetDisplay from './login/SpritesheetDisplay';
 import ColorCharacter from './login/ColorCharacter';
+import UserInterface from './ui/UserInterface';
 
 export default function App()
 {
@@ -17,6 +18,8 @@ export default function App()
                 return <Login />;
             case 'createCharacter':
                 return <CreateCharacter />;
+            case 'userInterface':
+                return <UserInterface />;
             default:
                 return null;
         }

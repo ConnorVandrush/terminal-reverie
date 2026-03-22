@@ -44,7 +44,9 @@ class ServerManager
         {
             cors: 
             {
-                origin: process.env.VITE_ORIGIN_ADDRESS, // Vite dev URL
+                origin: [
+                    process.env.VITE_ORIGIN_ADDRESS,
+                ],
                 methods: ["GET", "POST"],
                 credentials: true
             },
