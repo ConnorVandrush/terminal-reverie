@@ -6,6 +6,7 @@ import CreateCharacter from './login/CreateCharacter';
 import SpritesheetDisplay from './login/SpritesheetDisplay';
 import ColorCharacter from './login/ColorCharacter';
 import UserInterface from './ui/UserInterface';
+import ChatWindow from './chat/ChatWindow';
 
 export default function App()
 {
@@ -32,6 +33,8 @@ export default function App()
         {
             case 'spritesheetDisplay':
                 return <SpritesheetDisplay />;
+            case 'chatWindow':
+                return <ChatWindow />;
             default:
                 return null;
         }

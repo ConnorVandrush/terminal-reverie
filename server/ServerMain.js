@@ -20,6 +20,10 @@ serverManager.startSocketIOServer();
 const ServerPlayerManager = require('./modules/ServerPlayerManager.js');
 const serverPlayerManager = new ServerPlayerManager(serverManager.io);
 
+const ServerChatManager = require('./modules/ServerChatManager.js');
+const serverChatManager = new ServerChatManager(serverManager.io, serverPlayerManager);
+serverChatManager.startListeners();
+
 const ServerMapManager = require('./modules/ServerMapManager.js');
 const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager);
 serverMapManager.loadMaps();

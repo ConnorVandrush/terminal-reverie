@@ -50,6 +50,13 @@ Sprite_Character.prototype.setCharacterBitmap = function() {
     }
 };
 
+// Disable all dashing in RMMZ
+const _Game_Player_isDashing = Game_Player.prototype.isDashing;
+Game_Player.prototype.isDashing = function() {
+    return false;
+};
+
+
 // Client-side movement with server reconciliation and client prediction
 Game_Player.prototype.moveByInput = async function (reactDirection) 
 {

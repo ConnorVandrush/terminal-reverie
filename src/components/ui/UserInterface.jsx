@@ -2,6 +2,9 @@ import React from 'react';
 
 import styles from './UserInterface.module.css';
 import MovementButton from './MovementButton';
+import ConirmButton from './Confirmbutton';
+import CancelButton from './CancelButton';
+import ChatButton from './ChatButton';
 
 export default function UserInterface()
 {
@@ -16,6 +19,9 @@ export default function UserInterface()
                 <MovementButton direction="Down" />
                 <MovementButton direction="Left" />
                 <MovementButton direction="Right" />
+                <ConirmButton />
+                <CancelButton />
+                <ChatButton />
             </div>
         </div>
     );

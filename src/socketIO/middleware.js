@@ -1,11 +1,13 @@
 import loginEmitters from "./emitters/loginEmitters";
+import chatWindowEmitters from "./emitters/chatWindowEmitters";
 
 import { createCharacterListeners } from "./listeners/createCharacterListeners";
+import { createChatWindowListeners } from "./listeners/chatWindowListeners";
 
 export const middleware = (store) => 
 {
-    let globalManagerInitialized = false;
     let initialized = false;
+    let authenticated = false;
     return (next) => (action) =>
     {
         if (!initialized)
@@ -13,13 +15,14 @@ export const middleware = (store) =>
             initialized = true;
             createCharacterListeners(store);
         }
-
-        if (window.clientGlobalManager && !globalManagerInitialized)
+        if (!authenticated && window.clientGlobalManager.clientPlayerManager.socket)
         {
-            globalManagerInitialized = true;
+            authenticated = true;
+            createChatWindowListeners(store);
         }
 
         loginEmitters(store, action);
+        chatWindowEmitters(action);
 
         return next(action);
     }
