@@ -7,6 +7,7 @@ import SpritesheetDisplay from './login/SpritesheetDisplay';
 import ColorCharacter from './login/ColorCharacter';
 import UserInterface from './ui/UserInterface';
 import ChatWindow from './chat/ChatWindow';
+import PartyWindow from './party/PartyWindow';
 
 export default function App()
 {
@@ -35,6 +36,8 @@ export default function App()
                 return <SpritesheetDisplay />;
             case 'chatWindow':
                 return <ChatWindow />;
+            case 'partyWindow':
+                return <PartyWindow />;
             default:
                 return null;
         }
@@ -56,7 +59,15 @@ export default function App()
         <div id="layout">
             <div id="leftPanel">{renderLeftPanel()}</div>
             <div id="gamePanel">
-                {centerPanel && <div id="centerPanel">{renderCenterPanel()}</div>}
+                {centerPanel && <div
+                    className={[
+                        "centerPanel",
+                        centerPanel === "chatWindow" && "centerPanelChat",
+                        centerPanel === "partyWindow" && "centerPanelParty"
+                    ].filter(Boolean).join(" ")}
+                    >
+                    {renderCenterPanel()}
+                </div>}
             </div>
             <div id="rightPanel">{renderRightPanel()}</div>
         </div>

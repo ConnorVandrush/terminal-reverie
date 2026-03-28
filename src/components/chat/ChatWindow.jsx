@@ -15,7 +15,6 @@ export default function ChatWindow() {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
     }, [chatMessages]);
 
-
     function handleClientSendMessage() 
     {
         dispatch(clientSendChatMessage(chatMessageRef.current.value));

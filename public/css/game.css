@@ -40,7 +40,7 @@ body {
     text-shadow: 1px 1px 3px #000000;
     padding: 1%;
 }
-#centerPanel {
+.centerPanel {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -56,6 +56,14 @@ body {
     border-radius: 1vw;
     z-index: 2;
 }
+.centerPanelChat, .centerPanelParty {
+    width: 95%;
+    height: 95vh;
+    opacity: 0.9;
+    z-index: 3;
+    overflow-y: auto;
+}
+
 #leftPanel input, #rightPanel input, #centerPanel input {
     font-family: system-ui;
 }

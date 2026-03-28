@@ -1,0 +1,17 @@
+.partyMembers {
+  height: 85%;
+  padding: 2%;
+  box-sizing: border-box;
+  flex-direction: column;
+  overflow-y: scroll;
+  display: flex;
+}
+
+.inputRow {
+  display: flex;
+  height: 15%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2%;
+  gap: 2%;
+}

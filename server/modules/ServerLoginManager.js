@@ -79,6 +79,7 @@ class ServerLoginManager
                     {
                         playersOnMap = Array.from(this.serverPlayerManager.playersOnMaps.get(existingUser.characterData.location.map)?.entries()) || [];
                     }
+                    this.serverPlayerManager.characterNameToId.set(existingUser.characterData.name, playerId);
                     return cb({ success: true, JWT, characterData: existingUser.characterData, mapData, playersOnMap });
                 }
                 catch (error)

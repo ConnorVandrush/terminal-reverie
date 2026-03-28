@@ -6,7 +6,6 @@ const centerPanelSlice = createSlice(
     initialState: 
     {
         centerPanel: null,
-        chatMessages: [],
     },
     reducers: 
     {

@@ -5,6 +5,7 @@ import MovementButton from './MovementButton';
 import ConirmButton from './Confirmbutton';
 import CancelButton from './CancelButton';
 import ChatButton from './ChatButton';
+import PartyButton from './PartyButton';
 
 export default function UserInterface()
 {
@@ -22,6 +23,7 @@ export default function UserInterface()
                 <ConirmButton />
                 <CancelButton />
                 <ChatButton />
+                <PartyButton />
             </div>
         </div>
     );

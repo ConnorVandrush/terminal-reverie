@@ -7,7 +7,11 @@ class PlayerData
         this.isBattling = false;
         this.isPartyLeader = false;
         this.isPartyFollower = false;
-        this.partyLeaderId = null;
+        this.partyData = 
+        {
+            partyLeader: null,
+            members: []
+        }
     }
 }
 

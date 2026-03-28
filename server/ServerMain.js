@@ -32,3 +32,7 @@ serverMapManager.startListeners();
 const ServerLoginManager = require('./modules/ServerLoginManager.js');
 const serverLoginManager = new ServerLoginManager(serverManager.publicNamespace, serverManager.io, serverPlayerManager, serverMapManager);
 serverLoginManager.startListeners();
+
+const ServerPartyManager = require('./modules/ServerPartyManager.js');
+const serverPartyManager = new ServerPartyManager(serverManager.io, serverPlayerManager);
+serverPartyManager.startListeners();

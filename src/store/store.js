@@ -6,6 +6,7 @@ import createCharacterReducer from "./createCharacterSlice";
 import centerPanelReducer from "./centerPanelSlice";
 import rightPanelReducer from "./rightPanelSlice";
 import chatWindowReducer from "./chatWindowSlice";
+import partWindowReducer from "./partyWindowSlice";
 
 export const store = configureStore(
 {
@@ -17,6 +18,7 @@ export const store = configureStore(
         centerPanel: centerPanelReducer,
         rightPanel: rightPanelReducer,
         chatWindow: chatWindowReducer,
+        partyWindow: partWindowReducer,
     },
     middleware: (getDefault) =>
     getDefault(
