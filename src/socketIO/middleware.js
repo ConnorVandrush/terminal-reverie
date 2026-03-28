@@ -4,6 +4,7 @@ import partyWindowEmitters from "./emitters/partyWindowEmitters";
 
 import { createCharacterListeners } from "./listeners/createCharacterListeners";
 import { createChatWindowListeners } from "./listeners/chatWindowListeners";
+import { createPartyWindowListeners } from "./listeners/partyWindowListeners";
 
 export const middleware = (store) => 
 {
@@ -20,11 +21,12 @@ export const middleware = (store) =>
         {
             authenticated = true;
             createChatWindowListeners(store);
+            createPartyWindowListeners(store);
         }
 
         loginEmitters(store, action);
         chatWindowEmitters(action);
-        partyWindowEmitters(action);
+        partyWindowEmitters(action, store);
 
         return next(action);
     }

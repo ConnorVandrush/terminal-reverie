@@ -5,7 +5,11 @@ const partyWindowSlice = createSlice(
     name: 'partyWindow',
     initialState:
     {
-        party: null,
+        partyData: 
+        {
+            partyLeaderId: 0,
+            members: []
+        },
         errorMessage: null,
         successMessage: null,
         partyInvites: [],
@@ -16,9 +20,21 @@ const partyWindowSlice = createSlice(
         {
             // emit handled in partyWindowEmitters.js
         },
-        setParty: (state, action) =>
+        serverSendPartyInvite: (state, action) =>
         {
-            state.party = action.payload;
+            if (!state.partyInvites.some(invite => invite.fromPlayerName === action.payload.fromPlayerName))
+            {
+                state.partyInvites.push(action.payload);
+            }
+        },
+        clientAcceptPartyInvite: (state, action) =>
+        {
+            // emit handled in partyWindowEmitters.js
+            state.partyInvites = state.partyInvites.filter(invite => invite.fromPlayerName !== action.payload);
+        },
+        setPartyData: (state, action) =>
+        {
+            state.partyData = action.payload;
         },
         setErrorMessage: (state, action) =>
         {
@@ -28,16 +44,12 @@ const partyWindowSlice = createSlice(
         {
             state.successMessage = action.payload;
         },
-        addPartyInvite: (state, action) =>
-        {
-            state.partyInvites.push(action.payload);
-        },
         removePartyInvite: (state, action) =>
         {
-            state.partyInvites = state.partyInvites.filter(invite => invite !== action.payload);
+            state.partyInvites = state.partyInvites.filter(invite => invite.fromPlayerName !== action.payload);
         },
     },
 });
 
-export const { clientSendPartyInvite, setParty, setErrorMessage, setSuccessMessage, addPartyInvite, removePartyInvite } = partyWindowSlice.actions;
+export const { clientSendPartyInvite, setParty, setErrorMessage, setSuccessMessage, addPartyInvite, removePartyInvite, clientAcceptPartyInvite, serverSendPartyInvite } = partyWindowSlice.actions;
 export default partyWindowSlice.reducer;

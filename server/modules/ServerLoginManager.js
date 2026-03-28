@@ -79,6 +79,7 @@ class ServerLoginManager
                     {
                         playersOnMap = Array.from(this.serverPlayerManager.playersOnMaps.get(existingUser.characterData.location.map)?.entries()) || [];
                     }
+                    this.serverPlayerManager.socketIdToSocket.set(socket.id, socket);
                     this.serverPlayerManager.characterNameToId.set(existingUser.characterData.name, playerId);
                     return cb({ success: true, JWT, characterData: existingUser.characterData, mapData, playersOnMap });
                 }
@@ -171,6 +172,7 @@ class ServerLoginManager
                 socket.playerId = playerId;
                 const existingUser = await PlayerAccount.findOne({ playerId });
                 const playerData = new PlayerData(existingUser.characterData);
+                playerData.socketId = socket.id;
                 this.serverPlayerManager.playersOnline.set(playerId, playerData);
                 this.serverPlayerManager.playerJoinMap(socket, playerId, existingUser.characterData.location.map);
             }

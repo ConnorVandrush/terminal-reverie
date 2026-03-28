@@ -36,6 +36,7 @@ export default function ChatWindow() {
 
     return (
         <div className={styles.chatWindow}>
+
             <div className={styles.messagesContainer}>
                 <div style={{ marginTop: 'auto' }} />
                 {renderChatMessages()}
@@ -46,6 +47,7 @@ export default function ChatWindow() {
                 <input type="text" placeholder="Type a message..." ref={chatMessageRef}/>
                 <button onClick={handleClientSendMessage}>Send</button>
             </div>
+            
         </div>
     );
 }

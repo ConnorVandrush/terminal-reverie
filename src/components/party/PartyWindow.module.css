@@ -1,10 +1,30 @@
+.partyWindow {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
 .partyMembers {
-  height: 85%;
+  height: 80%;
   padding: 2%;
   box-sizing: border-box;
   flex-direction: column;
   overflow-y: scroll;
   display: flex;
+}
+
+.partyInvite {
+  box-sizing: border-box;
+  padding: 2%;
+}
+
+.statusMessages {
+  height: 5%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2%;
 }
 
 .inputRow {
@@ -14,4 +34,22 @@
   box-sizing: border-box;
   padding: 2%;
   gap: 2%;
+}
+
+.inputRow input {
+  flex: 1; /* take all remaining space */
+}
+
+.inputRow button {
+  flex: 0 0 auto; /* size to content */
+}
+
+.errorMessage {
+  color: #ff4d4d; /* retro red */
+  font-weight: bold;
+}
+
+.successMessage {
+  color: #4dff4d; /* retro green */
+  font-weight: bold;
 }
