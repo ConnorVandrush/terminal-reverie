@@ -27,6 +27,7 @@ class ClientPlayerManager
         });
         this.startListeners();
         window.clientGlobalManager.clientMapManager.startListeners();
+        window.clientGlobalManager.clientPartyManager.startListeners();
 
         DataManager.setupNewGame();
         this.characterData = characterData;

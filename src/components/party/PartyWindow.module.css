@@ -7,7 +7,7 @@
 }
 
 .partyMembers {
-  height: 80%;
+  height: 70%;
   padding: 2%;
   box-sizing: border-box;
   flex-direction: column;
@@ -21,10 +21,11 @@
 }
 
 .statusMessages {
-  height: 5%;
+  height: 15%;
   width: 100%;
   box-sizing: border-box;
   padding: 2%;
+  align-items: center;
 }
 
 .inputRow {
@@ -33,6 +34,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 2%;
+
   gap: 2%;
 }
 
@@ -47,9 +49,11 @@
 .errorMessage {
   color: #ff4d4d; /* retro red */
   font-weight: bold;
+  height: 100%;
 }
 
 .successMessage {
   color: #4dff4d; /* retro green */
   font-weight: bold;
+  height: 100%;
 }

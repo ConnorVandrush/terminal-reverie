@@ -6,7 +6,6 @@ class ServerPlayerManager
         this.playersOnline = new Map(); // playerId -> PlayerData
         this.playersOnMaps = new Map(); // mapName -> Map of playerIds -> PlayerData
         this.characterNameToId = new Map(); // characterName -> playerId
-        this.playerParties = new Map(); // partyLeaderId -> partyData
         this.io = io;
     }
 

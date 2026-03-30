@@ -30,7 +30,6 @@ const partyWindowSlice = createSlice(
         clientAcceptPartyInvite: (state, action) =>
         {
             // emit handled in partyWindowEmitters.js
-            state.partyInvites = state.partyInvites.filter(invite => invite.fromPlayerName !== action.payload);
         },
         setPartyData: (state, action) =>
         {

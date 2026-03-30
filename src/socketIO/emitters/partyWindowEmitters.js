@@ -1,4 +1,5 @@
 import { clientSendPartyInvite, setErrorMessage, setSuccessMessage, clientAcceptPartyInvite } from "@store/partyWindowSlice";
+import { removePartyInvite } from "../../store/partyWindowSlice";
 
 export default async function partyWindowEmitters(action, store)
 {
@@ -27,6 +28,7 @@ export default async function partyWindowEmitters(action, store)
         {
             store.dispatch(setSuccessMessage(response.message));
             store.dispatch(setErrorMessage(false));
+            store.dispatch(removePartyInvite(action.payload));
         }
         else
         {

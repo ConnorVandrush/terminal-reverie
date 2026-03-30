@@ -6,6 +6,7 @@ class ClientGlobalManager
         this.clientInputManager = null;
         this.clientPlayerManager = null;
         this.clientMapManager = null;
+        this.clientPartyManager = null;
     }
 }
 
