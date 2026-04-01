@@ -6,12 +6,13 @@ const PlayerData = require('./PlayerData.js');
 
 class ServerLoginManager
 {
-    constructor(publicNamespace, io, serverPlayerManager, serverMapManager)
+    constructor(publicNamespace, io, serverPlayerManager, serverMapManager, serverPartyManager)
     {
         this.publicNamespace = publicNamespace;
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
         this.serverMapManager = serverMapManager;
+        this.serverPartyManager = serverPartyManager;
         this.tokenTimeouts = new Map(); // playerId -> timeoutId for token invalidation after disconnect
     }
 
@@ -188,7 +189,25 @@ class ServerLoginManager
 
                 const playerId = socket.playerId;
                 if (!playerId) return;
-                const characterData = this.serverPlayerManager.playersOnline.get(playerId)?.characterData;
+                const playerData = this.serverPlayerManager.playersOnline.get(playerId);
+                if (!playerData) return;
+                const characterData = playerData.characterData;
+                let partyData;
+                let partyLeaderId;
+                if (playerData.partyData.partyLeaderId)
+                {
+                    partyLeaderId = playerData.partyData.partyLeaderId;
+                    partyData = this.serverPartyManager.playerParties.get(partyLeaderId);
+                }
+
+                // FIXME
+                if (partyData)
+                {
+                    if (partyLeaderId === playerId)
+                    {
+                        this.serverPartyManager.playerParties.delete(partyLeaderId);
+                    }
+                }
 
                 this.serverPlayerManager.playerLeftMap(socket, playerId, characterData?.location.map); // FIXME remove after testing
                 this.serverPlayerManager.playersOnline.delete(playerId); // FIXME remove after testing

@@ -55,9 +55,23 @@ class ClientMapManager
         unlock();
     }
 
+    moveToLocation(player, newLoc)
+    {
+        while (player.x !== newLoc.x || player.y !== newLoc.y)
+        {
+            this.isMoving = true;
+            const dir = player.findDirectionTo(newLoc.x, newLoc.y);
+            player.moveStraight(dir);
+            this.waitForMovementEnd(player);
+            if (!window.clientGlobalManager.clientPartyManager.isPartyLeader && !window.clientGlobalManager.clientPartyManager.isPartyFollower)
+            {
+                this.requestMove(dir, { x: player.x, y: player.y, d: dir });
+            }
+        }
+    }
+
     async requestMapTransfer()
     {
-        this.isMoving = true;
         this.isTransferring = true;
 
         const response = await window.clientGlobalManager.clientPlayerManager.socket.emitWithAck('clientRequestMapTransfer');
@@ -89,7 +103,8 @@ class ClientMapManager
 
     startListeners()
     {
-        window.clientGlobalManager.clientPlayerManager.socket.on('serverPlayerMoved', ({ playerId, newLocation }) =>
+        const socket = window.clientGlobalManager.clientPlayerManager.socket;
+        socket.on('serverPlayerMoved', ({ playerId, newLocation }) =>
         {
             if (this.isTransferring) return; // ignore movements during transfer
             const eventId = window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId;
@@ -103,6 +118,34 @@ class ClientMapManager
                     y: newLocation.y,
                     direction: newLocation.direction
                 });
+            }
+        });
+
+        socket.on('serverPartyMoved', (newLocations) =>
+        {
+            if (this.isTransferring) return;
+            for (const { playerId, newLocation } of newLocations)
+            {
+                console.log(`Received party move for player ${playerId} to (${newLocation.x}, ${newLocation.y})`);
+                if (playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId)
+                {
+                    
+                    this.moveToLocation($gamePlayer, newLocation);
+                    continue;
+                }
+
+                const eventId = window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId;
+                const gameEvent = $gameMap._events[eventId];
+                if (gameEvent) 
+                {
+                    gameEvent._netMovementQueue = gameEvent._netMovementQueue || [];
+
+                    gameEvent._netMovementQueue.push({
+                        x: newLocation.x,
+                        y: newLocation.y,
+                        direction: newLocation.direction
+                    });
+                }
             }
         });
     }

@@ -24,15 +24,15 @@ const ServerChatManager = require('./modules/ServerChatManager.js');
 const serverChatManager = new ServerChatManager(serverManager.io, serverPlayerManager);
 serverChatManager.startListeners();
 
+const ServerPartyManager = require('./modules/ServerPartyManager.js');
+const serverPartyManager = new ServerPartyManager(serverManager.io, serverPlayerManager);
+serverPartyManager.startListeners();
+
 const ServerMapManager = require('./modules/ServerMapManager.js');
-const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager);
+const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager, serverPartyManager);
 serverMapManager.loadMaps();
 serverMapManager.startListeners();
 
 const ServerLoginManager = require('./modules/ServerLoginManager.js');
 const serverLoginManager = new ServerLoginManager(serverManager.publicNamespace, serverManager.io, serverPlayerManager, serverMapManager);
 serverLoginManager.startListeners();
-
-const ServerPartyManager = require('./modules/ServerPartyManager.js');
-const serverPartyManager = new ServerPartyManager(serverManager.io, serverPlayerManager);
-serverPartyManager.startListeners();

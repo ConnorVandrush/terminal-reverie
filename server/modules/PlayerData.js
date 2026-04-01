@@ -4,8 +4,8 @@ class PlayerData
     {
         this.socketId = null;
         this.characterData = characterData;
+        this.preventMovement = false;
         this.isTransferring = false;
-        this.isBattling = false;
         this.partyData = 
         {
             partyLeaderId: null,

@@ -1,3 +1,5 @@
+const { set } = require("mongoose");
+
 class ServerPartyManager
 {
     constructor(io, serverPlayerManager)
@@ -87,6 +89,7 @@ class ServerPartyManager
                         {
                             this.playerParties.set(partyLeaderId, { members: [fromPlayer.characterData, toPlayer.characterData] });
                         }
+                        fromPlayer.preventMovement = true;
                         cb({ success: true });
                         const socketIds = this.getPartySocketIds(partyLeaderId);
                         socketIds.forEach(socketId => this.io.to(socketId).emit('serverUpdatePartyData', this.playerParties.get(partyLeaderId)));
@@ -101,6 +104,13 @@ class ServerPartyManager
                 {
                     cb({ success: false, message: `You must be adjacent to ${fromPlayerName} to accept the party invite` });
                 }
+            });
+            
+            socket.on('partyAssembled', () => 
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                if (!playerData) return;
+                playerData.preventMovement = false;
             });
         });
     }

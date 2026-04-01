@@ -1,11 +1,13 @@
+const { current } = require('@reduxjs/toolkit');
 const fs = require('fs');
 
 class ServerMapManager
 {
-    constructor(io, serverPlayerManager)
+    constructor(io, serverPlayerManager, serverPartyManager)
     {
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
+        this.serverPartyManager = serverPartyManager;
         this.maps = new Map();
     }
 
@@ -117,7 +119,35 @@ class ServerMapManager
         return false;
     }
 
-    startListeners = (io) =>
+    canMove(playerData, direction, newLocation, currentLoc)
+    {
+        switch (direction)
+        {
+            case 2: newLocation = { ...playerData.characterData.location, y: playerData.characterData.location.y + 1 }; break; // down
+            case 4: newLocation = { ...playerData.characterData.location, x: playerData.characterData.location.x - 1 }; break; // left
+            case 6: newLocation = { ...playerData.characterData.location, x: playerData.characterData.location.x + 1 }; break; // right
+            case 8: newLocation = { ...playerData.characterData.location, y: playerData.characterData.location.y - 1 }; break; // up
+        }
+
+        const reverseDir = {2:8, 4:6, 6:4, 8:2};
+
+        // check leaving current tile
+        if (!this.isPassable(currentLoc.map, currentLoc.x, currentLoc.y, direction)) 
+        {
+            return { success: false };
+        }
+
+        // check entering destination tile
+        if (!this.isPassable(newLocation.map, newLocation.x, newLocation.y, reverseDir[direction])) 
+        {
+            return { success: false };
+        }
+
+        newLocation.d = direction;
+        return { success: true, newLocation };
+    }
+
+    startListeners = () =>
     {
         this.io.on('connection', (socket) =>
         {
@@ -126,38 +156,75 @@ class ServerMapManager
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 playerData.characterData.location.d = direction;
 
-                if (!playerData || playerData.isTransferring || playerData.isBattling)
+                if (!playerData || playerData.isTransferring || playerData.preventMovement)
                 {
                     return cb({ success: false });
                 }
 
-                const currentLoc = playerData.characterData.location;
                 let newLocation;
-                switch (direction)
-                {
-                    case 2: newLocation = { ...playerData.characterData.location, y: playerData.characterData.location.y + 1 }; break; // down
-                    case 4: newLocation = { ...playerData.characterData.location, x: playerData.characterData.location.x - 1 }; break; // left
-                    case 6: newLocation = { ...playerData.characterData.location, x: playerData.characterData.location.x + 1 }; break; // right
-                    case 8: newLocation = { ...playerData.characterData.location, y: playerData.characterData.location.y - 1 }; break; // up
-                }
-
-                const reverseDir = {2:8, 4:6, 6:4, 8:2};
-
-                // check leaving current tile
-                if (!this.isPassable(currentLoc.map, currentLoc.x, currentLoc.y, direction)) 
+                const currentLoc = playerData.characterData.location;
+                const result = this.canMove(playerData, direction, newLocation, currentLoc);
+                if (!result.success) 
                 {
                     return cb({ success: false });
                 }
 
-                // check entering destination tile
-                if (!this.isPassable(newLocation.map, newLocation.x, newLocation.y, reverseDir[direction])) 
+                playerData.characterData.location = result.newLocation;
+                this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation: result.newLocation });
+                return cb({ success: true, newLocation: result.newLocation });
+            });
+
+            socket.on('clientPartyMove', async (direction) =>
+            {
+                const leaderData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                if (!leaderData || leaderData.isTransferring || leaderData.preventMovement)                
                 {
-                    return cb({ success: false });
+                    return;
+                }
+                const partyData = this.serverPartyManager.playerParties.get(socket.playerId);
+                if (!partyData) return;
+                
+                let newLocation;
+                const currentLoc = leaderData.characterData.location;
+                const result = this.canMove(leaderData, direction, newLocation, currentLoc);
+                if (!result.success) 
+                {
+                    return;
                 }
 
-                playerData.characterData.location = newLocation;
-                this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation });
-                return cb({ success: true, newLocation: newLocation });
+                const oldPositions = new Map();
+                for (const member of partyData.members)
+                {
+                    const memberData = this.serverPlayerManager.playersOnline.get(member.playerId);
+                    oldPositions.set(member.playerId, { ...memberData.characterData.location });
+                }
+                for (let i = 0; i < partyData.members.length; i++)
+                {
+                    const currentMember = partyData.members[i];
+                    const previousMember = partyData.members[i - 1];
+
+                    const memberData = this.serverPlayerManager.playersOnline.get(currentMember.playerId);
+
+                    if (i === 0)
+                    {
+                        memberData.characterData.location = oldPositions.get(leaderData.playerId);
+                    }
+                    else
+                    {
+                        memberData.characterData.location = oldPositions.get(previousMember.playerId);
+                    }
+                }
+
+                leaderData.characterData.location = result.newLocation;
+
+                const newLocations = partyData.members.map(member => 
+                {
+                    const memberData = this.serverPlayerManager.playersOnline.get(member.playerId);
+                    return { playerId: member.playerId, newLocation: memberData.characterData.location };
+                });
+
+                console.log('Party moved. New locations:', newLocations);   
+                 this.io.to(leaderData.characterData.location.map).emit('serverPartyMoved', newLocations );
             });
 
             socket.on('clientRequestMapTransfer', async (cb) =>
@@ -190,14 +257,6 @@ class ServerMapManager
                     const playersOnMap = this.serverPlayerManager.playersOnMaps.get(destinationMap) || new Map();
 
                     if (!mapData || !tileset) return cb({ success: false });
-
-                    // this.serverPlayerManager.playersOnMaps.get(playerData.characterData.location.map)?.delete(socket.playerId);
-                    // this.serverPlayerManager.playersOnMaps.get(destinationMap)?.set(socket.playerId, playerData.characterData);
-                    // 
-                    // socket.leave(playerData.characterData.location.map);
-                    // socket.join(destinationMap);
-                    // this.io.to(playerData.characterData.location.map).except(socket.id).emit('serverPlayerLeftMap', socket.playerId);
-                    // this.io.to(destinationMap).emit('serverPlayerJoinedMap', { playerId: socket.playerId, characterData: playerData.characterData });
 
                     this.serverPlayerManager.playerLeftMap(socket, socket.playerId, playerData.characterData.location.map);
                     playerData.characterData.location = { x, y, d, map: destinationMap };

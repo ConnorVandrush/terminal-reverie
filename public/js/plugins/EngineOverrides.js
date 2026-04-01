@@ -56,22 +56,26 @@ Game_Player.prototype.isDashing = function() {
     return false;
 };
 
-
 // Client-side movement with server reconciliation and client prediction
 Game_Player.prototype.moveByInput = async function (reactDirection) 
 {
     const mapManager = window.clientGlobalManager.clientMapManager;
+    const partyManager = window.clientGlobalManager.clientPartyManager;
     const direction = reactDirection ?? Input.dir4;
     
-    if (direction <= 0 || mapManager.isMoving || window.isPartyFollower) return;
+    if (direction <= 0 || mapManager.isMoving || partyManager.isPartyFollower) return;
     
-    mapManager.isMoving = true;
-    
-    const oldLoc = {x: this.x, y: this.y, d: direction};
-    
-    // Solo movement with client prediction
-    if (!window.isPartyLeader && !window.isPartyFollower)
+    // Party movement
+    if (partyManager.isPartyLeader && !mapManager.isMoving)
     {
+        partyManager.requestPartyMove(direction);
+    }
+
+    // Solo movement with client prediction
+    if (!partyManager.isPartyLeader && !partyManager.isPartyFollower)
+    {
+        mapManager.isMoving = true;
+        const oldLoc = {x: this.x, y: this.y, d: direction};
         this.moveStraight(direction);
         mapManager.requestMove(direction, oldLoc);
     }
