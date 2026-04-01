@@ -176,11 +176,13 @@ class ServerMapManager
 
             socket.on('clientPartyMove', async (direction) =>
             {
+                console.log('Received party move request in direction:', direction);
                 const leaderData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 if (!leaderData || leaderData.isTransferring || leaderData.preventMovement)                
                 {
                     return;
                 }
+
                 const partyData = this.serverPartyManager.playerParties.get(socket.playerId);
                 if (!partyData) return;
                 
@@ -223,8 +225,7 @@ class ServerMapManager
                     return { playerId: member.playerId, newLocation: memberData.characterData.location };
                 });
 
-                console.log('Party moved. New locations:', newLocations);   
-                 this.io.to(leaderData.characterData.location.map).emit('serverPartyMoved', newLocations );
+                this.io.to(leaderData.characterData.location.map).emit('serverPartyMoved', newLocations );
             });
 
             socket.on('clientRequestMapTransfer', async (cb) =>

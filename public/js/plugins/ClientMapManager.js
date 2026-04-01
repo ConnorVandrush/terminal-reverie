@@ -59,6 +59,10 @@ class ClientMapManager
     {
         while (player.x !== newLoc.x || player.y !== newLoc.y)
         {
+            if (player.isMoving())
+            {
+                this.waitForMovementEnd(player);
+            }
             this.isMoving = true;
             const dir = player.findDirectionTo(newLoc.x, newLoc.y);
             player.moveStraight(dir);
@@ -116,7 +120,6 @@ class ClientMapManager
                 gameEvent._netMovementQueue.push({
                     x: newLocation.x,
                     y: newLocation.y,
-                    direction: newLocation.direction
                 });
             }
         });
@@ -126,11 +129,14 @@ class ClientMapManager
             if (this.isTransferring) return;
             for (const { playerId, newLocation } of newLocations)
             {
-                console.log(`Received party move for player ${playerId} to (${newLocation.x}, ${newLocation.y})`);
                 if (playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId)
                 {
-                    
-                    this.moveToLocation($gamePlayer, newLocation);
+                    const player = $gamePlayer;
+                    player._netMovementQueue = player._netMovementQueue || [];
+                    player._netMovementQueue.push({
+                        x: newLocation.x,
+                        y: newLocation.y,
+                    });
                     continue;
                 }
 
@@ -143,7 +149,6 @@ class ClientMapManager
                     gameEvent._netMovementQueue.push({
                         x: newLocation.x,
                         y: newLocation.y,
-                        direction: newLocation.direction
                     });
                 }
             }

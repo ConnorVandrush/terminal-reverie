@@ -64,11 +64,14 @@ Game_Player.prototype.moveByInput = async function (reactDirection)
     const direction = reactDirection ?? Input.dir4;
     
     if (direction <= 0 || mapManager.isMoving || partyManager.isPartyFollower) return;
-    
+
     // Party movement
     if (partyManager.isPartyLeader && !mapManager.isMoving)
     {
+        console.log('I am' + this);
+        mapManager.isMoving = true;
         partyManager.requestPartyMove(direction);
+        setTimeout(() => mapManager.waitForMovementEnd($gamePlayer), 50); // FIXME isMoving is being set to false too early, this is a band-aid to prevent desync but the root cause should be fixed. Maybe add prediction for party movement as well?
     }
 
     // Solo movement with client prediction
@@ -81,21 +84,22 @@ Game_Player.prototype.moveByInput = async function (reactDirection)
     }
 };
 
-// Extend Game_Event to handle networked movement
+// Extend Game_Event and Game_Player to handle networked movement
 const _Game_Event_update = Game_Event.prototype.update;
 Game_Event.prototype.update = function() {
     _Game_Event_update.call(this);
     this.updateNetMovement();
 };
+const _Game_Player_update = Game_Player.prototype.update;
+Game_Player.prototype.update = function(sceneActive) {
+    _Game_Player_update.call(this, sceneActive);
+    this.updateNetMovement();
+};
 Game_CharacterBase.prototype.updateNetMovement = function() {
-    if (!this._netMovementQueue || this._netMovementQueue.length === 0) return;
-
-    if (!this.isMoving()) {
-        const next = this._netMovementQueue.shift();
-
-        const dir = this.findDirectionTo(next.x, next.y);
-        this.moveStraight(dir);
-    }
+    if (!this._netMovementQueue || this._netMovementQueue.length === 0 || this.isMoving()) return;
+    const next = this._netMovementQueue.shift();
+    const dir = this.findDirectionTo(next.x, next.y);
+    this.moveStraight(dir);
 };
 
 // Save original SceneManager.pop function, it's disabled during battles

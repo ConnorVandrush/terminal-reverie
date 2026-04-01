@@ -13,7 +13,6 @@ class ClientPartyManager
     {
         try
         {
-            this.clientMapManager.isMoving = true;
             this.clientPlayerManager.socket.emit('clientPartyMove', dir);
         }
         catch (err)
@@ -27,6 +26,8 @@ class ClientPartyManager
         const socket = this.clientPlayerManager.socket;
         socket.on('serverUpdatePartyData', (partyData) =>
         {
+            this.isPartyFollower = false;
+            this.isPartyLeader = false;
             this.partyData = partyData;
             if (partyData.members[0].playerId === this.clientPlayerManager.characterData.playerId)
             {
