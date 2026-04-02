@@ -8,6 +8,7 @@ import ColorCharacter from './login/ColorCharacter';
 import UserInterface from './ui/UserInterface';
 import ChatWindow from './chat/ChatWindow';
 import PartyWindow from './party/PartyWindow';
+import Stats from './ui/stats/Stats';
 
 export default function App()
 {
@@ -50,6 +51,8 @@ export default function App()
         {
             case 'colorCharacter':
                 return <ColorCharacter />;
+            case 'stats':
+                return <Stats />;
             default:
                 return null;
         }

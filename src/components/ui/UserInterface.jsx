@@ -1,11 +1,11 @@
 import React from 'react';
 
 import styles from './UserInterface.module.css';
-import MovementButton from './MovementButton';
-import ConirmButton from './Confirmbutton';
-import CancelButton from './CancelButton';
-import ChatButton from './ChatButton';
-import PartyButton from './PartyButton';
+import MovementButton from './interaction_pad/MovementButton';
+import ConirmButton from './interaction_pad/ConfirmButton';
+import CancelButton from './interaction_pad/CancelButton';
+import ChatButton from './interaction_pad/ChatButton';
+import PartyButton from './interaction_pad/PartyButton';
 
 export default function UserInterface()
 {

@@ -1,4 +1,5 @@
 import { clientLogin, clientRegister } from "@/store/loginSlice.js";
+import { setStats } from "@/store/statsSlice.js";
 
 export default async function loginEmitters(store, action)
 {
@@ -21,7 +22,17 @@ export default async function loginEmitters(store, action)
             window.clientGlobalManager.clientPlayerManager.publicNamespace.disconnect();
             store.dispatch({ type: 'leftPanel/setLeftPanel', payload: 'userInterface' });
             store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
-            store.dispatch({ type: 'rightPanel/setRightPanel', payload: null });
+            const stats = 
+            {
+                name: response.characterData.name,
+                level: response.characterData.level,
+                experience: response.characterData.experience,
+                gold: response.characterData.gold,
+                currentHp: response.characterData.currentHp,
+                maxHp: response.characterData.maxHp
+            }
+            store.dispatch(setStats(stats));
+            store.dispatch({ type: 'rightPanel/setRightPanel', payload: 'stats' });
         }
     }
 
