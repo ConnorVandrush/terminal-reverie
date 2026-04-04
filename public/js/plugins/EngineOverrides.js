@@ -68,7 +68,6 @@ Game_Player.prototype.moveByInput = async function (reactDirection)
     // Party movement
     if (partyManager.isPartyLeader && !mapManager.isMoving)
     {
-        console.log('I am' + this);
         mapManager.isMoving = true;
         partyManager.requestPartyMove(direction);
         setTimeout(() => mapManager.waitForMovementEnd($gamePlayer), 50); // FIXME isMoving is being set to false too early, this is a band-aid to prevent desync but the root cause should be fixed. Maybe add prediction for party movement as well?

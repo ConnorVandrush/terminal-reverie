@@ -34,5 +34,5 @@ serverMapManager.loadMaps();
 serverMapManager.startListeners();
 
 const ServerLoginManager = require('./modules/ServerLoginManager.js');
-const serverLoginManager = new ServerLoginManager(serverManager.publicNamespace, serverManager.io, serverPlayerManager, serverMapManager);
+const serverLoginManager = new ServerLoginManager(serverManager.publicNamespace, serverManager.io, serverPlayerManager, serverMapManager, serverPartyManager);
 serverLoginManager.startListeners();

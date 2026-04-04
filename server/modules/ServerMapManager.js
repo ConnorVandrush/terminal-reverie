@@ -176,7 +176,6 @@ class ServerMapManager
 
             socket.on('clientPartyMove', async (direction) =>
             {
-                console.log('Received party move request in direction:', direction);
                 const leaderData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 if (!leaderData || leaderData.isTransferring || leaderData.preventMovement)                
                 {

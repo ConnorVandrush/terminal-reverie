@@ -20,6 +20,7 @@ export const middleware = (store) =>
         if (!authenticated && window.clientGlobalManager.clientPlayerManager.socket)
         {
             authenticated = true;
+            window.clientGlobalManager.dispatchToReact = store.dispatch;
             createChatWindowListeners(store);
             createPartyWindowListeners(store);
         }

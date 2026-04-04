@@ -3,6 +3,7 @@ class ClientGlobalManager
     constructor()
     {
         this.SERVER_CONFIG = window.SERVER_CONFIG
+        this.dispatchToReact = null;
         this.clientInputManager = null;
         this.clientPlayerManager = null;
         this.clientMapManager = null;

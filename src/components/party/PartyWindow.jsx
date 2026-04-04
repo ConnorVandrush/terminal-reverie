@@ -26,7 +26,7 @@ export default function PartyWindow()
     return (
         <div className={styles.partyWindow}>
 
-            {(partyData.partyLeaderId === playerId || partyData.partyLeaderId === 0) && (
+            {(partyData === null || partyData.members[0].playerId === playerId) && (
                 <div className={styles.inputRow}>
                     <input type="text" placeholder="Invite to party..." ref={invitedPlayerRef}/>
                     <button onClick={handleClientSendPartyInvite}>Send</button>
@@ -45,7 +45,7 @@ export default function PartyWindow()
                 </div>
             )}
 
-            {partyInvites.length > 0 && !partyData.partyLeaderId && (
+            {partyInvites.length > 0 && partyData === null && (
                 <div className={styles.partyInvites}>
                     {partyInvites.map((invite, index) => (
                         <div key={index} className={styles.partyInvite}>
@@ -57,11 +57,19 @@ export default function PartyWindow()
                 </div>
             )}
 
-            {partyData && partyData.members.length > 0 && (
+            {partyData && partyData.members && (
                 <div className={styles.partyMembers}>
-                    {partyData.members.map((memberId) => (
-                        <div key={memberId} className={styles.partyMember}>
-                            {memberId}
+                    {partyData.members.map((member, index) => (
+                        <div key={index} className={styles.partyMember}>
+                            <div className={styles.memberName}>
+                                {member.name}
+                            </div>
+                            <div className={styles.memberLevel}>
+                                Level {member.level}
+                            </div>
+                            <div className={styles.memberHp}>
+                                HP: {member.currentHp}/{member.maxHp}
+                            </div>
                         </div>
                     ))}
                 </div>

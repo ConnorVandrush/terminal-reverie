@@ -5,11 +5,7 @@ const partyWindowSlice = createSlice(
     name: 'partyWindow',
     initialState:
     {
-        partyData: 
-        {
-            partyLeaderId: 0,
-            members: []
-        },
+        partyData: null,
         errorMessage: null,
         successMessage: null,
         partyInvites: [],
@@ -34,6 +30,8 @@ const partyWindowSlice = createSlice(
         setPartyData: (state, action) =>
         {
             state.partyData = action.payload;
+            state.errorMessage = null;
+            state.successMessage = null;
         },
         setErrorMessage: (state, action) =>
         {

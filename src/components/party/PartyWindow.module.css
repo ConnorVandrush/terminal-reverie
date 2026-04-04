@@ -15,6 +15,15 @@
   display: flex;
 }
 
+.partyMember {
+  display: flex;
+  align-items: center;
+  padding: 1%;
+  border-bottom: 1px solid #ccc;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .partyInvite {
   box-sizing: border-box;
   padding: 2%;

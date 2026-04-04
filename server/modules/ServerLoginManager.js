@@ -192,23 +192,10 @@ class ServerLoginManager
                 const playerData = this.serverPlayerManager.playersOnline.get(playerId);
                 if (!playerData) return;
                 const characterData = playerData.characterData;
-                let partyData;
-                let partyLeaderId;
-                if (playerData.partyData.partyLeaderId)
+                if (this.serverPartyManager.playerParties.has(playerId)) // FIXME remove after testing
                 {
-                    partyLeaderId = playerData.partyData.partyLeaderId;
-                    partyData = this.serverPartyManager.playerParties.get(partyLeaderId);
+                    this.serverPartyManager.playerParties.delete(playerId);
                 }
-
-                // FIXME
-                if (partyData)
-                {
-                    if (partyLeaderId === playerId)
-                    {
-                        this.serverPartyManager.playerParties.delete(partyLeaderId);
-                    }
-                }
-
                 this.serverPlayerManager.playerLeftMap(socket, playerId, characterData?.location.map); // FIXME remove after testing
                 this.serverPlayerManager.playersOnline.delete(playerId); // FIXME remove after testing
 
