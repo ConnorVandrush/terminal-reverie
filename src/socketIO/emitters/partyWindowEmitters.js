@@ -1,4 +1,4 @@
-import { clientSendPartyInvite, setErrorMessage, setSuccessMessage, clientAcceptPartyInvite } from "@store/partyWindowSlice";
+import { clientSendPartyInvite, setErrorMessage, setSuccessMessage, clientAcceptPartyInvite, clientLeaveParty } from "@store/partyWindowSlice";
 import { removePartyInvite } from "../../store/partyWindowSlice";
 
 export default async function partyWindowEmitters(action, store)
@@ -29,6 +29,23 @@ export default async function partyWindowEmitters(action, store)
             store.dispatch(setSuccessMessage(response.message));
             store.dispatch(setErrorMessage(false));
             store.dispatch(removePartyInvite(action.payload));
+        }
+        else
+        {
+            store.dispatch(setErrorMessage(response.message));
+            store.dispatch(setSuccessMessage(false));
+        }
+    }
+
+    if (action.type === clientLeaveParty.type)
+    {
+        const response = await socket.emitWithAck('clientLeaveParty', action.payload);
+
+        if (response.success)        
+        {
+            store.dispatch(setSuccessMessage(response.message));
+            store.dispatch(setErrorMessage(false));
+            store.dispatch({ type: 'partyWindow/setPartyData', payload: null });
         }
         else
         {

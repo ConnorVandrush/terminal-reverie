@@ -65,3 +65,11 @@
   font-weight: bold;
   height: 100%;
 }
+
+.leavePartyButtonContainer {
+  position: absolute;
+  bottom: 2%;
+  right: 2%;
+  display: flex;
+  justify-content: flex-end;
+}

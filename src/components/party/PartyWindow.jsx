@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './PartyWindow.module.css';
-import { clientSendPartyInvite, removePartyInvite, clientAcceptPartyInvite } from '@store/partyWindowSlice.js';
+import { clientSendPartyInvite, removePartyInvite, clientAcceptPartyInvite, clientLeaveParty } from '@store/partyWindowSlice.js';
 
 export default function PartyWindow() 
 {
@@ -58,21 +58,32 @@ export default function PartyWindow()
             )}
 
             {partyData && partyData.members && (
-                <div className={styles.partyMembers}>
-                    {partyData.members.map((member, index) => (
-                        <div key={index} className={styles.partyMember}>
-                            <div className={styles.memberName}>
-                                {member.name}
+                <>
+                    <div className={styles.partyMembers}>
+                        {partyData.members.map((member, index) => (
+                            <div key={index} className={styles.partyMember}>
+                                <div className={styles.memberName}>
+                                    {member.name}
+                                </div>
+                                <div className={styles.memberLevel}>
+                                    Level {member.level}
+                                </div>
+                                <div className={styles.memberHp}>
+                                    HP: {member.currentHp}/{member.maxHp}
+                                </div>
+                                {partyData.members[0].playerId === playerId && member.playerId !== playerId && (
+                                    <div className={styles.kickPartyMemberButtonContainer}>
+                                        <button onClick={() => dispatch(clientKickPartyMember(member.playerId))}>Kick</button>
+                                    </div>
+                                )}
                             </div>
-                            <div className={styles.memberLevel}>
-                                Level {member.level}
-                            </div>
-                            <div className={styles.memberHp}>
-                                HP: {member.currentHp}/{member.maxHp}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+
+                    <div className={styles.leavePartyButtonContainer}>
+                        <button onClick={() => dispatch(clientLeaveParty(partyData.members[0].playerId))}>Leave Party</button>
+                    </div>
+                </>
             )}
 
         </div>

@@ -27,17 +27,6 @@ class ServerPartyManager
         return (dx === 0 && dy === 0) || (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
     }
 
-    getPartySocketIds(partyLeaderId)
-    {
-        const partyData = this.playerParties.get(partyLeaderId);
-        if (!partyData) return [];
-        return partyData.members.map(member => 
-        {
-            const playerData = this.serverPlayerManager.playersOnline.get(member.playerId);
-            return playerData ? playerData.socketId : null;
-        }).filter(socketId => socketId !== null);
-    }
-
     startListeners()
     {
         this.io.on('connection', (socket) =>
@@ -55,6 +44,7 @@ class ServerPartyManager
                 {
                     return cb({ success: false, message: `You cannot invite yourself to a party` });
                 }
+                socket.join(`party_${socket.playerId}`);
                 cb({ success: true, message: `Party invite sent to ${toPlayerName}` });
                 this.io.to(toPlayerSocket).emit('serverSendPartyInvite', { fromPlayerName });
             });
@@ -83,16 +73,17 @@ class ServerPartyManager
                             if (!partyData.members.includes(toPlayer.characterData))
                             {
                                 partyData.members.push(toPlayer.characterData);
+                                socket.join(`party_${partyLeaderId}`);
                             }
                         }
                         else
                         {
                             this.playerParties.set(partyLeaderId, { members: [fromPlayer.characterData, toPlayer.characterData] });
+                            socket.join(`party_${partyLeaderId}`);
                         }
                         fromPlayer.preventMovement = true;
                         cb({ success: true });
-                        const socketIds = this.getPartySocketIds(partyLeaderId);
-                        socketIds.forEach(socketId => this.io.to(socketId).emit('serverUpdatePartyData', this.playerParties.get(partyLeaderId)));
+                        this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', this.playerParties.get(partyLeaderId));
                     }
                     catch (error)
                     {
@@ -111,6 +102,49 @@ class ServerPartyManager
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 if (!playerData) return;
                 playerData.preventMovement = false;
+            });
+
+            socket.on('clientLeaveParty', (partyLeaderId, cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const partyData = this.playerParties.get(partyLeaderId);
+                if (!playerData || !partyData) 
+                {
+                    return cb({ success: false, message: 'Party not found' });
+                }
+                const memberIndex = partyData.members.findIndex(member => member.playerId === socket.playerId);
+                if (memberIndex === -1) 
+                {
+                    return cb({ success: false, message: 'You are not a member of this party' });
+                }
+                partyData.members.splice(memberIndex, 1);
+                socket.leave(`party_${partyLeaderId}`);
+                this.io.to(socket.id).emit('serverUpdatePartyData', null);
+                playerData.preventMovement = false;
+                if (partyData.members.length === 1)
+                {
+                    this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', null);
+                    this.io.in(`party_${partyLeaderId}`).socketsLeave('party_' + partyLeaderId);
+                    this.playerParties.delete(partyLeaderId);
+                    cb({ success: true, message: 'You have left the party. The party has been disbanded since there was only one member left.' });
+                }
+                else if (partyLeaderId === socket.playerId && partyData.members.length > 1)
+                {
+                    const newLeaderId = partyData.members[0].playerId;
+                    this.playerParties.set(newLeaderId, partyData);
+                    this.playerParties.delete(partyLeaderId);
+                    this.io.in(`party_${partyLeaderId}`).socketsJoin('party_' + newLeaderId);
+                    this.io.in(`party_${partyLeaderId}`).socketsLeave('party_' + partyLeaderId);
+                    partyLeaderId = newLeaderId;
+                    cb({ success: true, message: 'You have left the party. A new leader has been assigned.' });
+                    this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', partyData);
+                }
+                else if (partyData.members.length > 1)
+                {
+
+                    cb({ success: true, message: 'You have left the party' });
+                    this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', partyData);
+                }
             });
         });
     }
