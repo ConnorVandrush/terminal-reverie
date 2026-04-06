@@ -37,7 +37,7 @@ class ClientPartyManager
                 this.clientMapManager.isMoving = true;
                 setTimeout(() =>
                 {
-                    socket.emit('partyAssembled');
+                    socket.emit('clientPartyAssembled');
                     this.clientMapManager.isMoving = false;
                 }, 3000);
             }

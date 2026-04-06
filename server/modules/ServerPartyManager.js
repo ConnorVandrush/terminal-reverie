@@ -97,7 +97,7 @@ class ServerPartyManager
                 }
             });
             
-            socket.on('partyAssembled', () => 
+            socket.on('clientPartyAssembled', () => 
             {
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 if (!playerData) return;

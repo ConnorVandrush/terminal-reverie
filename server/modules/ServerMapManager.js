@@ -258,10 +258,15 @@ class ServerMapManager
 
                     if (!mapData || !tileset) return cb({ success: false });
 
+                    if (this.serverPartyManager.playerParties.has(socket.playerId))
+                    {
+                        this.io.to('party_' + socket.playerId).emit('serverUpdatePartyData', this.serverPartyManager.playerParties.get(socket.playerId));
+                    }
+
                     this.serverPlayerManager.playerLeftMap(socket, socket.playerId, playerData.characterData.location.map);
                     playerData.characterData.location = { x, y, d, map: destinationMap };
                     this.serverPlayerManager.playerJoinMap(socket, socket.playerId, destinationMap);
-   
+
                     return cb({ success: true, x, y, d, mapData, tileset, playersOnMap: Array.from(playersOnMap.entries()) });
                 }
             });
