@@ -28,8 +28,15 @@ const ServerPartyManager = require('./modules/ServerPartyManager.js');
 const serverPartyManager = new ServerPartyManager(serverManager.io, serverPlayerManager);
 serverPartyManager.startListeners();
 
+const ServerEncounterManager = require('./modules/ServerEncounterManager.js');
+const serverEncounterManager = new ServerEncounterManager();
+serverEncounterManager.loadTroops();
+serverEncounterManager.loadEnemies();
+serverEncounterManager.loadEncounterTables();
+serverEncounterManager.startListeners();
+
 const ServerMapManager = require('./modules/ServerMapManager.js');
-const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager, serverPartyManager);
+const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager, serverPartyManager, serverEncounterManager);
 serverMapManager.loadMaps();
 serverMapManager.startListeners();
 

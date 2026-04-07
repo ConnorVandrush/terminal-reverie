@@ -6,6 +6,7 @@ class PlayerData
         this.characterData = characterData;
         this.preventMovement = false;
         this.isTransferring = false;
+        this.inEncounter = false;
         this.partyData = 
         {
             partyLeaderId: null,

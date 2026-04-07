@@ -3,42 +3,73 @@ const fs = require('fs');
 
 class ServerMapManager
 {
-    constructor(io, serverPlayerManager, serverPartyManager)
+    constructor(io, serverPlayerManager, serverPartyManager, serverEncounterManager)
     {
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
         this.serverPartyManager = serverPartyManager;
-        this.maps = new Map();
+        this.serverEncounterManager = serverEncounterManager;
+        this.maps = new Map(); // mapName -> { mapData, tileset, eventData }
     }
 
     loadMaps = () =>
     {
+        // Load tilesets
         const tilesets = new Map();
         const tilesetData = JSON.parse(fs.readFileSync('./server/data/maps/Tilesets.json', 'utf-8'));
-        for (const tileset of tilesetData)
-            {
-                if (!tileset) continue;
-                tilesets.set(tileset.id, tileset);
-            }
-            
-        const mapFiles = fs.readdirSync('./server/data/maps');
-        for (const mapFile of mapFiles)
+
+        for (const tileset of tilesetData) 
         {
-            const mapName = mapFile.split('.')[0];
-            if (mapFile === 'Tilesets.json') continue;
-            const mapData = JSON.parse(fs.readFileSync(`./server/data/maps/${mapFile}`, 'utf-8'));
-
-            const eventData = new Map();
-            for (const event of mapData.events) 
-            {
-                if (!event) continue; // skip null at index 0
-
-                const eventCoord = `${event.x},${event.y}`;
-                eventData.set(eventCoord, event);
-            }
-
-            this.maps.set(mapName, {mapData, tileset: tilesets.get(mapData.tilesetId), eventData});
+            if (!tileset) continue;
+            tilesets.set(tileset.id, tileset);
         }
+
+        const basePath = './server/data/maps';
+        const mapDirectories = fs.readdirSync(basePath);
+
+        for (const dir of mapDirectories) 
+        {
+            const dirPath = `${basePath}/${dir}`;
+
+            if (!fs.lstatSync(dirPath).isDirectory()) continue;
+
+            // Read all JSON files inside this map directory
+            const files = fs.readdirSync(dirPath);
+
+            for (const file of files) 
+            {
+                if (!file.endsWith('.json')) continue;
+                if (file === 'Tilesets.json') continue;
+
+                const mapName = file.replace('.json', '');
+                const mapPath = `${dirPath}/${file}`;
+
+                const mapData = JSON.parse(fs.readFileSync(mapPath, 'utf-8'));
+
+                // Build event lookup
+                const eventData = new Map();
+                for (const event of mapData.events) 
+                {
+                    if (!event) continue;
+                    eventData.set(`${event.x},${event.y}`, event);
+                }
+
+                this.maps.set(mapName, 
+                {
+                    mapData,
+                    tileset: tilesets.get(mapData.tilesetId),
+                    eventData
+                });
+            }
+        }
+    };
+
+    getRegion = (mapName, x, y) =>
+    {
+        const mapJson = this.maps.get(mapName).mapData;
+        const base = 5 * mapJson.width * mapJson.height;
+        const index = base + (y * mapJson.width + x);
+        return mapJson.data[index];
     }
 
     getEventData = (mapName, x, y) =>
@@ -156,10 +187,12 @@ class ServerMapManager
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 playerData.characterData.location.d = direction;
 
-                if (!playerData || playerData.isTransferring || playerData.preventMovement)
+                if (!playerData || playerData.isTransferring || playerData.preventMovement || playerData.inEncounter)
                 {
                     return cb({ success: false });
                 }
+                playerData.preventMovement = true;
+                setTimeout(() => playerData.preventMovement = false, 50); // simple movement rate limit
 
                 let newLocation;
                 const currentLoc = playerData.characterData.location;
@@ -168,19 +201,21 @@ class ServerMapManager
                 {
                     return cb({ success: false });
                 }
-
                 playerData.characterData.location = result.newLocation;
-                this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation: result.newLocation });
-                return cb({ success: true, newLocation: result.newLocation });
+                const encounter = await this.serverEncounterManager.rollForEncounter(currentLoc.map, this.getRegion(currentLoc.map, result.newLocation.x, result.newLocation.y), playerData);
+                this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation: result.newLocation, inEncounter: playerData.inEncounter });
+                return cb({ success: true, newLocation: result.newLocation, encounter });
             });
 
             socket.on('clientPartyMove', async (direction) =>
             {
                 const leaderData = this.serverPlayerManager.playersOnline.get(socket.playerId);
-                if (!leaderData || leaderData.isTransferring || leaderData.preventMovement)                
+                if (!leaderData || leaderData.isTransferring || leaderData.preventMovement || leaderData.inEncounter)                
                 {
                     return;
                 }
+                leaderData.preventMovement = true;
+                setTimeout(() => leaderData.preventMovement = false, 50); // simple movement rate limit
 
                 const partyData = this.serverPartyManager.playerParties.get(socket.playerId);
                 if (!partyData) return;

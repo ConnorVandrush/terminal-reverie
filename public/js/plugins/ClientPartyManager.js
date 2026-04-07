@@ -26,7 +26,6 @@ class ClientPartyManager
         const socket = this.clientPlayerManager.socket;
         socket.on('serverUpdatePartyData', (partyData) =>
         {
-            console.log('Received party data update:', partyData);
             this.isPartyFollower = false;
             this.isPartyLeader = false;
             this.partyData = partyData;

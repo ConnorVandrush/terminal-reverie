@@ -21,6 +21,11 @@ class ClientMapManager
                 const loc = window.clientGlobalManager.clientPlayerManager.characterData.location;
                 loc.x = response.newLocation.x;
                 loc.y = response.newLocation.y;
+
+                if (response.encounter != null)
+                {
+                    window.clientGlobalManager.clientEncounterManager.startEncounter(response.encounter);
+                }
             }
         } 
         catch (err) 
