@@ -202,7 +202,7 @@ class ServerMapManager
                     return cb({ success: false });
                 }
                 playerData.characterData.location = result.newLocation;
-                const encounter = await this.serverEncounterManager.rollForEncounter(currentLoc.map, this.getRegion(currentLoc.map, result.newLocation.x, result.newLocation.y), playerData);
+                const encounter = await this.serverEncounterManager.rollForEncounter(currentLoc.map, this.getRegion(currentLoc.map, result.newLocation.x, result.newLocation.y), this.maps.get(currentLoc.map).mapData.battleback1Name, playerData);
                 this.io.to(currentLoc.map).except(socket.id).emit('serverPlayerMoved', { playerId: socket.playerId, newLocation: result.newLocation, inEncounter: playerData.inEncounter });
                 return cb({ success: true, newLocation: result.newLocation, encounter });
             });

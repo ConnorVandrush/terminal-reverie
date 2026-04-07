@@ -131,3 +131,37 @@ Scene_Map.prototype.update = function() {
     if (window.clientGlobalManager?.clientMapManager.isTransferring) return; // don't process pending changes during transfer
     window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
 };
+
+// Disable default battle windows
+const rect = new Rectangle(0, 0, 0, 0);
+Scene_Battle.prototype.createStatusWindow = function() {
+    this._statusWindow = new Window_BattleStatus(rect);
+    this._statusWindow.visible = false;
+    this._statusWindow.openness = 0;
+    this.addWindow(this._statusWindow);
+};
+Game_Troop.prototype.enemyNames = function() {
+    return []; // return no names → no message
+};
+Scene_Battle.prototype.createBattleLogWindow = function() {
+    this._battleLogWindow = new Window_BattleLog(rect);
+    this._battleLogWindow.visible = false;
+    this._battleLogWindow.openness = 0;
+    this.addWindow(this._battleLogWindow);
+};
+Scene_Battle.prototype.createActorCommandWindow = function() {
+    this._actorCommandWindow = new Window_ActorCommand(rect);
+    this._actorCommandWindow.visible = false;
+    this._actorCommandWindow.openness = 0;
+    this.addWindow(this._actorCommandWindow);
+};
+Scene_Battle.prototype.createPartyCommandWindow = function() {
+    this._partyCommandWindow = new Window_PartyCommand(rect);
+    this._partyCommandWindow.visible = false;
+    this._partyCommandWindow.openness = 0;
+    this.addWindow(this._partyCommandWindow);
+};
+ImageManager.loadFace = function() {
+    // Return an empty bitmap so nothing loads
+    return new Bitmap(144, 144);
+};

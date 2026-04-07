@@ -28,9 +28,11 @@ class ClientPlayerManager
         this.startListeners();
         window.clientGlobalManager.clientMapManager.startListeners();
         window.clientGlobalManager.clientPartyManager.startListeners();
-
+        window.clientGlobalManager.clientEncounterManager.startListeners();
+        
         DataManager.setupNewGame();
         this.characterData = characterData;
+        window.clientGlobalManager.clientPartyManager.partyData = { members: [this.characterData] };
         this.pendingRemotePlayers = new Map(playersOnMap);
         
         const appearance = await this.spriteColorer.recolorSpritesheet('/img/characters/$' + characterData.appearance.template + '.png', characterData.appearance.template, characterData.appearance.colors);

@@ -57,7 +57,7 @@ class ServerEncounterManager
         }
     }
 
-    rollForEncounter(mapName, region, playerData)
+    rollForEncounter(mapName, region, battleback, playerData)
     {
         const encounterTable = this.encounterTables.get(mapName);
         const regionTable = encounterTable?.[String(region)];
@@ -85,7 +85,8 @@ class ServerEncounterManager
                         playerData.inEncounter = true;
                         return {
                             troopData,
-                            enemyData: troopData.members.map(member => this.enemies.get(member.enemyId))
+                            enemyData: troopData.members.map(member => this.enemies.get(member.enemyId)),
+                            battleback
                         };
                     }
                 }

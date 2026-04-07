@@ -10,5 +10,6 @@ var $plugins =
 {"name":"ClientSpriteColorer","status":true,"description":"","parameters":{}},
 {"name":"ClientMapManager","status":true,"description":"","parameters":{}},
 {"name":"ClientPartyManager","status":true,"description":"","parameters":{}},
+{"name":"ClientEncounterManager","status":true,"description":"","parameters":{}},
 {"name":"ClientMain","status":true,"description":"","parameters":{}}
 ];
