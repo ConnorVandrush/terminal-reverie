@@ -9,6 +9,7 @@ import UserInterface from './ui/UserInterface';
 import ChatWindow from './chat/ChatWindow';
 import PartyWindow from './party/PartyWindow';
 import Stats from './ui/stats/Stats';
+import EncounterInfo from './encounter/EncounterInfo';
 
 export default function App()
 {
@@ -39,6 +40,8 @@ export default function App()
                 return <ChatWindow />;
             case 'partyWindow':
                 return <PartyWindow />;
+            case 'encounterInfo':
+                return <EncounterInfo />;
             default:
                 return null;
         }
@@ -65,8 +68,9 @@ export default function App()
                 {centerPanel && <div
                     className={[
                         "centerPanel",
-                        centerPanel === "chatWindow" && "centerPanelChat",
-                        centerPanel === "partyWindow" && "centerPanelParty"
+                        centerPanel === "chatWindow" && "centerPanelChat", //game.css
+                        centerPanel === "partyWindow" && "centerPanelParty",
+                        centerPanel === "encounterInfo" && "centerPanelEncounterInfo",
                     ].filter(Boolean).join(" ")}
                     >
                     {renderCenterPanel()}

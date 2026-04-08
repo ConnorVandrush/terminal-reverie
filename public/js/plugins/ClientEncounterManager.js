@@ -7,7 +7,6 @@ class ClientEncounterManager
 
     startEncounter({ troopData, enemyData, battleback })
     {
-        console.log("Starting encounter with data:", { troopData, enemyData, battleback }, "Current party data:", this.clientPartyManager.partyData);
         $gameParty._actors.slice().forEach(actorId => 
         {
             $gameParty.removeActor(actorId);
@@ -31,7 +30,7 @@ class ClientEncounterManager
         });
         $gameMap._battleback1Name = battleback;
         SceneManager.push(Scene_Battle);
-        console.log("Encounter started");
+        window.clientGlobalManager.dispatchToReact({ type: 'centerPanel/setCenterPanel', payload: 'encounterInfo' });
     }
 
     startListeners()
