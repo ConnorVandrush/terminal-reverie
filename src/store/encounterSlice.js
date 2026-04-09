@@ -6,15 +6,30 @@ const encounterSlice = createSlice(
     initialState: 
     {
         encounterInfo: 'commandSelection',
+        enemyInfo: null,
+        allyInfo: null,
+        currentTarget: null // { index: number, side: 'ally' | 'enemy' }
     },
     reducers:
     {
         setEncounterInfo: (state, action) =>
         {
             state.encounterInfo = action.payload;
+        },
+        setEnemyInfo: (state, action) =>
+        {
+            state.enemyInfo = action.payload;
+        },
+        setAllyInfo: (state, action) =>
+        {
+            state.allyInfo = action.payload;
+        },
+        setCurrentTarget: (state, action) =>
+        {
+            state.currentTarget = action.payload;
         }
     }
 });
 
-export const { setEncounterInfo } = encounterSlice.actions;
+export const { setEncounterInfo, setEnemyInfo, setAllyInfo, setCurrentTarget } = encounterSlice.actions;
 export default encounterSlice.reducer;

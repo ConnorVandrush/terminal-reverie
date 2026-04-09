@@ -50,6 +50,19 @@ Sprite_Character.prototype.setCharacterBitmap = function() {
     }
 };
 
+// const _setImage = Game_CharacterBase.prototype.setImage;
+// Game_CharacterBase.prototype.setImage = function(characterName, characterIndex) {
+
+//     console.log(this);
+
+//     // 🚨 If THIS character already uses custom bitmap, ignore file system changes
+//     if (this._customBitmap) {
+//         return;
+//     }
+
+//     _setImage.call(this, characterName, characterIndex);
+// };
+
 // Disable all dashing in RMMZ
 const _Game_Player_isDashing = Game_Player.prototype.isDashing;
 Game_Player.prototype.isDashing = function() {
@@ -164,4 +177,79 @@ Scene_Battle.prototype.createPartyCommandWindow = function() {
 ImageManager.loadFace = function() {
     // Return an empty bitmap so nothing loads
     return new Bitmap(144, 144);
+};
+
+// --- GLOBAL TARGET ACCESSOR -----------------------------------------------
+// Instead of $gameTemp, we read from your React-driven global manager.
+
+function getSelectedTarget() {
+    const t = window.clientGlobalManager?.clientEncounterManager?.target;
+    return t || null; // { index, side } or null
+}
+
+
+// --- SPRITE ENEMY ----------------------------------------------------------
+
+const _Sprite_Enemy_update = Sprite_Enemy.prototype.update;
+Sprite_Enemy.prototype.update = function () {
+    _Sprite_Enemy_update.call(this);
+
+    const target = getSelectedTarget();
+
+    if (target && target.side === "enemy" && this._enemy && this._enemy.index() === target.index) {
+        this.showSelectionArrow();
+    } else {
+        this.hideSelectionArrow();
+    }
+};
+
+Sprite_Enemy.prototype.showSelectionArrow = function () {
+    if (!this._arrowSprite) {
+        this._arrowSprite = new Sprite(ImageManager.loadSystem("Arrow"));
+        this._arrowSprite.anchor.set(0.5, 1);
+        this.addChild(this._arrowSprite);
+    }
+
+    this._arrowSprite.x = 0;
+    this._arrowSprite.y = -75 + Math.sin(Graphics.frameCount / 10) * 4;
+    this._arrowSprite.visible = true;
+};
+
+Sprite_Enemy.prototype.hideSelectionArrow = function () {
+    if (this._arrowSprite) {
+        this._arrowSprite.visible = false;
+    }
+};
+
+
+// --- SPRITE ACTOR ----------------------------------------------------------
+
+const _Sprite_Actor_update = Sprite_Actor.prototype.update;
+Sprite_Actor.prototype.update = function () {
+    _Sprite_Actor_update.call(this);
+
+    const target = getSelectedTarget();
+
+    if (target && target.side === "ally" && this._actor && this._actor.index() === target.index) {
+        this.showSelectionArrow();
+    } else {
+        this.hideSelectionArrow();
+    }
+};
+
+Sprite_Actor.prototype.showSelectionArrow = Sprite_Enemy.prototype.showSelectionArrow;
+Sprite_Actor.prototype.hideSelectionArrow = Sprite_Enemy.prototype.hideSelectionArrow;
+
+// Disable victory messages and rewards
+BattleManager.displayVictoryMessage = function() {};
+BattleManager.displayRewards = function() {};
+BattleManager.gainRewards = function() {};
+
+const _BattleManager_endBattle = BattleManager.endBattle;
+BattleManager.endBattle = function(result) {
+    // Temporarily disable SceneManager.pop()
+    SceneManager.pop = function() {
+        // do nothing — prevent default map return
+    };
+    _BattleManager_endBattle.call(this, result);
 };

@@ -10,6 +10,8 @@ import ChatWindow from './chat/ChatWindow';
 import PartyWindow from './party/PartyWindow';
 import Stats from './ui/stats/Stats';
 import EncounterInfo from './encounter/EncounterInfo';
+import EnemyInfo from './encounter/EnemyInfo';
+import AllyInfo from './encounter/AllyInfo';
 
 export default function App()
 {
@@ -24,6 +26,8 @@ export default function App()
                 return <CreateCharacter />;
             case 'userInterface':
                 return <UserInterface />;
+            case 'enemyInfo':
+                return <EnemyInfo />;
             default:
                 return null;
         }
@@ -56,6 +60,8 @@ export default function App()
                 return <ColorCharacter />;
             case 'stats':
                 return <Stats />;
+            case 'allyInfo':
+                return <AllyInfo />;
             default:
                 return null;
         }
