@@ -38,6 +38,7 @@ class ClientPlayerManager
         const appearance = await this.spriteColorer.recolorSpritesheet('/img/characters/$' + characterData.appearance.template + '.png', characterData.appearance.template, characterData.appearance.colors);
         const bitmap = ImageManager.loadBitmapFromUrl(appearance);
         $gamePlayer._customBitmap = bitmap;
+
         window.clientGlobalManager.clientPlayerManager.customBitmaps.set(String('$' + characterData.playerId), bitmap);
         $gameActors.actor(1).setCharacterImage(String('$' +characterData.playerId), 0);
         

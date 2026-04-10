@@ -25,6 +25,14 @@ class CharacterData
                 pants: null
             }
         };
+        this.availableActions = ["attack", "defend", "item", "run"];
+    }
+
+    attack(target)
+    {
+        const damage = 10; // Fixed damage for simplicity
+        target.currentHp = Math.max(target.currentHp - damage, 0);
+        return damage;
     }
 }
 

@@ -29,7 +29,7 @@ const serverPartyManager = new ServerPartyManager(serverManager.io, serverPlayer
 serverPartyManager.startListeners();
 
 const ServerEncounterManager = require('./modules/ServerEncounterManager.js');
-const serverEncounterManager = new ServerEncounterManager();
+const serverEncounterManager = new ServerEncounterManager(serverManager.io, serverPartyManager);
 serverEncounterManager.loadTroops();
 serverEncounterManager.loadEnemies();
 serverEncounterManager.loadEncounterTables();

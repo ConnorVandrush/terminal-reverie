@@ -1,13 +1,18 @@
 const fs = require('fs');
 const path = require('path');
+const encounter = require('./Encounter.js');
+const { createEnemy } = require('./Enemies/EnemyRegistry.js');
 
 class ServerEncounterManager 
 {
-    constructor()
+    constructor(io, serverPartyManager)
     {
+        this.io = io;
+        this.serverPartyManager = serverPartyManager;
         this.troops = new Map();
         this.enemies = new Map();
         this.encounterTables = new Map();
+        this.ongoingEncounters = new Map(); // playerId -> Encounter instance
     }
 
     randInt(min, max) 
@@ -83,6 +88,31 @@ class ServerEncounterManager
                     if (!playerData.inEncounter)
                     {
                         playerData.inEncounter = true;
+                        let allyList;
+                        let encounterRoom;
+                        if (this.serverPartyManager.playerParties.has(playerData.playerId))
+                        {
+                            allyList = this.serverPartyManager.playerParties.get(playerData.playerId).members.map(member => member.characterData);
+                            encounterRoom = `party_${this.serverPartyManager.getPartyLeaderId(playerData.playerId)}`;
+                        }
+                        else
+                        {
+                            allyList = [playerData.characterData];
+                            encounterRoom = playerData.socketId;
+                        }
+                        let enemyList;
+                        for (const member of troopData.members)
+                        {
+                            const enemyInfo = this.enemies.get(member.enemyId);
+                            if (enemyInfo)                            
+                            {
+                                const enemyInstance = createEnemy(enemyInfo.name);
+                                enemyList = enemyList || [];
+                                enemyList.push(enemyInstance);
+                            }
+                        }
+                        const newEncounter = new encounter(allyList, enemyList, encounterRoom);
+                        this.ongoingEncounters.set(playerData.characterData.playerId, newEncounter);
                         return {
                             troopData,
                             enemyData: troopData.members.map(member => this.enemies.get(member.enemyId)),
@@ -96,9 +126,17 @@ class ServerEncounterManager
         return null;
     }
 
-
     startListeners = () =>
     {
+        this.io.on('connection', (socket) =>
+        {
+            socket.on('clientAllyTurn', (allyTurnData, cb) =>
+            {
+                const thisEncounter = this.ongoingEncounters.get(socket.playerId);
+                thisEncounter.processAllyTurn(allyTurnData);
+                cb({ success: true });
+            });
+        });
     }
 }
 

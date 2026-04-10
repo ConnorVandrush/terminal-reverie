@@ -27,9 +27,13 @@ const encounterSlice = createSlice(
         setCurrentTarget: (state, action) =>
         {
             state.currentTarget = action.payload;
+        },
+        clientAllyTurn: (state, action) =>
+        {
+            // emit handled in encounterEmitters.js
         }
     }
 });
 
-export const { setEncounterInfo, setEnemyInfo, setAllyInfo, setCurrentTarget } = encounterSlice.actions;
+export const { setEncounterInfo, setEnemyInfo, setAllyInfo, setCurrentTarget, clientAllyTurn } = encounterSlice.actions;
 export default encounterSlice.reducer;

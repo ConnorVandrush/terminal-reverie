@@ -15,7 +15,6 @@ class ClientEncounterManager
         this.clientPartyManager.partyData.members.forEach((member, index) =>
         {
             $gameActors.actor(index + 1).setBattlerImage("GrasslanderBattle");
-            $gameActors.actor(index + 1).setCharacterImage("Blank", 0); // prevent trying to read from file for no reason
             $gameActors.actor(index + 1).setHp(member.currentHp);
             $gameParty.addActor(index + 1);
         });

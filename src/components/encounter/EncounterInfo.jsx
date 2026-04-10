@@ -6,12 +6,12 @@ import styles from './EncounterInfo.module.css';
 export default function EncounterInfo() {
     const dispatch = useDispatch();
     const encounterInfo = useSelector(state => state.encounter.encounterInfo);
-
-    //const allyTarget = useSelector(state => state.battleCommandWindow.allyTarget);
-    //const enemyTarget = useSelector(state => state.battleCommandWindow.enemyTarget);
+    const currentTarget = useSelector(state => state.encounter.currentTarget);
 
     function attack()
     {
+        console.log('Attacking target:', currentTarget);
+        dispatch({ type: 'encounter/clientAllyTurn', payload: { actionType: 'attack', target: currentTarget } });
     }
 
     function renderBattleWindow() 

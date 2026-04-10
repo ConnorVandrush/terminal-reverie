@@ -42,6 +42,7 @@ const _setBitmap = Sprite_Character.prototype.setCharacterBitmap;
 Sprite_Character.prototype.setCharacterBitmap = function() {
     const character = this._character;
 
+    console.log("Setting bitmap for character", character);
     if (character && character._customBitmap) {
         this.bitmap = character._customBitmap;
         this._isBigCharacter = true;
@@ -49,19 +50,16 @@ Sprite_Character.prototype.setCharacterBitmap = function() {
         _setBitmap.call(this);
     }
 };
-
-// const _setImage = Game_CharacterBase.prototype.setImage;
-// Game_CharacterBase.prototype.setImage = function(characterName, characterIndex) {
-
-//     console.log(this);
-
-//     // 🚨 If THIS character already uses custom bitmap, ignore file system changes
-//     if (this._customBitmap) {
-//         return;
-//     }
-
-//     _setImage.call(this, characterName, characterIndex);
-// };
+// Override ImageManager.loadCharacter to prevent loading character sprites from disk, we handle this ourselves in ClientPlayerManager when we recolor the spritesheet and create a custom bitmap for the player.
+const _loadCharacter = ImageManager.loadCharacter;
+ImageManager.loadCharacter = function(filename) {
+    // Disable loading when filename is empty OR starts with "$"
+    if (!filename || filename.startsWith("$")) {
+        return new Bitmap(0, 0);
+    }
+    return _loadCharacter.call(this, filename);
+};
+//SceneManager._scene._spriteset._characterSprites
 
 // Disable all dashing in RMMZ
 const _Game_Player_isDashing = Game_Player.prototype.isDashing;
