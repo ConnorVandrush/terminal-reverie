@@ -2,6 +2,8 @@ class ClientEncounterManager
 {
     constructor()
     {
+        this.playerManager = window.clientGlobalManager.clientPlayerManager;
+        this.socket = null;
         this.clientPartyManager = window.clientGlobalManager.clientPartyManager;
         this.target = null; // { index: number, side: 'ally' | 'enemy' }
     }
@@ -39,8 +41,23 @@ class ClientEncounterManager
         window.clientGlobalManager.dispatchToReact({ type: 'rightPanel/setRightPanel', payload: 'allyInfo' });
     }
 
+    hideSelectionArrow()
+    {
+        this.target = null;
+        window.clientGlobalManager.dispatchToReact({ type: 'encounter/setCurrentTarget', payload: null });
+    }
+
     startListeners()
     {
+        this.socket = this.playerManager.socket;
+        this.socket.on('serverAllyTurnResults', (allyTurnResults) =>
+        {
+            allyTurnResults.forEach(result => 
+            {
+                window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterMessage', payload: result.encounterMessage });
+                window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' });
+            });
+        });
     }
 }
 

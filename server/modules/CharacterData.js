@@ -28,11 +28,20 @@ class CharacterData
         this.availableActions = ["attack", "defend", "item", "run"];
     }
 
-    attack(target)
+    static checkIfActionAvailable(characterData, action)
     {
-        const damage = 10; // Fixed damage for simplicity
-        target.currentHp = Math.max(target.currentHp - damage, 0);
-        return damage;
+        return characterData.availableActions.includes(action);
+    }
+
+    static attack(characterData, target)
+    {
+        if (this.checkIfActionAvailable(characterData, "attack"))
+        {
+            const damage = 10; // Fixed damage for simplicity
+            target.currentHp = Math.max(target.currentHp - damage, 0);
+            return damage;
+        }
+        return false;
     }
 }
 

@@ -8,6 +8,7 @@ class ClientGlobalManager
         this.clientPlayerManager = null;
         this.clientMapManager = null;
         this.clientPartyManager = null;
+        this.clientEncounterManager = null;
     }
 }
 

@@ -42,7 +42,6 @@ const _setBitmap = Sprite_Character.prototype.setCharacterBitmap;
 Sprite_Character.prototype.setCharacterBitmap = function() {
     const character = this._character;
 
-    console.log("Setting bitmap for character", character);
     if (character && character._customBitmap) {
         this.bitmap = character._customBitmap;
         this._isBigCharacter = true;

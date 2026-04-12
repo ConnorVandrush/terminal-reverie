@@ -4,7 +4,7 @@ class Goblin
     {
         this.name = "Goblin";
         this.maxHp = 30;
-        this.currenthp = 30;
+        this.currentHp = 30;
     }
 
     attack(target)

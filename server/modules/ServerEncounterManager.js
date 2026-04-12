@@ -111,7 +111,7 @@ class ServerEncounterManager
                                 enemyList.push(enemyInstance);
                             }
                         }
-                        const newEncounter = new encounter(allyList, enemyList, encounterRoom);
+                        const newEncounter = new encounter(this, allyList, enemyList, encounterRoom);
                         this.ongoingEncounters.set(playerData.characterData.playerId, newEncounter);
                         return {
                             troopData,
@@ -130,13 +130,19 @@ class ServerEncounterManager
     {
         this.io.on('connection', (socket) =>
         {
-            socket.on('clientAllyTurn', (allyTurnData, cb) =>
+            socket.on('clientAllyTurn', (allyTurnData) =>
             {
                 const thisEncounter = this.ongoingEncounters.get(socket.playerId);
+                const playerData = this.serverPartyManager.serverPlayerManager.playersOnline.get(socket.playerId);
+                allyTurnData.characterData = playerData.characterData;
                 thisEncounter.processAllyTurn(allyTurnData);
-                cb({ success: true });
             });
         });
+    }
+
+    broadcastTurnResults(encounterRoom, allyTurnResults)
+    {
+        this.io.to(encounterRoom).emit('serverAllyTurnResults', allyTurnResults);
     }
 }
 

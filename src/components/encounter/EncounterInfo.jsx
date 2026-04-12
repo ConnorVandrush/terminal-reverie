@@ -7,10 +7,11 @@ export default function EncounterInfo() {
     const dispatch = useDispatch();
     const encounterInfo = useSelector(state => state.encounter.encounterInfo);
     const currentTarget = useSelector(state => state.encounter.currentTarget);
+    const encounterMessage = useSelector(state => state.encounter.encounterMessage);
 
     function attack()
     {
-        console.log('Attacking target:', currentTarget);
+        window.clientGlobalManager.clientEncounterManager.hideSelectionArrow();
         dispatch({ type: 'encounter/clientAllyTurn', payload: { actionType: 'attack', target: currentTarget } });
     }
 
@@ -27,9 +28,10 @@ export default function EncounterInfo() {
                         <button className={styles.commandButton}>Run</button>
                     </div>
                 );
-            case 'encounterReadout':
+            case 'encounterMessage':
                 return (
-                    <div className={styles.encounterBattleReadout}>
+                    <div className={styles.encounterMessage}>
+                        {encounterMessage}
                     </div>
                 );
             case 'gameOver':

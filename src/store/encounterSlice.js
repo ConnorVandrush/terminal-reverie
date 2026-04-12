@@ -8,7 +8,8 @@ const encounterSlice = createSlice(
         encounterInfo: 'commandSelection',
         enemyInfo: null,
         allyInfo: null,
-        currentTarget: null // { index: number, side: 'ally' | 'enemy' }
+        currentTarget: null, // { index: number, side: 'ally' | 'enemy' }
+        encounterMessage: null
     },
     reducers:
     {
@@ -31,9 +32,14 @@ const encounterSlice = createSlice(
         clientAllyTurn: (state, action) =>
         {
             // emit handled in encounterEmitters.js
+        },
+        setEncounterMessage: (state, action) =>
+        {
+            state.encounterMessage = action.payload;
         }
+
     }
 });
 
-export const { setEncounterInfo, setEnemyInfo, setAllyInfo, setCurrentTarget, clientAllyTurn } = encounterSlice.actions;
+export const { setEncounterInfo, setEnemyInfo, setAllyInfo, setCurrentTarget, clientAllyTurn, setEncounterMessage } = encounterSlice.actions;
 export default encounterSlice.reducer;
