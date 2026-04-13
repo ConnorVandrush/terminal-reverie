@@ -33,15 +33,39 @@ class CharacterData
         return characterData.availableActions.includes(action);
     }
 
-    static attack(characterData, target)
+    static processTurn(characterData, allyAction, enemyList)
     {
-        if (this.checkIfActionAvailable(characterData, "attack"))
+        if (this.checkIfActionAvailable(characterData, allyAction.actionType))
         {
-            const damage = 10; // Fixed damage for simplicity
-            target.currentHp = Math.max(target.currentHp - damage, 0);
-            return damage;
+            switch (allyAction.actionType)
+            {
+                case 'attack':
+                    return this.attack(characterData, enemyList[allyAction.target.index], allyAction.target.index);
+                default:
+                    console.warn(`Unknown action type: ${allyAction.actionType}`);
+                    return false;
+            }
         }
-        return false;
+        else
+        {
+            console.warn(`Action ${allyAction.actionType} is not available for character ${characterData.name}`);
+            return false;
+        }
+    }
+
+    static attack(characterData, target, targetIndex)
+    {
+        const damage = 10; // Fixed damage for simplicity
+        target.currentHp = Math.max(target.currentHp - damage, 0);
+        const turnResults =
+        {
+            actionType: 'attack',
+            playerId: characterData.playerId,
+            targetIndex: targetIndex,
+            damage: damage,
+            encounterMessage: `${characterData.name} attacked ${target.name} ${targetIndex + 1} for ${damage} damage!`
+        };
+        return turnResults;
     }
 }
 

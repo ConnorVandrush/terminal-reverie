@@ -135,14 +135,14 @@ class ServerEncounterManager
                 const thisEncounter = this.ongoingEncounters.get(socket.playerId);
                 const playerData = this.serverPartyManager.serverPlayerManager.playersOnline.get(socket.playerId);
                 allyTurnData.characterData = playerData.characterData;
-                thisEncounter.processAllyTurn(allyTurnData);
+                thisEncounter.processTurn(allyTurnData);
             });
         });
     }
 
-    broadcastTurnResults(encounterRoom, allyTurnResults)
+    broadcastTurnResults(encounterRoom, allyTurnResults, enemyTurnResults)
     {
-        this.io.to(encounterRoom).emit('serverAllyTurnResults', allyTurnResults);
+        this.io.to(encounterRoom).emit('serverTurnResults', allyTurnResults, enemyTurnResults);
     }
 }
 

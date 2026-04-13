@@ -41,22 +41,76 @@ class ClientEncounterManager
         window.clientGlobalManager.dispatchToReact({ type: 'rightPanel/setRightPanel', payload: 'allyInfo' });
     }
 
+    wait(ms)
+    {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     hideSelectionArrow()
     {
         this.target = null;
         window.clientGlobalManager.dispatchToReact({ type: 'encounter/setCurrentTarget', payload: null });
     }
 
+    async processAllyAttackResult(playerId, targetIndex, damage, encounterMessage)
+    {
+        window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterMessage', payload: encounterMessage });
+        const ally = $gameParty.members().find(member => member.actorId() === playerId);
+        const enemy = $gameTroop.members()[targetIndex];
+        await this.wait(300);
+        ally.performAttack();
+        await this.wait(300);
+        enemy.gainHp(-damage);
+        enemy.startDamagePopup();
+        enemy.performDamage();
+        await this.wait(2000);
+        window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterMessage', payload: null });
+    }
+
+    async processEnemyAttackResult(enemyIndex, targetIndex, damage, encounterMessage)
+    {
+        console.log(`enemyIndex: ${enemyIndex}, targetIndex: ${targetIndex}, damage: ${damage}, encounterMessage: ${encounterMessage}`);
+        window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterMessage', payload: encounterMessage });
+        const enemy = $gameTroop.members()[enemyIndex];
+        const enemySprite = BattleManager._spriteset._enemySprites.find(sprite => sprite._enemy === enemy);
+        const ally = $gameParty.members()[targetIndex];
+        enemySprite.startEffect('whiten');
+        await this.wait(300);
+        ally.gainHp(-damage);
+        ally.startDamagePopup();
+        ally.performDamage();
+        await this.wait(2000);
+        window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterMessage', payload: null });
+    }
+
     startListeners()
     {
         this.socket = this.playerManager.socket;
-        this.socket.on('serverAllyTurnResults', (allyTurnResults) =>
+        this.socket.on('serverTurnResults', async (allyTurnResults, enemyTurnResults) =>
         {
-            allyTurnResults.forEach(result => 
+            window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' });
+            await this.wait(500);
+            for (const result of allyTurnResults)
             {
-                window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterMessage', payload: result.encounterMessage });
-                window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' });
-            });
+                const { actionType, playerId, targetIndex, damage, encounterMessage } = result;
+                switch (actionType)
+                {
+                    case 'attack':
+                        await this.processAllyAttackResult(playerId, targetIndex, damage, encounterMessage);
+                        break;
+                }
+            }
+            for (const result of enemyTurnResults)
+            {
+                const { actionType, enemyIndex, targetIndex, damage, encounterMessage } = result;
+                switch (actionType)
+                {
+                    case 'attack':
+                        await this.processEnemyAttackResult(enemyIndex, targetIndex, damage, encounterMessage);
+                        break;
+                }
+            }
+            window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterInfo', payload: 'commandSelection' });
         });
     }
 }

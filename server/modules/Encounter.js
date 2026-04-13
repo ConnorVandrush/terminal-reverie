@@ -10,44 +10,31 @@ class Encounter
         this.room = encounterRoom;
         this.allyTurns = [];
         this.allyTurnResults = [];
+        this.enemyTurnResults = [];
     }
 
-    processAllyTurn(allyTurnData)
+    processTurn(allyTurnData)
     {
         this.allyTurns.push(allyTurnData);
         if (this.allyTurns.length === this.allyList.length)
         {
             for (const allyAction of this.allyTurns)
             {
-                switch (allyAction.actionType)
-                {
-                    case 'attack':
-                        this.processAttack(allyAction);
-                        break;
-                    default:
-                        console.warn(`Unknown action type: ${allyAction.actionType}`);
-                }
+                const allyTurnResult = CharacterData.processTurn(allyAction.characterData, allyAction, this.enemyList);
+                this.allyTurnResults.push(allyTurnResult);
             }
 
-            this.serverEncounterManager.broadcastTurnResults(this.room, this.allyTurnResults);
+            for (const [i, enemy] of this.enemyList.entries())
+            {
+                const enemyTurnResult = enemy.processTurn(this.allyList, i);
+                this.enemyTurnResults.push(enemyTurnResult);
+            }
+
+            this.serverEncounterManager.broadcastTurnResults(this.room, this.allyTurnResults, this.enemyTurnResults);
             this.allyTurns = [];
             this.allyTurnResults = [];
+            this.enemyTurnResults = [];
         }
-    }
-
-    processAttack(allyTurn)
-    {
-        const characterData = allyTurn.characterData;
-        const targetEnemy = this.enemyList[allyTurn.target.index];
-        const damage = CharacterData.attack(characterData, targetEnemy);
-        const turnResults = 
-        {
-            playerId: characterData.playerId,
-            targetIndex: allyTurn.target.index,
-            damage: damage,
-            encounterMessage: `${characterData.name} attacked ${targetEnemy.name} ${allyTurn.target.index + 1} for ${damage} damage!`
-        };
-        this.allyTurnResults.push(turnResults);
     }
 }
 

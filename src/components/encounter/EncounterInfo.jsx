@@ -12,6 +12,7 @@ export default function EncounterInfo() {
     function attack()
     {
         window.clientGlobalManager.clientEncounterManager.hideSelectionArrow();
+        dispatch({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' }); //FIXME
         dispatch({ type: 'encounter/clientAllyTurn', payload: { actionType: 'attack', target: currentTarget } });
     }
 
