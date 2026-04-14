@@ -5,6 +5,7 @@ class Goblin
         this.name = "Goblin";
         this.maxHp = 30;
         this.currentHp = 30;
+        this.experienceReward = 20;
     }
 
     randInt(min, max) 
@@ -24,6 +25,16 @@ class Goblin
             damage, 
             encounterMessage: `${this.name} ${index + 1} attacked ${targetAlly.name} for ${damage} damage!` 
         };
+    }
+
+    rollGoldDrops()
+    {
+        return this.randInt(5, 15);
+    }
+
+    rollItemDrops()
+    {
+        return this.randInt(1, 3);
     }
 
     attack(target)

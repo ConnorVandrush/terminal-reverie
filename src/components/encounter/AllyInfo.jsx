@@ -8,10 +8,21 @@ export default function AllyInfo() {
 
     const currentTarget = useSelector(state => state.encounter.currentTarget);
 
-    const handleAllySelect = (i) => {
-        const payload = { index: i, side: 'ally' };
-        dispatch({ type: 'encounter/setCurrentTarget', payload });
-        window.clientGlobalManager.clientEncounterManager.target = payload;
+    const handleAllySelect = (index) => {
+        const isAlreadySelected =
+            currentTarget?.side === 'ally' &&
+            currentTarget?.index === index;
+
+        if (isAlreadySelected) {
+            // Deselect
+            dispatch({ type: 'encounter/setCurrentTarget', payload: null });
+            window.clientGlobalManager.clientEncounterManager.target = null;
+        } else {
+            // Select
+            const payload = { index, side: 'ally' };
+            dispatch({ type: 'encounter/setCurrentTarget', payload });
+            window.clientGlobalManager.clientEncounterManager.target = payload;
+        }
     };
 
     return (

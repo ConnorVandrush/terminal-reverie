@@ -7,10 +7,15 @@ export default function EncounterInfo() {
     const dispatch = useDispatch();
     const encounterInfo = useSelector(state => state.encounter.encounterInfo);
     const currentTarget = useSelector(state => state.encounter.currentTarget);
-    const encounterMessage = useSelector(state => state.encounter.encounterMessage);
+    const encounterMessages = useSelector(state => state.encounter.encounterMessages);
 
     function attack()
     {
+        if (!currentTarget)        
+        {
+            alert("Please select a target before attacking.");
+            return;
+        }
         window.clientGlobalManager.clientEncounterManager.hideSelectionArrow();
         dispatch({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' }); //FIXME
         dispatch({ type: 'encounter/clientAllyTurn', payload: { actionType: 'attack', target: currentTarget } });
@@ -31,8 +36,10 @@ export default function EncounterInfo() {
                 );
             case 'encounterMessage':
                 return (
-                    <div className={styles.encounterMessage}>
-                        {encounterMessage}
+                    <div className={styles.encounterMessages}>
+                        {encounterMessages.map((message, index) => (
+                            <p key={index}>{message}</p>
+                        ))}
                     </div>
                 );
             case 'gameOver':

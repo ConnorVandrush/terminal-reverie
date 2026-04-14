@@ -5,14 +5,21 @@ const { createEnemy } = require('./Enemies/EnemyRegistry.js');
 
 class ServerEncounterManager 
 {
-    constructor(io, serverPartyManager)
+    constructor(io, serverPlayerManager, serverPartyManager)
     {
         this.io = io;
+        this.serverPlayerManager = serverPlayerManager;
         this.serverPartyManager = serverPartyManager;
+        this.serverMapManager = null; // will be set after serverMapManager is initialized in ServerMain
         this.troops = new Map();
         this.enemies = new Map();
         this.encounterTables = new Map();
         this.ongoingEncounters = new Map(); // playerId -> Encounter instance
+    }
+
+    setServerMapManager(serverMapManager)
+    {
+        this.serverMapManager = serverMapManager;
     }
 
     randInt(min, max) 
@@ -133,16 +140,35 @@ class ServerEncounterManager
             socket.on('clientAllyTurn', (allyTurnData) =>
             {
                 const thisEncounter = this.ongoingEncounters.get(socket.playerId);
-                const playerData = this.serverPartyManager.serverPlayerManager.playersOnline.get(socket.playerId);
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 allyTurnData.characterData = playerData.characterData;
                 thisEncounter.processTurn(allyTurnData);
+            });
+
+            socket.on('clientRequestTransferFromEncounter', (cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const encounter = this.ongoingEncounters.get(socket.playerId);
+                if (encounter)                     
+                {
+                    this.ongoingEncounters.delete(socket.playerId);
+                    playerData.inEncounter = false;
+                }
+                const mapName = playerData.characterData.location.map || 1;
+                const tileset = this.serverMapManager.maps.get(mapName)?.tileset || 1;
+                const mapData = this.serverMapManager.maps.get(mapName)?.mapData || null;
+                const x = playerData.characterData.location.x || 1;
+                const y = playerData.characterData.location.y || 1;
+                const d = playerData.characterData.location.d || 2;
+                const playersOnMap = this.serverPlayerManager.playersOnMaps.get(mapName) || new Map();
+                cb({ success: true, mapData, tileset, x, y, d, playersOnMap: Array.from(playersOnMap.entries()) });
             });
         });
     }
 
-    broadcastTurnResults(encounterRoom, allyTurnResults, enemyTurnResults)
+    broadcastTurnResults(encounterRoom, allyTurnResults, enemyTurnResults, deadAllies, deadEnemies, rewards = null)
     {
-        this.io.to(encounterRoom).emit('serverTurnResults', allyTurnResults, enemyTurnResults);
+        this.io.to(encounterRoom).emit('serverTurnResults', allyTurnResults, enemyTurnResults, deadAllies, deadEnemies, rewards);
     }
 }
 

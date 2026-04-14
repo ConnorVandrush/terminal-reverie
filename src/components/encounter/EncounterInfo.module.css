@@ -53,6 +53,12 @@
   }
 }
 
-.encounterMessage {
+.encounterMessages {
+  width: 100%;
+  overflow-y: auto;
+}
+
+.encounterMessages p {
+  width: 100%;
   margin: 2%;
 }

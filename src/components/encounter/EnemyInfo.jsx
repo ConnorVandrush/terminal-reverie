@@ -8,11 +8,21 @@ export default function EnemyInfo() {
     const enemies = useSelector(state => state.encounter.enemyInfo);
     const currentTarget = useSelector(state => state.encounter.currentTarget);
 
-    const handleEnemySelect = (index) => 
-    {
-        const payload = { index, side: 'enemy' };
-        dispatch({ type: 'encounter/setCurrentTarget', payload });
-        window.clientGlobalManager.clientEncounterManager.target = payload;
+    const handleEnemySelect = (index) => {
+        const isAlreadySelected =
+            currentTarget?.side === 'enemy' &&
+            currentTarget?.index === index;
+
+        if (isAlreadySelected) {
+            // Deselect
+            dispatch({ type: 'encounter/setCurrentTarget', payload: null });
+            window.clientGlobalManager.clientEncounterManager.target = null;
+        } else {
+            // Select
+            const payload = { index, side: 'enemy' };
+            dispatch({ type: 'encounter/setCurrentTarget', payload });
+            window.clientGlobalManager.clientEncounterManager.target = payload;
+        }
     };
 
     return (

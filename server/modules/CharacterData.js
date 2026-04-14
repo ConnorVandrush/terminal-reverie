@@ -55,7 +55,7 @@ class CharacterData
 
     static attack(characterData, target, targetIndex)
     {
-        const damage = 10; // Fixed damage for simplicity
+        const damage = 30; // Fixed damage for simplicity
         target.currentHp = Math.max(target.currentHp - damage, 0);
         const turnResults =
         {

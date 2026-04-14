@@ -29,7 +29,7 @@ const serverPartyManager = new ServerPartyManager(serverManager.io, serverPlayer
 serverPartyManager.startListeners();
 
 const ServerEncounterManager = require('./modules/ServerEncounterManager.js');
-const serverEncounterManager = new ServerEncounterManager(serverManager.io, serverPartyManager);
+const serverEncounterManager = new ServerEncounterManager(serverManager.io, serverPlayerManager, serverPartyManager);
 serverEncounterManager.loadTroops();
 serverEncounterManager.loadEnemies();
 serverEncounterManager.loadEncounterTables();
@@ -39,6 +39,7 @@ const ServerMapManager = require('./modules/ServerMapManager.js');
 const serverMapManager = new ServerMapManager(serverManager.io, serverPlayerManager, serverPartyManager, serverEncounterManager);
 serverMapManager.loadMaps();
 serverMapManager.startListeners();
+serverEncounterManager.setServerMapManager(serverMapManager);
 
 const ServerLoginManager = require('./modules/ServerLoginManager.js');
 const serverLoginManager = new ServerLoginManager(serverManager.publicNamespace, serverManager.io, serverPlayerManager, serverMapManager, serverPartyManager);
