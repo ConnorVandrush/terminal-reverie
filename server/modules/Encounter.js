@@ -1,11 +1,12 @@
 const CharacterData = require('./CharacterData');
+const playerModel = require('./PlayerAccountModel');
 
 class Encounter
 {
     constructor(serverEncounterManager, allyList, enemyList, encounterRoom)
     {
         this.serverEncounterManager = serverEncounterManager;
-        this.allyList = allyList;
+        this.allyList = allyList; // Array of characterData objects
         this.enemyList = enemyList;
         this.room = encounterRoom;
         this.allyTurns = [];
@@ -44,7 +45,13 @@ class Encounter
     {
         if (this.deadAllies.length === this.allyList.length)
         {
-            return 'enemies';
+            this.allyList.forEach(async ally =>
+            {
+                const userData = await playerModel.findOne({ playerId: ally.playerId });
+                userData.isDead = true;
+                await userData.save();
+                this.serverEncounterManager.endEncounter(ally.playerId);
+            });
         }
         else if (this.deadEnemies.length === this.enemyList.length)
         {
@@ -56,6 +63,10 @@ class Encounter
             }, { gold: 0, experience: 0 });
             rewards.gold = Math.floor(rewards.gold / this.allyList.length);
             rewards.experience = Math.floor(rewards.experience / this.allyList.length);
+            this.allyList.forEach(async ally =>
+            {
+                this.serverEncounterManager.endEncounter(ally.playerId);
+            });
             return { rewardMessage: `You are victorious! You earned ${rewards.gold} gold and ${rewards.experience} experience!`, gold: rewards.gold, experience: rewards.experience };
         }
     }

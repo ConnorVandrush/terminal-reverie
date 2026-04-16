@@ -44,9 +44,9 @@ export default function EncounterInfo() {
                 );
             case 'gameOver':
                 return (
-                    <div className={styles.gameOver}>
-                        <h1>{globalThis.playerData.characterData.name} Has Been Vanquished</h1>
-                        <p>Return to the login screen and login again to create a new character.</p>
+                    <div className={styles.gameOverWindow}>
+                        <p>{window.clientGlobalManager.clientPlayerManager.characterData.name} Has Been Vanquished<br />
+                        Return to the login screen and login again to create a new character.</p>
                         <button className={styles.returnToLoginButton} onClick={() => {
                             window.location.reload(true);
                         }}>Return to Login Screen</button>

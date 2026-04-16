@@ -133,6 +133,24 @@ class ServerEncounterManager
         return null;
     }
 
+    endEncounter(playerId)
+    {
+        const encounter = this.ongoingEncounters.get(playerId);
+        if (encounter)                     
+        {
+            const playersInEncounter = encounter ? encounter.allyList.map(ally => ally.playerId) : [];
+            playersInEncounter.forEach(pid => 
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(pid);
+                if (playerData)                
+                {
+                    playerData.inEncounter = false;
+                }
+            });
+            this.ongoingEncounters.delete(playerId);
+        }
+    }
+
     startListeners = () =>
     {
         this.io.on('connection', (socket) =>
@@ -148,12 +166,6 @@ class ServerEncounterManager
             socket.on('clientRequestTransferFromEncounter', (cb) =>
             {
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
-                const encounter = this.ongoingEncounters.get(socket.playerId);
-                if (encounter)                     
-                {
-                    this.ongoingEncounters.delete(socket.playerId);
-                    playerData.inEncounter = false;
-                }
                 const mapName = playerData.characterData.location.map || 1;
                 const tileset = this.serverMapManager.maps.get(mapName)?.tileset || 1;
                 const mapData = this.serverMapManager.maps.get(mapName)?.mapData || null;

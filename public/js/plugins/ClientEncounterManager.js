@@ -77,7 +77,7 @@ class ClientEncounterManager
         {
             $gameParty.members().forEach((member, index) =>
             {
-                if (deadAllies.includes(index))
+                if (deadAllies.includes(index) && member._hp <= 0)
                 {
                     const actor = $gameActors.actor(member.actorId());
                     actor.setHp(0);
@@ -162,7 +162,14 @@ class ClientEncounterManager
                         break;
                 }
             }
-            if (rewards)
+            if (deadAllies.includes(window.clientGlobalManager.clientPartyManager.partyData.members.findIndex(member => member.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId)))
+            {
+                await this.wait(1000);
+                SceneManager.goto(Scene_Gameover);
+                window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterInfo', payload: 'gameOver' });
+                return;
+            }
+            else if (rewards)
             {
                 await this.wait(1000);
                 const characterData = window.clientGlobalManager.clientPartyManager.partyData.members.find(member => member.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
