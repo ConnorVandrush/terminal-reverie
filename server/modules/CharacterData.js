@@ -55,6 +55,11 @@ class CharacterData
 
     static attack(characterData, target, targetIndex)
     {
+        let targetAlreadyDead;
+        if (target.currentHp <= 0)
+        {
+            targetAlreadyDead = true;
+        }
         const damage = 30; // Fixed damage for simplicity
         target.currentHp = Math.max(target.currentHp - damage, 0);
         const turnResults =
@@ -65,6 +70,11 @@ class CharacterData
             damage: damage,
             encounterMessage: `${characterData.name} attacked ${target.name} ${targetIndex + 1} for ${damage} damage!`
         };
+        if (targetAlreadyDead)
+        {
+            turnResults.damage = 0;
+            turnResults.encounterMessage = `${characterData.name} attacked thin air!`;
+        }
         return turnResults;
     }
 }

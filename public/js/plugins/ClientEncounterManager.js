@@ -28,6 +28,7 @@ class ClientEncounterManager
             const enemyInfo = enemyData[index];
             if (enemyInfo) 
             {
+                console.log("enemy hp", enemyInfo.params[0]);
                 enemy._hp = enemyInfo.params[0];
             }
         });
@@ -88,13 +89,10 @@ class ClientEncounterManager
         {
             $gameTroop.members().forEach((enemy, index) =>
             {
-                if (deadEnemies.includes(index))
+                if (deadEnemies.includes(index) && enemy._hp <= 0)
                 {
-                    if (!enemy.isDead())
-                    {
-                        enemy.addState(enemy.deathStateId());
-                        enemy.performCollapse();
-                    }
+                    enemy.addState(enemy.deathStateId());
+                    enemy.performCollapse();
                 }
             });
         }
@@ -175,10 +173,12 @@ class ClientEncounterManager
                 const characterData = window.clientGlobalManager.clientPartyManager.partyData.members.find(member => member.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
                 characterData.gold += rewards.gold;
                 characterData.experience += rewards.experience;
+                const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
+                window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: partyDataClone });
                 window.clientGlobalManager.dispatchToReact({ type: 'encounter/appendEncounterMessage', payload: rewards.rewardMessage });
                 await this.wait(3000);
                 const response = await this.socket.emitWithAck('clientRequestTransferFromEncounter');
-                if (response.success)                
+                if (response.success)
                 {
                     this.updateReactStatsState();
                     window.clientGlobalManager.dispatchToReact({ type: 'encounter/clearEncounterMessages' });
@@ -192,6 +192,11 @@ class ClientEncounterManager
             {
                 window.clientGlobalManager.dispatchToReact({ type: 'encounter/setEncounterInfo', payload: 'commandSelection' });
             }
+        });
+
+        this.socket.on('serverPartyEncounter', (encounter) =>
+        {
+            this.startEncounter(encounter);
         });
     }
 }

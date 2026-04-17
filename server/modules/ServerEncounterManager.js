@@ -95,12 +95,14 @@ class ServerEncounterManager
                     if (!playerData.inEncounter)
                     {
                         playerData.inEncounter = true;
+                        const playerId = playerData.characterData.playerId;
                         let allyList;
                         let encounterRoom;
-                        if (this.serverPartyManager.playerParties.has(playerData.playerId))
+                        if (this.serverPartyManager.playerParties.has(playerId))
                         {
-                            allyList = this.serverPartyManager.playerParties.get(playerData.playerId).members.map(member => member.characterData);
-                            encounterRoom = `party_${this.serverPartyManager.getPartyLeaderId(playerData.playerId)}`;
+                            const party = this.serverPartyManager.playerParties.get(playerId);
+                            allyList = party.members
+                            encounterRoom = `party_${playerId}`;
                         }
                         else
                         {
@@ -157,8 +159,16 @@ class ServerEncounterManager
         {
             socket.on('clientAllyTurn', (allyTurnData) =>
             {
-                const thisEncounter = this.ongoingEncounters.get(socket.playerId);
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                let thisEncounter
+                if (playerData.partyData.partyLeaderId > 0)
+                {
+                    thisEncounter = this.ongoingEncounters.get(playerData.partyData.partyLeaderId);
+                }
+                else
+                {
+                    thisEncounter = this.ongoingEncounters.get(playerData.characterData.playerId);
+                }
                 allyTurnData.characterData = playerData.characterData;
                 thisEncounter.processTurn(allyTurnData);
             });

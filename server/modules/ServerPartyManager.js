@@ -4,6 +4,7 @@ class ServerPartyManager
 {
     constructor(io, serverPlayerManager)
     {
+        // party rooms are `party_${leaderPlayerId}`
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
         this.playerParties = new Map(); // partyLeaderId -> [characterDatas]
@@ -54,8 +55,10 @@ class ServerPartyManager
                 if (this.checkOrthogonalAdjacency(socket.playerId, this.serverPlayerManager.characterNameToId.get(fromPlayerName)))
                 {
                     const fromPlayer = this.serverPlayerManager.playersOnline.get(this.serverPlayerManager.characterNameToId.get(fromPlayerName));
+                    fromPlayer.partyData.partyLeaderId = fromPlayer.characterData.playerId;
                     const fromPlayerSocket = fromPlayer ? fromPlayer.socketId : null;
                     const toPlayer = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                    toPlayer.partyData.partyLeaderId = fromPlayer.characterData.playerId;
                     if (!fromPlayerSocket) 
                     {
                         return cb({ success: false, message: `Player ${fromPlayerName} not found` });

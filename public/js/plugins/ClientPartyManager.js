@@ -29,7 +29,8 @@ class ClientPartyManager
             this.isPartyFollower = false;
             this.isPartyLeader = false;
             this.partyData = partyData;
-            window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: partyData });
+            const frozenReactPartyData = structuredClone(partyData)
+            window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: frozenReactPartyData });
             if (partyData !== null && partyData.members[0].playerId === this.clientPlayerManager.characterData.playerId)
             {
                 this.isPartyLeader = true;

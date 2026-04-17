@@ -129,7 +129,7 @@ class ClientMapManager
             }
         });
 
-        socket.on('serverPartyMoved', (newLocations) =>
+        socket.on('serverPartyMoved', ({ newLocations, inEncounter }) =>
         {
             if (this.isTransferring) return;
             for (const { playerId, newLocation } of newLocations)

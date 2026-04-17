@@ -259,7 +259,12 @@ class ServerMapManager
                     return { playerId: member.playerId, newLocation: memberData.characterData.location };
                 });
 
-                this.io.to(leaderData.characterData.location.map).emit('serverPartyMoved', newLocations );
+                const encounter = await this.serverEncounterManager.rollForEncounter(currentLoc.map, this.getRegion(currentLoc.map, result.newLocation.x, result.newLocation.y), this.maps.get(currentLoc.map).mapData.battleback1Name, leaderData);
+                this.io.to(leaderData.characterData.location.map).emit('serverPartyMoved', { newLocations, inEncounter: leaderData.inEncounter });
+                if (encounter)
+                {
+                    this.io.to(`party_${socket.playerId}`).emit('serverPartyEncounter', encounter);
+                }
             });
 
             socket.on('clientRequestMapTransfer', async (cb) =>
