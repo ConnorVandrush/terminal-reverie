@@ -17,8 +17,15 @@ export default function EncounterInfo() {
             return;
         }
         window.clientGlobalManager.clientEncounterManager.hideSelectionArrow();
-        dispatch({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' }); //FIXME
+        dispatch({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' });
         dispatch({ type: 'encounter/clientAllyTurn', payload: { actionType: 'attack', target: currentTarget } });
+    }
+
+    function defend()
+    {
+        window.clientGlobalManager.clientEncounterManager.hideSelectionArrow();
+        dispatch({ type: 'encounter/setEncounterInfo', payload: 'encounterMessage' });
+        dispatch({ type: 'encounter/clientAllyTurn', payload: { actionType: 'defend' } });
     }
 
     function renderBattleWindow() 
@@ -29,7 +36,7 @@ export default function EncounterInfo() {
                 return (
                     <div className={styles.encounterCommand}>
                         <button className={styles.commandButton} onClick={attack}>Attack</button>
-                        <button className={styles.commandButton}>Defend</button>
+                        <button className={styles.commandButton} onClick={defend}>Defend</button>
                         <button className={styles.commandButton}>Item</button>
                         <button className={styles.commandButton}>Run</button>
                     </div>

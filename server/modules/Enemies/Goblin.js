@@ -1,7 +1,10 @@
-class Goblin
+const Enemy = require('./Enemy');
+
+class Goblin extends Enemy
 {
     constructor()
     {
+        super();
         this.name = "Goblin";
         this.maxHp = 30;
         this.currentHp = 30;
@@ -15,7 +18,7 @@ class Goblin
 
     processTurn(allyList, index)
     {
-        const targetIndex = this.randInt(0, allyList.length - 1);
+        const targetIndex = super.pickLivingTarget(allyList);
         const targetAlly = allyList[targetIndex];
         const damage = this.attack(targetAlly);
         return { 
@@ -39,7 +42,11 @@ class Goblin
 
     attack(target)
     {
-        const damage = 5; // Fixed damage for simplicity
+        let damage = 50; // Fixed damage for simplicity
+        if (target.isDefending)
+        {
+            damage = 0;
+        }
         target.currentHp = Math.max(target.currentHp - damage, 0);
         return damage;
     }

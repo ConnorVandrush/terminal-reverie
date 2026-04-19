@@ -4,6 +4,7 @@ class CharacterData
     {
         this.playerId = null;
         this.isDead = false;
+        this.isDefending = false;
         this.location = { x: 0, y: 0, d: 0, map: '' };
         this.name = '';
         this.freeSteps = 0;
@@ -41,6 +42,8 @@ class CharacterData
             {
                 case 'attack':
                     return this.attack(characterData, enemyList[allyAction.target.index], allyAction.target.index);
+                case 'defend':
+                    return this.defend(characterData);
                 default:
                     console.warn(`Unknown action type: ${allyAction.actionType}`);
                     return false;
@@ -60,7 +63,7 @@ class CharacterData
         {
             targetAlreadyDead = true;
         }
-        const damage = 30; // Fixed damage for simplicity
+        const damage = 5; // Fixed damage for simplicity
         target.currentHp = Math.max(target.currentHp - damage, 0);
         const turnResults =
         {
@@ -76,6 +79,18 @@ class CharacterData
             turnResults.encounterMessage = `${characterData.name} attacked thin air!`;
         }
         return turnResults;
+    }
+
+    static defend(characterData)
+    {
+        characterData.isDefending = true;
+        const turnResults =
+        {
+            actionType: 'defend',
+            playerId: characterData.playerId,
+            encounterMessage: `${characterData.name} defends themselves!`
+        };
+        return turnResults
     }
 }
 

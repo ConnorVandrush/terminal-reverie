@@ -160,6 +160,10 @@ class ServerEncounterManager
             socket.on('clientAllyTurn', (allyTurnData) =>
             {
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                if (playerData.characterData.isDead)
+                {
+                    return;
+                }
                 let thisEncounter
                 if (playerData.partyData.partyLeaderId > 0)
                 {

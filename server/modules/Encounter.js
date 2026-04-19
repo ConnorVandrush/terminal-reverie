@@ -23,17 +23,21 @@ class Encounter
 
     checkForDead()
     {
-        for (const ally of this.allyList)
+        for (const ally of this.allyList) 
         {
-            if (ally.currentHp <= 0)
+            const index = this.allyList.indexOf(ally);
+
+            if (ally.currentHp <= 0 && !this.deadAllies.includes(index)) 
             {
                 ally.isDead = true;
-                this.deadAllies.push(this.allyList.indexOf(ally));
+                this.deadAllies.push(index);
             }
         }
         for (const enemy of this.enemyList)
         {
-            if (enemy.currentHp <= 0 && this.deadEnemies.indexOf(this.enemyList.indexOf(enemy)) === -1)
+            const index = this.enemyList.indexOf(enemy);
+
+            if (enemy.currentHp <= 0 && !this.deadEnemies.includes(index))
             {
                 enemy.isDead = true;
                 this.deadEnemies.push(this.enemyList.indexOf(enemy));
@@ -45,6 +49,8 @@ class Encounter
     {
         if (this.deadAllies.length === this.allyList.length)
         {
+            console.log("dead allies", this.deadAllies.length);
+            console.log("allies", this.allyList.length);
             this.allyList.forEach(async ally =>
             {
                 const userData = await playerModel.findOne({ playerId: ally.playerId });
@@ -52,6 +58,7 @@ class Encounter
                 await userData.save();
                 this.serverEncounterManager.endEncounter(ally.playerId);
             });
+            this.serverEncounterManager.serverPartyManager.playerParties.delete(this.allyList[0].playerId);
         }
         else if (this.deadEnemies.length === this.enemyList.length)
         {
@@ -66,16 +73,30 @@ class Encounter
             this.allyList.forEach(async ally =>
             {
                 this.serverEncounterManager.endEncounter(ally.playerId);
+                if (ally.currentHp <= 0)
+                {
+                    ally.currentHp = 1;
+                    ally.isDead = false;
+                }
             });
             return { rewardMessage: `You are victorious! You earned ${rewards.gold} gold and ${rewards.experience} experience!`, gold: rewards.gold, experience: rewards.experience };
         }
     }
 
+    setupNextTurn()
+    {
+        this.allyList.forEach(ally =>
+        {
+            ally.isDefending = false;
+        });
+    }
+
     processTurn(allyTurnData)
     {
         this.allyTurns.push(allyTurnData);
-        if (this.allyTurns.length === this.allyList.length)
+        if (this.allyTurns.length === (this.allyList.length - this.deadAllies.length))
         {
+            this.setupNextTurn();
             for (const allyAction of this.allyTurns)
             {
                 if (!this.isAbleToAct(allyAction.characterData)) continue;

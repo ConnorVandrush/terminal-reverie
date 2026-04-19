@@ -133,6 +133,12 @@ class ClientEncounterManager
         await this.wait(2000);
     }
 
+    async processAllyDefendResult(playerId, encounterMessage)
+    {
+        window.clientGlobalManager.dispatchToReact({ type: 'encounter/appendEncounterMessage', payload: encounterMessage });
+        await this.wait(2000);
+    }
+
     startListeners()
     {
         this.socket = this.playerManager.socket;
@@ -148,6 +154,9 @@ class ClientEncounterManager
                     case 'attack':
                         await this.processAllyAttackResult(playerId, targetIndex, damage, encounterMessage, deadAllies, deadEnemies);
                         break;
+                    case 'defend':
+                        await this.processAllyDefendResult(playerId, encounterMessage);
+                        break;
                 }
             }
             for (const result of enemyTurnResults)
@@ -160,7 +169,7 @@ class ClientEncounterManager
                         break;
                 }
             }
-            if (deadAllies.includes(window.clientGlobalManager.clientPartyManager.partyData.members.findIndex(member => member.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId)))
+            if (deadAllies.length === this.clientPartyManager.partyData.members.length)
             {
                 await this.wait(1000);
                 SceneManager.goto(Scene_Gameover);
@@ -170,6 +179,15 @@ class ClientEncounterManager
             else if (rewards)
             {
                 await this.wait(1000);
+                const partyData = window.clientGlobalManager.clientPartyManager.partyData.members;
+                console.log("party data", partyData);
+                partyData.forEach(member =>
+                {
+                    if (member.currentHp <= 0)
+                    {
+                        member.currentHp = 1;
+                    }
+                });
                 const characterData = window.clientGlobalManager.clientPartyManager.partyData.members.find(member => member.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
                 characterData.gold += rewards.gold;
                 characterData.experience += rewards.experience;
