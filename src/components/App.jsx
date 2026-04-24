@@ -1,17 +1,19 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import Login from './login/Login';
-import CreateCharacter from './login/CreateCharacter';
-import SpritesheetDisplay from './login/SpritesheetDisplay';
-import ColorCharacter from './login/ColorCharacter';
+import LoginPanel from './ui/left_panel/login/LoginPanel';
+import CreateCharacter from './ui/left_panel/login/CreateCharacter';
+import SpritesheetDisplay from './ui/left_panel/login/SpritesheetDisplay';
+import ColorCharacter from './ui/left_panel/login/ColorCharacter';
 import UserInterface from './ui/UserInterface';
-import ChatWindow from './chat/ChatWindow';
-import PartyWindow from './party/PartyWindow';
-import Stats from './ui/stats/Stats';
+import ChatWindow from './ui/center_panel/chat/ChatWindow';
+import PartyWindow from './ui/center_panel/party/PartyWindow';
+import StatsPanel from './ui/right_panel/stats/StatsPanel';
 import EncounterInfo from './encounter/EncounterInfo';
 import EnemyInfo from './encounter/EnemyInfo';
 import AllyInfo from './encounter/AllyInfo';
+import TradeWindow from './ui/center_panel/trade/TradeWindow'; 
+import InventoryPanel from './ui/right_panel/inventory/InventoryPanel';
 
 export default function App()
 {
@@ -21,7 +23,7 @@ export default function App()
         switch (leftPanel)
         {
             case 'login':
-                return <Login />;
+                return <LoginPanel />;
             case 'createCharacter':
                 return <CreateCharacter />;
             case 'userInterface':
@@ -46,6 +48,8 @@ export default function App()
                 return <PartyWindow />;
             case 'encounterInfo':
                 return <EncounterInfo />;
+            case 'tradeWindow':
+                return <TradeWindow />;
             default:
                 return null;
         }
@@ -58,10 +62,12 @@ export default function App()
         {
             case 'colorCharacter':
                 return <ColorCharacter />;
-            case 'stats':
-                return <Stats />;
+            case 'statsPanel':
+                return <StatsPanel />;
             case 'allyInfo':
                 return <AllyInfo />;
+            case 'inventoryPanel':
+                return <InventoryPanel />;
             default:
                 return null;
         }

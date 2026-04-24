@@ -2,7 +2,6 @@ class Enemy
 {
     constructor()
     {
-
     }
     
     pickLivingTarget(allyList)

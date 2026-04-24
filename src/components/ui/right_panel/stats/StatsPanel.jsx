@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import styles from './Stats.module.css';
+import styles from './StatsPanel.module.css';
 
 
-export default function Stats()
+export default function StatsPanel()
 {
     const { name, level, currentHp, maxHp, experience, gold } = useSelector((state) => state.stats);
 

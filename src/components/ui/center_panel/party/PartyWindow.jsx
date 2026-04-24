@@ -12,7 +12,8 @@ export default function PartyWindow()
     const successMessage = useSelector((state) => state.partyWindow.successMessage);
     const partyData = useSelector((state) => state.partyWindow.partyData);
     const partyInvites = useSelector((state) => state.partyWindow.partyInvites);
-    const playerId = window.clientGlobalManager.clientPlayerManager.characterData.playerId;
+    const characterData = window.clientGlobalManager.clientPlayerManager.characterData
+    const playerId = characterData.playerId;
 
     const invitedPlayerRef = useRef(null);
 
@@ -80,9 +81,11 @@ export default function PartyWindow()
                         ))}
                     </div>
 
+                    {partyData.length > 1 && (
                     <div className={styles.leavePartyButtonContainer}>
                         <button onClick={() => dispatch(clientLeaveParty(partyData.members[0].playerId))}>Leave Party</button>
                     </div>
+                    )}
                 </>
             )}
 

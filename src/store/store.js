@@ -9,6 +9,7 @@ import chatWindowReducer from "./chatWindowSlice";
 import partWindowReducer from "./partyWindowSlice";
 import statsReducer from "./statsSlice";
 import encounterReducer from "./encounterSlice";
+import inventoryReducer from "./inventorySlice";
 
 export const store = configureStore(
 {
@@ -23,6 +24,7 @@ export const store = configureStore(
         partyWindow: partWindowReducer,
         stats: statsReducer,
         encounter: encounterReducer,
+        inventory: inventoryReducer
     },
     middleware: (getDefault) =>
     getDefault(

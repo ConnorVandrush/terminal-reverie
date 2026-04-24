@@ -28,7 +28,6 @@ class ClientEncounterManager
             const enemyInfo = enemyData[index];
             if (enemyInfo) 
             {
-                console.log("enemy hp", enemyInfo.params[0]);
                 enemy._hp = enemyInfo.params[0];
             }
         });
@@ -180,7 +179,6 @@ class ClientEncounterManager
             {
                 await this.wait(1000);
                 const partyData = window.clientGlobalManager.clientPartyManager.partyData.members;
-                console.log("party data", partyData);
                 partyData.forEach(member =>
                 {
                     if (member.currentHp <= 0)
@@ -202,7 +200,7 @@ class ClientEncounterManager
                     window.clientGlobalManager.dispatchToReact({ type: 'encounter/clearEncounterMessages' });
                     window.clientGlobalManager.dispatchToReact({ type: 'centerPanel/setCenterPanel', payload: null });
                     window.clientGlobalManager.dispatchToReact({ type: 'leftPanel/setLeftPanel', payload: 'userInterface' });
-                    window.clientGlobalManager.dispatchToReact({ type: 'rightPanel/setRightPanel', payload: 'stats' });
+                    window.clientGlobalManager.dispatchToReact({ type: 'rightPanel/setRightPanel', payload: 'statsPanel' });
                     window.clientGlobalManager.clientMapManager.transferToMap(response.mapData, response.tileset, response.x, response.y, response.d, response.playersOnMap);
                 }
             }

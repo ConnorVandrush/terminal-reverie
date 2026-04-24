@@ -13,7 +13,7 @@ class CharacterData
         this.gold = 0;
         this.maxHp = 100;
         this.currentHp = this.maxHp;
-        this.inventory = {};
+        this.inventory = {}
         this.appearance = 
         {
             template: null,
@@ -63,7 +63,7 @@ class CharacterData
         {
             targetAlreadyDead = true;
         }
-        const damage = 5; // Fixed damage for simplicity
+        const damage = 15; // Fixed damage for simplicity
         target.currentHp = Math.max(target.currentHp - damage, 0);
         const turnResults =
         {

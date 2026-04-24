@@ -5,8 +5,8 @@
     flex-direction: column;
 }
 
-.character,
-.interaction {
+.top9,
+.bottom9 {
     flex: 1;
     display: grid;
     grid-template-areas:

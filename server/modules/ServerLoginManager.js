@@ -6,13 +6,14 @@ const PlayerData = require('./PlayerData.js');
 
 class ServerLoginManager
 {
-    constructor(publicNamespace, io, serverPlayerManager, serverMapManager, serverPartyManager)
+    constructor(publicNamespace, io, serverPlayerManager, serverMapManager, serverPartyManager, serverInventoryManager)
     {
         this.publicNamespace = publicNamespace;
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
         this.serverMapManager = serverMapManager;
         this.serverPartyManager = serverPartyManager;
+        this.serverInventoryManager = serverInventoryManager
         this.tokenTimeouts = new Map(); // playerId -> timeoutId for token invalidation after disconnect
     }
 
@@ -68,6 +69,10 @@ class ServerLoginManager
                         existingUser.characterData.location.y = 128;
                         existingUser.characterData.location.d = 2;
                         existingUser.characterData.location.map = 'Town1';
+                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 1, 1) // add 1 herb
+                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 2, 2)
+                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 3, 3)
+                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 4, 4)
                         existingUser.characterData.isDead = false;
                         existingUser.isDead = false;
                         existingUser.markModified('characterData');

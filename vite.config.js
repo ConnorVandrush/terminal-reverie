@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': '/src',
         '@store': '/src/store',
+        '@data': '/public/data',
       }
     }
   };

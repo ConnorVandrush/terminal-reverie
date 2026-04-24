@@ -49,8 +49,6 @@ class Encounter
     {
         if (this.deadAllies.length === this.allyList.length)
         {
-            console.log("dead allies", this.deadAllies.length);
-            console.log("allies", this.allyList.length);
             this.allyList.forEach(async ally =>
             {
                 const userData = await playerModel.findOne({ playerId: ally.playerId });
@@ -79,7 +77,7 @@ class Encounter
                     ally.isDead = false;
                 }
             });
-            return { rewardMessage: `You are victorious! You earned ${rewards.gold} gold and ${rewards.experience} experience!`, gold: rewards.gold, experience: rewards.experience };
+            return { rewardMessage: `You are victorious! You gained ${rewards.gold} gold and ${rewards.experience} experience!`, gold: rewards.gold, experience: rewards.experience };
         }
     }
 

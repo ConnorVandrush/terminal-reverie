@@ -42,7 +42,7 @@ class Goblin extends Enemy
 
     attack(target)
     {
-        let damage = 50; // Fixed damage for simplicity
+        let damage = 10; // Fixed damage for simplicity
         if (target.isDefending)
         {
             damage = 0;

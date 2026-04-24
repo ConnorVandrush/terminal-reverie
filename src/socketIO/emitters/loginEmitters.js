@@ -32,7 +32,10 @@ export default async function loginEmitters(store, action)
                 maxHp: response.characterData.maxHp
             }
             store.dispatch(setStats(stats));
-            store.dispatch({ type: 'rightPanel/setRightPanel', payload: 'stats' });
+            store.dispatch({ type: 'rightPanel/setRightPanel', payload: 'statsPanel' });
+            const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
+            store.dispatch({ type: 'partyWindow/setPartyData', payload: partyDataClone });
+            store.dispatch({ type: 'inventory/setInventory', payload: response.characterData.inventory });
         }
     }
 

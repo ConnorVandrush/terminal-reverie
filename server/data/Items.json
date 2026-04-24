@@ -1,0 +1,6 @@
+{
+    "1": { "name": "Herb", "effects": { "restoreHP": 25 }, "description": "Restores 25% of max HP", "quantity": 0 },
+    "2": { "name": "Ointment", "effects": { "restoreHP": 50 }, "description": "Restores 50% of max HP", "quantity": 0 },
+    "3": { "name": "Potion", "effects": { "restoreHP": 75 }, "description": "Restores 75% of max HP", "quantity": 0 },
+    "4": { "name": "Shot", "effects": { "restoreHP": 100 }, "description": "Restores 100% of max HP", "quantity": 0 }
+}

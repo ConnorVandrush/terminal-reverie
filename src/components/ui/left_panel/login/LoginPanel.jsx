@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import styles from './Login.module.css';
+import styles from './LoginPanel.module.css';
 import { clientLogin, clientRegister } from "@store/loginSlice";
 
-export default function Login()
+export default function LoginPanel()
 {
     const dispatch = useDispatch();
 
