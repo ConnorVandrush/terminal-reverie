@@ -8,6 +8,7 @@ const partyWindowSlice = createSlice(
         partyData: null,
         errorMessage: null,
         successMessage: null,
+        selectedPartyMember: null,
         partyInvites: [],
     },
     reducers:
@@ -63,8 +64,12 @@ const partyWindowSlice = createSlice(
         {
             // emit handled in partyWindowEmitters.js
         },
+        setSelectedPartyMember: (state, action) =>
+        {
+            state.selectedPartyMember = action.payload;
+        }
     },
 });
 
-export const { clientSendPartyInvite, setParty, setErrorMessage, setSuccessMessage, addPartyInvite, removePartyInvite, clientAcceptPartyInvite, serverSendPartyInvite, clientLeaveParty, clientKickPartyMember, updatePartyData } = partyWindowSlice.actions;
+export const { clientSendPartyInvite, setParty, setErrorMessage, setSuccessMessage, addPartyInvite, removePartyInvite, clientAcceptPartyInvite, serverSendPartyInvite, clientLeaveParty, clientKickPartyMember, updatePartyData, setSelectedPartyMember } = partyWindowSlice.actions;
 export default partyWindowSlice.reducer;

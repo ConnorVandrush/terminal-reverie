@@ -100,7 +100,7 @@ class ClientEncounterManager
     async processAllyAttackResult(playerId, targetIndex, damage, encounterMessage, deadAllies, deadEnemies)
     {
         window.clientGlobalManager.dispatchToReact({ type: 'encounter/appendEncounterMessage', payload: encounterMessage });
-        const index = window.clientGlobalManager.clientPartyManager.partyData.members.findIndex(member => member.playerId === playerId)
+        const index = window.clientGlobalManager.clientPartyManager.findPartyIndex(playerId)
         const ally = $gameParty.members()[index];
         const enemy = $gameTroop.members()[targetIndex];
         await this.wait(300);

@@ -21,6 +21,11 @@ class ClientPartyManager
         }
     }
 
+    findPartyIndex(playerId)
+    {
+        return window.clientGlobalManager.clientPartyManager.partyData.members.findIndex(member => member.playerId === playerId)
+    }
+
     startListeners()
     {
         const socket = this.clientPlayerManager.socket;

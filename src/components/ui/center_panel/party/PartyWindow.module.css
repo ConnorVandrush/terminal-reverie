@@ -73,3 +73,17 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.itemDescription {
+  margin-top: auto;
+  align-self: center;
+  padding: 2%;
+}
+
+.selectedPartyMember {
+  background: #0f0f5a;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-shadow: 1px 1px 2px #000;
+}

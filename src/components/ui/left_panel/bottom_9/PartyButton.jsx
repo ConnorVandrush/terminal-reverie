@@ -13,6 +13,7 @@ export default function InviteToPartyButton() {
         if (centerPanelState === 'partyWindow')
         {
             dispatch(setCenterPanel(null));
+            dispatch({ type: 'inventory/setSelectedItem', payload: null });
         }
         else
         {

@@ -17,13 +17,9 @@ const inventorySlice = createSlice(
         setSelectedItem: (state, action) => 
         {
             state.selectedItem = action.payload;
-        },
-        clearSelectedItem: (state) => 
-        {
-            state.selectedItem = null;
         }
     }
 });
 
-export const { setInventory, setSelectedItem, clearSelectedItem } = inventorySlice.actions;
+export const { setInventory, setSelectedItem } = inventorySlice.actions;
 export default inventorySlice.reducer;

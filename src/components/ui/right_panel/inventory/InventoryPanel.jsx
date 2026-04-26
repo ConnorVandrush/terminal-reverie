@@ -17,18 +17,19 @@ export default function InventoryPanel()
 
         if (isAlreadySelected) 
         {
-            dispatch({ type: 'inventory/clearSelectedItem' });
+            dispatch({ type: 'inventory/setSelectedItem', payload: null });
+            dispatch({ type: 'partyWindow/setSelectedPartyMember', payload: null });
         } 
         else 
         {
             dispatch({ type: 'inventory/setSelectedItem', payload: { id, item } });
+            dispatch({ type: 'centerPanel/setCenterPanel', payload: 'partyWindow' });
+            dispatch({ type: 'partyWindow/setSelectedPartyMember', payload: window.clientGlobalManager.clientPartyManager.findPartyIndex(window.clientGlobalManager.clientPlayerManager.characterData.playerId) });
         }
     };
 
     return (
         <div className={styles.inventory}>
-            <h3>Inventory</h3>
-
             <ul className={styles.itemList}>
                 {entries.map(([id, item]) => {
                     const isSelected = selectedItem?.id === Number(id);
