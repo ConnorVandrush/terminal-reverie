@@ -7,9 +7,9 @@ import centerPanelReducer from "./centerPanelSlice";
 import rightPanelReducer from "./rightPanelSlice";
 import chatWindowReducer from "./chatWindowSlice";
 import partWindowReducer from "./partyWindowSlice";
-import statsReducer from "./statsSlice";
 import encounterReducer from "./encounterSlice";
 import inventoryReducer from "./inventorySlice";
+import { rightPanelListener } from "./listeners/rightPanelListeners";
 
 export const store = configureStore(
 {
@@ -22,7 +22,6 @@ export const store = configureStore(
         rightPanel: rightPanelReducer,
         chatWindow: chatWindowReducer,
         partyWindow: partWindowReducer,
-        stats: statsReducer,
         encounter: encounterReducer,
         inventory: inventoryReducer
     },
@@ -35,7 +34,9 @@ export const store = configureStore(
                 ignoredPaths: ['createCharacter.createCharacterCB'], // Ignore the createCharacterCB field in the state for serializability checks
             }
         }
-    ).concat(middleware),
+    )
+    .prepend(rightPanelListener.middleware)
+    .concat(middleware),
 });
 
 export default store;

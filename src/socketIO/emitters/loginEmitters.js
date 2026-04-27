@@ -1,5 +1,4 @@
 import { clientLogin, clientRegister } from "@/store/loginSlice.js";
-import { setStats } from "@/store/statsSlice.js";
 
 export default async function loginEmitters(store, action)
 {
@@ -31,11 +30,10 @@ export default async function loginEmitters(store, action)
                 currentHp: response.characterData.currentHp,
                 maxHp: response.characterData.maxHp
             }
-            store.dispatch(setStats(stats));
-            store.dispatch({ type: 'rightPanel/setRightPanel', payload: 'statsPanel' });
             const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
             store.dispatch({ type: 'partyWindow/setPartyData', payload: partyDataClone });
             store.dispatch({ type: 'inventory/setInventory', payload: response.characterData.inventory });
+            store.dispatch({ type: 'rightPanel/setRightPanel', payload: null });
         }
     }
 

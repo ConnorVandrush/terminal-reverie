@@ -6,24 +6,25 @@ import styles from './StatsPanel.module.css';
 
 export default function StatsPanel()
 {
-    const { name, level, currentHp, maxHp, experience, gold } = useSelector((state) => state.stats);
+    const partyData = useSelector((state) => state.partyWindow.partyData);
+    const characterData = partyData.members.find(member => member.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
 
     return (
         <div className={styles.stats}>
             <div className={styles.name}>
-                {name}
+                {characterData.name}
             </div>
             <div className={styles.level}>
-                Level: {level}
+                Level: {characterData.level}
             </div>
             <div className={styles.experience}>
-                XP: {experience}
+                XP: {characterData.experience}
             </div>
             <div className={styles.gold}>
-                Gold: {gold}
+                Gold: {characterData.gold}
             </div>
             <div className={styles.health}>
-                HP: {currentHp}/{maxHp}
+                HP: {characterData.currentHp}/{characterData.maxHp}
             </div>
         </div>
     )

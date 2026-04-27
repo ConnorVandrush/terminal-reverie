@@ -65,12 +65,6 @@ class ClientEncounterManager
         });
     }
 
-    updateReactStatsState()
-    {
-        const characterData = this.clientPartyManager.partyData.members.find(member => member.playerId === this.playerManager.characterData.playerId);
-        window.clientGlobalManager.dispatchToReact({ type: 'stats/setStats', payload: { level: characterData.level, experience: characterData.experience, gold: characterData.gold, currentHp: characterData.currentHp, maxHp: characterData.maxHp } });
-    }
-
     checkIfDead(deadAllies, deadEnemies)
     {
         if (deadAllies.length > 0)
@@ -197,7 +191,6 @@ class ClientEncounterManager
                 const response = await this.socket.emitWithAck('clientRequestTransferFromEncounter');
                 if (response.success)
                 {
-                    this.updateReactStatsState();
                     window.clientGlobalManager.dispatchToReact({ type: 'encounter/clearEncounterMessages' });
                     window.clientGlobalManager.dispatchToReact({ type: 'centerPanel/setCenterPanel', payload: null });
                     window.clientGlobalManager.dispatchToReact({ type: 'leftPanel/setLeftPanel', payload: 'userInterface' });

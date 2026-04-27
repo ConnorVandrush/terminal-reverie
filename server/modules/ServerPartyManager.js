@@ -5,7 +5,7 @@ class ServerPartyManager
         // party rooms are `party_${leaderPlayerId}`
         this.io = io;
         this.serverPlayerManager = serverPlayerManager;
-        this.playerParties = new Map(); // partyLeaderId -> [characterDatas]
+        this.playerParties = new Map(); // partyLeaderId -> {members: [characterDatas]}
     }
 
     checkOrthogonalAdjacency(playerId1, playerId2)
@@ -24,6 +24,28 @@ class ServerPartyManager
 
         // Same tile OR orthogonally adjacent
         return (dx === 0 && dy === 0) || (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
+    }
+
+    clearPartyData(playerData)
+    {
+        playerData.partyData =
+        {
+            partyLeaderId: null,
+            members: []
+        }
+    }
+
+    updatePartyData(partyData, partyLeaderId, members)
+    {
+        for (const member of partyData.members)
+        {
+            const playerData = this.serverPlayerManager.playersOnline.get(member.playerId)
+            playerData.partyData = 
+            {
+                partyLeaderId: partyLeaderId,
+                members: members
+            }
+        }
     }
 
     startListeners()
@@ -83,6 +105,8 @@ class ServerPartyManager
                             socket.join(`party_${partyLeaderId}`);
                         }
                         fromPlayer.preventMovement = true;
+                        const partyData = this.playerParties.get(partyLeaderId);
+                        this.updatePartyData(partyData, partyLeaderId, partyData.members);
                         cb({ success: true });
                         this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', this.playerParties.get(partyLeaderId));
                     }
@@ -126,7 +150,9 @@ class ServerPartyManager
                 {
                     this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', null);
                     this.io.in(`party_${partyLeaderId}`).socketsLeave('party_' + partyLeaderId);
+                    this.updatePartyData(partyData, null, [])
                     this.playerParties.delete(partyLeaderId);
+                    this.clearPartyData(playerData);
                     cb({ success: true, message: 'You have left the party. The party has been disbanded since there was only one member left.' });
                 }
                 else if (partyLeaderId === socket.playerId && partyData.members.length > 1)
@@ -137,12 +163,15 @@ class ServerPartyManager
                     this.io.in(`party_${partyLeaderId}`).socketsJoin('party_' + newLeaderId);
                     this.io.in(`party_${partyLeaderId}`).socketsLeave('party_' + partyLeaderId);
                     partyLeaderId = newLeaderId;
+                    this.clearPartyData(playerData);
+                    this.updatePartyData(partyData, partyLeaderId, partyData.members)
                     cb({ success: true, message: 'You have left the party. A new leader has been assigned.' });
                     this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', partyData);
                 }
                 else if (partyData.members.length > 1)
                 {
-
+                    this.clearPartyData(playerData);
+                    this.updatePartyData(partyData, partyLeaderId, partyData.members)
                     cb({ success: true, message: 'You have left the party' });
                     this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', partyData);
                 }

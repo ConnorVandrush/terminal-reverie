@@ -3,9 +3,12 @@ const path = require('path');
 
 class ServerInventoryManager
 {
-    constructor()
+    constructor(io, serverPlayerManager, serverPartyManager)
     {
-        this.items = new Map()
+        this.io = io;
+        this.serverPlayerManager = serverPlayerManager;
+        this.serverPartyManager = serverPartyManager;
+        this.items = new Map();
     }
 
     loadItems()
@@ -42,8 +45,86 @@ class ServerInventoryManager
         };
     }
 
+    useItem(playerData, itemId, targetMemberId, partyData) 
+    {
+        const characterData = playerData.characterData
+        const inventory = characterData.inventory;
+        const key = String(itemId);
+        let itemUsed = false;
+
+        // 1. Validate inventory
+        if (!inventory[key] || inventory[key].quantity <= 0) {
+            return { success: false, error: "Item not in inventory" };
+        }
+
+        // 2. Validate item definition
+        const itemDef = this.items.get(itemId);
+        if (!itemDef) 
+        {
+            return { success: false, error: "Invalid item ID" };
+        }
+
+        // 3. Determine target (self or party member)
+        let target = characterData;
+        if (partyData) 
+        {
+            target = partyData.members.get(targetMemberId);
+            if (!target) 
+            {
+                return { success: false, error: "Invalid party member" };
+            }
+        }
+
+        // 4. Apply effects
+        if (itemDef.effects.restoreHP && target.currentHp < target.maxHp) {
+            const percent = itemDef.effects.restoreHP; // e.g. 25
+            const maxHp = target.maxHp;
+
+            const amount = Math.floor(maxHp * (percent / 100));
+
+            target.currentHp = Math.min(
+                maxHp,
+                target.currentHp + amount
+            );
+
+            itemUsed = true;
+        }
+
+        // 5. Remove item from inventory
+        if (itemUsed)
+        {
+            inventory[key].quantity -= 1;
+            if (inventory[key].quantity <= 0) {
+                delete inventory[key];
+            }
+        }
+
+        // 6. Return updated data
+        return {
+            success: true,
+            itemUsed: itemDef,
+            targetId: targetMemberId,
+            updatedInventory: inventory,
+            updatedTarget: target
+        };
+    }
+
     startListeners()
     {
+        this.io.on('connection', (socket) =>
+        {
+            socket.on('clientUseItem', ({ selectedItem, selectedPartyMemberId }, cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const partyData = this.serverPartyManager.playerParties.get(playerData.partyData.partyLeaderId);
+                const result = this.useItem(playerData, selectedItem.id, selectedPartyMemberId, partyData);
+                if (partyData)
+                {
+                    this.io.to('party_${playerData.partyData.partyLeaderId}').emit("serverPartyStatusUpdate", { partyData });
+                }
+                cb(result);
+            });
+        });
     }
 }
 
