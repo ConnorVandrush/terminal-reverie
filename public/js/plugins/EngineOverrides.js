@@ -38,17 +38,59 @@ Game_Interpreter.prototype.command201 = function()
 };
 
 // Override Sprite_Character to use the custom bitmap if it exists
-const _setBitmap = Sprite_Character.prototype.setCharacterBitmap;
+// ============================================================================
+// 1. Override setCharacterBitmap to use _customBitmap when present
+// ============================================================================
+const _Sprite_Character_setCharacterBitmap = Sprite_Character.prototype.setCharacterBitmap;
 Sprite_Character.prototype.setCharacterBitmap = function() {
-    const character = this._character;
+    const custom = this._character && this._character._customBitmap;
 
-    if (character && character._customBitmap) {
-        this.bitmap = character._customBitmap;
-        this._isBigCharacter = true;
+    // No custom bitmap → use default engine behavior
+    if (!custom) {
+        _Sprite_Character_setCharacterBitmap.call(this);
+        return;
+    }
+
+    // Custom bitmap exists but isn't ready yet → wait for it
+    if (!custom.isReady()) {
+        custom.addLoadListener(() => {
+            this.applyCustomCharacterBitmap(custom);
+        });
     } else {
-        _setBitmap.call(this);
+        this.applyCustomCharacterBitmap(custom);
     }
 };
+
+// ============================================================================
+// 2. Apply the custom bitmap safely (async‑safe, race‑proof)
+// ============================================================================
+Sprite_Character.prototype.applyCustomCharacterBitmap = function(bitmap) {
+    this.bitmap = bitmap;
+
+    // Big-character sheet ($ prefix)
+    this._isBigCharacter = true;
+
+    // Force PIXI to rebuild the GPU texture
+    if (this.bitmap.touch) {
+        this.bitmap.touch();
+    }
+
+    // Now that texture is valid, update the animation frame
+    this._refresh();
+    this.updateFrame();
+};
+
+// ============================================================================
+// 3. Guard updateFrame so the engine never crashes on undefined bitmap
+// ============================================================================
+const _Sprite_Character_updateFrame = Sprite_Character.prototype.updateFrame;
+Sprite_Character.prototype.updateFrame = function() {
+    if (!this.bitmap || !this.bitmap.isReady()) {
+        return; // Skip until bitmap is valid
+    }
+    _Sprite_Character_updateFrame.call(this);
+};
+
 // Override ImageManager.loadCharacter to prevent loading character sprites from disk, we handle this ourselves in ClientPlayerManager when we recolor the spritesheet and create a custom bitmap for the player.
 const _loadCharacter = ImageManager.loadCharacter;
 ImageManager.loadCharacter = function(filename) {
@@ -249,4 +291,14 @@ BattleManager.endBattle = function(result) {
         // do nothing — prevent default map return
     };
     _BattleManager_endBattle.call(this, result);
+};
+
+// Sync RMMZ gold amount
+const _Scene_Shop_create = Scene_Shop.prototype.create;
+Scene_Shop.prototype.create = function() {
+    _Scene_Shop_create.call(this);
+
+    // Sync gold immediately when the shop opens
+    window.clientGlobalManager.clientShopManager.syncGold();
+    window.clientGlobalManager.clientShopManager.syncPossesions();
 };

@@ -9,6 +9,7 @@ class ClientGlobalManager
         this.clientMapManager = null;
         this.clientPartyManager = null;
         this.clientEncounterManager = null;
+        this.clientShopManager = null;
     }
 }
 

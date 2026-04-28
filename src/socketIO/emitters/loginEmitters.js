@@ -21,15 +21,6 @@ export default async function loginEmitters(store, action)
             window.clientGlobalManager.clientPlayerManager.publicNamespace.disconnect();
             store.dispatch({ type: 'leftPanel/setLeftPanel', payload: 'userInterface' });
             store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
-            const stats = 
-            {
-                name: response.characterData.name,
-                level: response.characterData.level,
-                experience: response.characterData.experience,
-                gold: response.characterData.gold,
-                currentHp: response.characterData.currentHp,
-                maxHp: response.characterData.maxHp
-            }
             const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
             store.dispatch({ type: 'partyWindow/setPartyData', payload: partyDataClone });
             store.dispatch({ type: 'inventory/setInventory', payload: response.characterData.inventory });

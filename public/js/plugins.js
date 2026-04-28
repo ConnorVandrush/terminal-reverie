@@ -11,5 +11,7 @@ var $plugins =
 {"name":"ClientMapManager","status":true,"description":"","parameters":{}},
 {"name":"ClientPartyManager","status":true,"description":"","parameters":{}},
 {"name":"ClientEncounterManager","status":true,"description":"","parameters":{}},
-{"name":"ClientMain","status":true,"description":"","parameters":{}}
+{"name":"ClientShopManager","status":true,"description":"","parameters":{}},
+{"name":"ClientMain","status":true,"description":"","parameters":{}},
+{"name":"WindowStyling","status":true,"description":"Retro NES-style window skin (message, shop, menu, etc.)","parameters":{}}
 ];

@@ -1,62 +1,45 @@
 /*:
  * @target MZ
- * @plugindesc [RPG Maker MZ] [Version 1.0]
- * @author Gamer Tool Studio
- * @help This plugin allows the game to continue running even when the window loses
- * focus or is minimized.
+ * @plugindesc [RPG Maker MZ] Continue running when unfocused without speeding up (safe timing).
+ * @author Connor
  */
 
 (() => {
-    let gameStarted = false;
-    let lastTime = performance.now();
-    const frameDuration = 10000 / 60; // 16.67 milliseconds per frame
+    "use strict";
 
-    // Override document.hasFocus to always return true
-    document.hasFocus = function() {
-        return true;
-    };
+    // ------------------------------------------------------------
+    // 1. Override document.hidden and document.visibilityState
+    //    so the engine never thinks the tab is inactive.
+    // ------------------------------------------------------------
 
-    // Override document.hidden to always return false
     Object.defineProperty(document, "hidden", {
-        get: function() {
-            return false;
-        }
+        get: () => false
     });
 
-    // Hook into Scene_Map to detect when the game has started
-    const originalSceneMapStart = Scene_Map.prototype.start;
-    Scene_Map.prototype.start = function() {
-        originalSceneMapStart.call(this);
-        if (!gameStarted) {
-            gameStarted = true;
-            startGameUpdateLoop();
-        }
+    Object.defineProperty(document, "visibilityState", {
+        get: () => "visible"
+    });
+
+    // ------------------------------------------------------------
+    // 2. Override document.hasFocus so the engine thinks we're active
+    // ------------------------------------------------------------
+
+    document.hasFocus = () => true;
+
+    // ------------------------------------------------------------
+    // 3. Override Graphics._isFullScreen to prevent throttling
+    // ------------------------------------------------------------
+
+    Graphics._isFullScreen = function() {
+        return document.fullscreenElement != null;
     };
 
-    function startGameUpdateLoop() {
-        function gameUpdate() {
-            if (SceneManager && SceneManager._scene) {
-                const now = performance.now();
-                const deltaTime = now - lastTime;
+    // ------------------------------------------------------------
+    // 4. DO NOT override SceneManager.updateMain
+    //    DO NOT create a second game loop
+    //    DO NOT touch requestAnimationFrame
+    //
+    //    The engine's built-in loop stays intact.
+    // ------------------------------------------------------------
 
-                if (deltaTime >= frameDuration) {
-                    lastTime += frameDuration;
-                    SceneManager.updateMain();
-                } else {
-                    lastTime = now;
-                }
-            }
-            requestAnimationFrame(gameUpdate); // Use requestAnimationFrame for accurate timing
-        }
-        requestAnimationFrame(gameUpdate);
-    }
-
-    // Ensure the game loop continues to run without affecting the timing
-    const originalSceneManagerUpdateMain = SceneManager.updateMain;
-    SceneManager.updateMain = function() {
-        if (gameStarted) {
-            this._stopped = false;
-        }
-        originalSceneManagerUpdateMain.call(this);
-    };
 })();
