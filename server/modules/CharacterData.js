@@ -63,7 +63,7 @@ class CharacterData
         {
             targetAlreadyDead = true;
         }
-        const damage = 15; // Fixed damage for simplicity
+        const damage = 150; // Fixed damage for simplicity
         target.currentHp = Math.max(target.currentHp - damage, 0);
         const turnResults =
         {

@@ -7,7 +7,7 @@ class ClientShopManager
         const _doBuy = Scene_Shop.prototype.doBuy;
         Scene_Shop.prototype.doBuy = function(number) 
         {
-            window.socket.emitWithAck("clientBuyItem", 
+            window.clientGlobalManager.clientPlayerManager.socket.emitWithAck("clientBuyItem", 
             {
                 itemId: this._item.id,
                 quantity: number
@@ -15,10 +15,11 @@ class ClientShopManager
             {
                 if (response.success) 
                 {
-                    //globalThis.playerData.characterStats.gold = response.buyerGold;
-                    //globalThis.playerData.characterStats.inventory = response.buyerInventory;
-                    //window.dispatchToReact?.({type: "inventory/setInventory", payload: response.buyerInventory});
-                    //window.dispatchToReact?.({type: "stats/setGold", payload: response.buyerGold});
+                    window.clientGlobalManager.clientPlayerManager.updatePlayerCharacterData(response.characterData);
+                }
+                else
+                {
+                    return;
                 }
             });
             _doBuy.call(this, number);

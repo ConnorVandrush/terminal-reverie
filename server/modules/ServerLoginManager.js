@@ -70,15 +70,6 @@ class ServerLoginManager
                         existingUser.characterData.location.d = 2;
                         existingUser.characterData.location.map = 'Town1';
                         this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 1, 1) // add 1 herb
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 2, 2)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 3, 3)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 4, 4)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 5, 5)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 6, 6)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 7, 7)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 8, 8)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 9, 9)
-                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 10, 10)
                         existingUser.characterData.isDead = false;
                         existingUser.isDead = false;
                         existingUser.markModified('characterData');

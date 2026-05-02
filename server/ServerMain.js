@@ -42,8 +42,9 @@ serverMapManager.startListeners();
 serverEncounterManager.setServerMapManager(serverMapManager);
 
 const ServerInventoryManager = require('./modules/ServerInventoryManager.js');
-const serverInventoryManager = new ServerInventoryManager(serverManager.io, serverPlayerManager, serverPartyManager);
+const serverInventoryManager = new ServerInventoryManager(serverManager.io, serverPlayerManager, serverPartyManager, serverMapManager);
 serverInventoryManager.loadItems();
+serverInventoryManager.loadShops();
 serverInventoryManager.startListeners();
 
 const ServerLoginManager = require('./modules/ServerLoginManager.js');

@@ -39,9 +39,7 @@
   border-radius: 12px;
   image-rendering: pixelated;
 
-  transform: scale(0.95);
-  opacity: 0;
-  animation: panelPop 0.35s ease-out forwards;
+
 }
 
 .itemButton:hover {
@@ -53,25 +51,15 @@
   box-shadow:
     inset 0 0 0 4px #000000,
     0 0 0 2px #000000;
-  transform: scale(0.92);
+  transform: scale(0.95);
 }
 
 .selected:hover {
   background: #0f0f5a; /* same as selected */
-  transform: scale(0.92); /* same as selected */
+  transform: scale(0.95); /* same as selected */
   cursor: default; /* optional: no pointer change */
 }
 
-@keyframes panelPop {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
 css
 .itemList::-webkit-scrollbar {

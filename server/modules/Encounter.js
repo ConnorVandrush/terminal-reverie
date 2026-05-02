@@ -70,6 +70,8 @@ class Encounter
             rewards.experience = Math.floor(rewards.experience / this.allyList.length);
             this.allyList.forEach(async ally =>
             {
+                ally.gold += rewards.gold;
+                ally.experience += rewards.experience;
                 this.serverEncounterManager.endEncounter(ally.playerId);
                 if (ally.currentHp <= 0)
                 {

@@ -151,6 +151,15 @@ class ClientPlayerManager
         SceneManager._scene._spriteset._characterSprites.push(sprite);
     }
 
+    updatePlayerCharacterData(newCharacterData)
+    {
+        const index = window.clientGlobalManager.clientPartyManager.partyData.members.findIndex(member => member.playerId === newCharacterData.playerId);
+        window.clientGlobalManager.clientPartyManager.partyData.members[index] = newCharacterData;
+        const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
+        window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: partyDataClone });
+        window.clientGlobalManager.dispatchToReact({ type: 'inventory/setInventory', payload: newCharacterData.inventory });
+    }
+
     startListeners()
     {
         this.socket.on('serverPlayerJoinedMap', ({playerId, characterData}) =>
