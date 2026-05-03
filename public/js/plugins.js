@@ -8,6 +8,7 @@ var $plugins =
 {"name":"ClientInputManager","status":true,"description":"Allows Backspace to work in React inputs by bypassing RPG Maker's Input handler.","parameters":{}},
 {"name":"ClientPlayerManager","status":true,"description":"","parameters":{}},
 {"name":"ClientSpriteColorer","status":true,"description":"","parameters":{}},
+{"name":"ClientBattleSpriteColorer","status":true,"description":"","parameters":{}},
 {"name":"ClientMapManager","status":true,"description":"","parameters":{}},
 {"name":"ClientPartyManager","status":true,"description":"","parameters":{}},
 {"name":"ClientEncounterManager","status":true,"description":"","parameters":{}},

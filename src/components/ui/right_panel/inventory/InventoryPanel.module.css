@@ -60,7 +60,6 @@
   cursor: default; /* optional: no pointer change */
 }
 
-
 css
 .itemList::-webkit-scrollbar {
   width: 10px;

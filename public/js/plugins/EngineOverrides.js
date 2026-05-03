@@ -279,6 +279,33 @@ Sprite_Actor.prototype.update = function () {
 Sprite_Actor.prototype.showSelectionArrow = Sprite_Enemy.prototype.showSelectionArrow;
 Sprite_Actor.prototype.hideSelectionArrow = Sprite_Enemy.prototype.hideSelectionArrow;
 
+//Battler sprite
+(() => {
+
+    // Called when the battler is assigned to the sprite
+    const _Sprite_Actor_setBattler = Sprite_Actor.prototype.setBattler;
+    Sprite_Actor.prototype.setBattler = function(battler) {
+        _Sprite_Actor_setBattler.call(this, battler);
+        this.applyCustomBattlerBitmap();
+    };
+
+    // Called every frame and whenever the engine tries to reload the bitmap
+    const _Sprite_Actor_updateBitmap = Sprite_Actor.prototype.updateBitmap;
+    Sprite_Actor.prototype.updateBitmap = function() {
+        _Sprite_Actor_updateBitmap.call(this);
+        this.applyCustomBattlerBitmap();
+    };
+
+    // Our unified function
+    Sprite_Actor.prototype.applyCustomBattlerBitmap = function() {
+        const actor = this._actor;
+        if (actor && actor._customBattlerBitmap) {
+            this._mainSprite.bitmap = actor._customBattlerBitmap;
+        }
+    };
+
+})();
+
 // Disable victory messages and rewards
 BattleManager.displayVictoryMessage = function() {};
 BattleManager.displayRewards = function() {};
@@ -302,3 +329,4 @@ Scene_Shop.prototype.create = function() {
     window.clientGlobalManager.clientShopManager.syncGold();
     window.clientGlobalManager.clientShopManager.syncPossesions();
 };
+

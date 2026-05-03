@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-// FIXME 
-// const { saveWhitePixelRangesToJson } = require('./modules/SharpColorFinder.js');
+// // FIXME 
+// const { saveColorPixelRangesToJson } = require('./modules/SharpColorFinder.js');
 // // Example usage
-// saveWhitePixelRangesToJson(
-//     './server/modules/Grasslands.png',
-//     './whitePixelRanges.json'
+// saveColorPixelRangesToJson(
+//     './server/modules/GrasslanderBattle.png',
+//     './colorPixelRanges.json'
 // );
 
 const ServerManager = require('./modules/ServerManager.js');

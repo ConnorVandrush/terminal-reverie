@@ -6,6 +6,7 @@ class ClientPlayerManager
         this.publicNamespace = null;
         this.socket = null;
         this.spriteColorer = null;
+        this.battleSpriteColorer = null;
         this.characterData = null;
         this.playersOnMap = new Map(); // playerId -> { characterData, eventId }
         this.customBitmaps = new Map(); // playerId -> bitmap
@@ -138,6 +139,7 @@ class ClientPlayerManager
         $gameMap._events[eventId] = gameEvent;
         this.playersOnMap.set(playerId, { characterData, eventId });
         const sprite = new Sprite_Character(gameEvent);
+
         this.spriteColorer.recolorSpritesheet('/img/characters/$' + characterData.appearance.template + '.png', characterData.appearance.template, characterData.appearance.colors)
         .then(recolored => 
         {
@@ -149,6 +151,29 @@ class ClientPlayerManager
         
         SceneManager._scene._spriteset._tilemap.addChild(sprite);
         SceneManager._scene._spriteset._characterSprites.push(sprite);
+    }
+
+    applyBattlerSprite(member, actorId)
+    {
+        return this.battleSpriteColorer
+            .recolorSpritesheet(
+                '/img/sv_actors/' + member.appearance.template + '.png',
+                member.appearance.template,
+                member.appearance.colors
+            )
+            .then(recolored => {
+                const bitmap = ImageManager.loadBitmapFromUrl(recolored);
+
+                // Cache it
+                window.clientGlobalManager.clientPlayerManager.customBitmaps
+                    .set("battler_" + member.playerId, bitmap);
+
+                // Assign to the correct actor slot
+                const actor = $gameActors.actor(actorId);
+                actor._customBattlerBitmap = bitmap;
+
+                return actor;
+            });
     }
 
     updatePlayerCharacterData(newCharacterData)

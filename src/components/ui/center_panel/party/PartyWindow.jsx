@@ -48,7 +48,7 @@ export default function PartyWindow()
                 </div>
             )}
 
-            {partyInvites.length > 0 && partyData === null && (
+            {partyInvites.length > 0 && (
                 <div className={styles.partyInvites}>
                     {partyInvites.map((invite, index) => (
                         <div key={index} className={styles.partyInvite}>

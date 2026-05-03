@@ -16,9 +16,10 @@ class ClientEncounterManager
         });
         this.clientPartyManager.partyData.members.forEach((member, index) =>
         {
-            $gameActors.actor(index + 1).setBattlerImage("GrasslanderBattle");
-            $gameActors.actor(index + 1).setHp(member.currentHp);
-            $gameParty.addActor(index + 1);
+            const actorId = index + 1;
+            window.clientGlobalManager.clientPlayerManager.applyBattlerSprite(member, actorId);
+            $gameActors.actor(actorId).setHp(member.currentHp);
+            $gameParty.addActor(actorId);
         });
         $dataTroops[troopData.id] = structuredClone(troopData);
         BattleManager.setup(troopData.id, false, false);

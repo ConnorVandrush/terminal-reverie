@@ -2,72 +2,133 @@ const fs = require('fs');
 const sharp = require('sharp');
 
 /**
- * Find all white pixels and return continuous ranges of pixel indices.
- * @param {string} imagePath
- * @param {number} tolerance
- * @returns {Promise<Array<{start:number,end:number}>>}
+ * Detect visible color after alpha blending
  */
-async function findWhitePixelRanges(imagePath, tolerance = 12) {
+function getVisibleColor(r, g, b, a) {
+    const alpha = a / 255;
+
+    return {
+        r: Math.round(r * alpha + 255 * (1 - alpha)),
+        g: Math.round(g * alpha + 255 * (1 - alpha)),
+        b: Math.round(b * alpha + 255 * (1 - alpha))
+    };
+}
+
+/**
+ * Create a color matcher
+ */
+function createColorMatcher(targetR, targetG, targetB, tolerance = 12) {
+    return (r, g, b, a) => {
+        if (a === 0) return false;
+
+        const visible = getVisibleColor(r, g, b, a);
+
+        return (
+            Math.abs(visible.r - targetR) <= tolerance &&
+            Math.abs(visible.g - targetG) <= tolerance &&
+            Math.abs(visible.b - targetB) <= tolerance
+        );
+    };
+}
+
+/**
+ * Find continuous pixel ranges for multiple colors
+ */
+async function findColorPixelRanges(imagePath, tolerance = 12) {
     const { data, info } = await sharp(imagePath)
         .raw()
         .ensureAlpha()
         .toBuffer({ resolveWithObject: true });
 
-    const width = info.width;
-    const height = info.height;
+    const totalPixels = info.width * info.height;
 
-    const ranges = [];
-    let rangeStart = null;
-
-    const isWhite = (r, g, b, a) => {
-        if (a === 0) return false; // skip fully transparent
-        const alpha = a / 255;
-        const rVis = Math.round(r * alpha + 255 * (1 - alpha));
-        const gVis = Math.round(g * alpha + 255 * (1 - alpha));
-        const bVis = Math.round(b * alpha + 255 * (1 - alpha));
-        return (
-            Math.abs(rVis - 255) <= tolerance &&
-            Math.abs(gVis - 255) <= tolerance &&
-            Math.abs(bVis - 255) <= tolerance
-        );
+    // Define colors to track
+    const colorMatchers = {
+        white: createColorMatcher(255, 255, 255, tolerance),
+        red: createColorMatcher(255, 0, 0, tolerance),
+        green: createColorMatcher(0, 255, 0, tolerance),
+        blue: createColorMatcher(0, 0, 255, tolerance),
+        cyan: createColorMatcher(0, 255, 255, tolerance),
+        magenta: createColorMatcher(255, 0, 255, tolerance),
+        yellow: createColorMatcher(255, 255, 0, tolerance)
     };
 
-    const totalPixels = width * height;
+    const ranges = {};
+    const activeRanges = {};
+
+    // Initialize storage
+    for (const color in colorMatchers) {
+        ranges[color] = [];
+        activeRanges[color] = null;
+    }
 
     for (let p = 0; p < totalPixels; p++) {
         const i = p * 4;
+
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
         const a = data[i + 3];
 
-        if (isWhite(r, g, b, a)) {
-            if (rangeStart === null) rangeStart = p; // start new range
-        } else {
-            if (rangeStart !== null) {
-                ranges.push({ start: rangeStart, end: p - 1 });
-                rangeStart = null;
+        for (const color in colorMatchers) {
+            const matches = colorMatchers[color](r, g, b, a);
+
+            if (matches) {
+                if (activeRanges[color] === null) {
+                    activeRanges[color] = p;
+                }
+            } else {
+                if (activeRanges[color] !== null) {
+                    ranges[color].push({
+                        start: activeRanges[color],
+                        end: p - 1
+                    });
+                    activeRanges[color] = null;
+                }
             }
         }
     }
 
-    // push last range if image ends with white pixels
-    if (rangeStart !== null) {
-        ranges.push({ start: rangeStart, end: totalPixels - 1 });
+    // Close any remaining open ranges
+    for (const color in activeRanges) {
+        if (activeRanges[color] !== null) {
+            ranges[color].push({
+                start: activeRanges[color],
+                end: totalPixels - 1
+            });
+        }
     }
 
     return ranges;
 }
 
 /**
- * Save white pixel ranges to JSON file
+ * Save color ranges to JSON
  */
-async function saveWhitePixelRangesToJson(imagePath, outputJsonPath) {
-    const ranges = await findWhitePixelRanges(imagePath, 12);
-    fs.writeFileSync(outputJsonPath, JSON.stringify(ranges)); // no pretty print
+async function saveColorPixelRangesToJson(imagePath, outputJsonPath) {
+    const ranges = await findColorPixelRanges(imagePath);
+
+    const lines = ['{'];
+
+    const entries = Object.entries(ranges);
+
+    entries.forEach(([color, values], index) => {
+        const comma = index < entries.length - 1 ? ',' : '';
+
+        lines.push(
+            `  "${color}": ${JSON.stringify(values)}${comma}`
+        );
+    });
+
+    lines.push('}');
+
+    fs.writeFileSync(
+        outputJsonPath,
+        lines.join('\n')
+    );
 }
 
 module.exports = {
-    findWhitePixelRanges,
-    saveWhitePixelRangesToJson
+    findColorPixelRanges,
+    saveColorPixelRangesToJson
 };
