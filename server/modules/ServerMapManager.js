@@ -270,11 +270,11 @@ class ServerMapManager
             socket.on('clientRequestMapTransfer', async (cb) =>
             {
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
-                playerData.isTransferring = true;
                 if (!playerData) return cb({ success: false });
 
                 const event = this.getEventData(playerData.characterData.location.map, playerData.characterData.location.x, playerData.characterData.location.y);
-                if (!event) return cb({ success: false });
+                if (!event || playerData.isTransferring) return cb({ success: false });
+                playerData.isTransferring = true;
 
                 if (event.name.startsWith('Transfer'))
                 {

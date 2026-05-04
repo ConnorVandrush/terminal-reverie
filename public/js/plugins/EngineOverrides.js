@@ -45,20 +45,24 @@ const _Sprite_Character_setCharacterBitmap = Sprite_Character.prototype.setChara
 Sprite_Character.prototype.setCharacterBitmap = function() {
     const custom = this._character && this._character._customBitmap;
 
-    // No custom bitmap → use default engine behavior
     if (!custom) {
         _Sprite_Character_setCharacterBitmap.call(this);
         return;
     }
 
-    // Custom bitmap exists but isn't ready yet → wait for it
-    if (!custom.isReady()) {
-        custom.addLoadListener(() => {
+    const tryApply = () => {
+        if (
+            custom.isReady() &&
+            custom.baseTexture &&
+            custom.baseTexture.valid
+        ) {
             this.applyCustomCharacterBitmap(custom);
-        });
-    } else {
-        this.applyCustomCharacterBitmap(custom);
-    }
+        } else {
+            requestAnimationFrame(tryApply);
+        }
+    };
+
+    tryApply();
 };
 
 // ============================================================================
@@ -66,16 +70,9 @@ Sprite_Character.prototype.setCharacterBitmap = function() {
 // ============================================================================
 Sprite_Character.prototype.applyCustomCharacterBitmap = function(bitmap) {
     this.bitmap = bitmap;
-
-    // Big-character sheet ($ prefix)
     this._isBigCharacter = true;
 
-    // Force PIXI to rebuild the GPU texture
-    if (this.bitmap.touch) {
-        this.bitmap.touch();
-    }
-
-    // Now that texture is valid, update the animation frame
+    // Force engine to rebuild frame from bitmap (SAFE WAY)
     this._refresh();
     this.updateFrame();
 };
@@ -96,11 +93,43 @@ const _loadCharacter = ImageManager.loadCharacter;
 ImageManager.loadCharacter = function(filename) {
     // Disable loading when filename is empty OR starts with "$"
     if (!filename || filename.startsWith("$")) {
-        return new Bitmap(0, 0);
+        const placeholder = new Bitmap(48, 48);
+        placeholder.fillAll("rgba(0,0,0,0)");
+        return placeholder;
     }
     return _loadCharacter.call(this, filename);
 };
 //SceneManager._scene._spriteset._characterSprites
+
+const _ImageManager_loadBitmapFromUrl = ImageManager.loadBitmapFromUrl;
+ImageManager.loadBitmapFromUrl = function(url) {
+    // Detect real URLs or data URLs
+    const isRealUrl =
+        url.startsWith("http://") ||
+        url.startsWith("https://") ||
+        url.startsWith("data:image");
+
+    if (!isRealUrl) {
+        // Fall back to the original behavior
+        return _ImageManager_loadBitmapFromUrl.call(this, url);
+    }
+
+    // --- Your custom URL loader ---
+    const bitmap = new Bitmap();
+    const image = new Image();
+
+    image.crossOrigin = "anonymous";
+
+    bitmap._image = image;
+    bitmap._loadingState = "loading";
+
+    image.addEventListener("load", bitmap._onLoad.bind(bitmap));
+    image.addEventListener("error", bitmap._onError.bind(bitmap));
+
+    image.src = url;
+
+    return bitmap;
+};
 
 // Disable all dashing in RMMZ
 const _Game_Player_isDashing = Game_Player.prototype.isDashing;
@@ -115,7 +144,7 @@ Game_Player.prototype.moveByInput = async function (reactDirection)
     const partyManager = window.clientGlobalManager.clientPartyManager;
     const direction = reactDirection ?? Input.dir4;
     
-    if (direction <= 0 || mapManager.isMoving || partyManager.isPartyFollower) return;
+    if (direction <= 0 || mapManager.isMoving || mapManager.isTransferring || partyManager.isPartyFollower) return;
 
     // Party movement
     if (partyManager.isPartyLeader && !mapManager.isMoving)
@@ -281,7 +310,6 @@ Sprite_Actor.prototype.hideSelectionArrow = Sprite_Enemy.prototype.hideSelection
 
 //Battler sprite
 (() => {
-
     // Called when the battler is assigned to the sprite
     const _Sprite_Actor_setBattler = Sprite_Actor.prototype.setBattler;
     Sprite_Actor.prototype.setBattler = function(battler) {
@@ -303,7 +331,6 @@ Sprite_Actor.prototype.hideSelectionArrow = Sprite_Enemy.prototype.hideSelection
             this._mainSprite.bitmap = actor._customBattlerBitmap;
         }
     };
-
 })();
 
 // Disable victory messages and rewards
@@ -330,3 +357,9 @@ Scene_Shop.prototype.create = function() {
     window.clientGlobalManager.clientShopManager.syncPossesions();
 };
 
+// This may or may not fix camera jumping on transfer
+const _Game_Player_center = Game_Player.prototype.center;
+Game_Player.prototype.center = function(x, y) {
+    console.log("Game_Player.center called with:", x, y, "at", performance.now());
+    _Game_Player_center.call(this, x, y);
+};
