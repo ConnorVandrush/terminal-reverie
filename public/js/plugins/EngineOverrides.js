@@ -197,7 +197,7 @@ Scene_Map.prototype.onMapLoaded = function() {
     for (const [playerId, player] of window.clientGlobalManager.clientPlayerManager.playersOnMap.entries()) 
     {
         // enqueue for creation
-        window.clientGlobalManager.clientPlayerManager.pendingRemotePlayers.set(playerId, { characterData: player.characterData, });
+        window.clientGlobalManager.clientPlayerManager.pendingRemotePlayers.set(playerId, player.characterData);
     }
 
     window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
