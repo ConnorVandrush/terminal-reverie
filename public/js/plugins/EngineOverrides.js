@@ -360,6 +360,5 @@ Scene_Shop.prototype.create = function() {
 // This may or may not fix camera jumping on transfer
 const _Game_Player_center = Game_Player.prototype.center;
 Game_Player.prototype.center = function(x, y) {
-    console.log("Game_Player.center called with:", x, y, "at", performance.now());
     _Game_Player_center.call(this, x, y);
 };

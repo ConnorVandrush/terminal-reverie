@@ -7,7 +7,6 @@ export default async function inventoryEmitters(action, store)
 
         if (response.success)
         {
-            console.log(response);
             const index = window.clientGlobalManager.clientPartyManager.partyData.members.findIndex(member => member.playerId === response.updatedTarget.playerId);
             window.clientGlobalManager.clientPartyManager.partyData.members[index] = response.updatedTarget;
             const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
