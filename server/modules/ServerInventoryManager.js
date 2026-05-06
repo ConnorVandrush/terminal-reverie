@@ -43,7 +43,6 @@ class ServerInventoryManager
         }
     }
 
-
     addItemToInventory(inventory, itemId, amount)
     {
         const key = String(itemId);
@@ -129,6 +128,24 @@ class ServerInventoryManager
         };
     }
 
+    buildShopInventory(shopData) 
+    {
+        const result = {};
+
+        for (const [itemId, priceInfo] of shopData.entries()) {
+            const itemInfo = this.items.get(itemId);
+
+            if (!itemInfo) continue;
+
+            result[itemId] = {
+                ...itemInfo,
+                cost: priceInfo.cost
+            };
+        }
+
+        return result;
+    }
+
     clientBuyItem(playerData, itemId, quantity)
     {
         const characterData = playerData.characterData
@@ -136,16 +153,16 @@ class ServerInventoryManager
         const key = String(itemId);
         const eventData = this.serverMapManager.getEventData(characterData.location.map, characterData.location.x, characterData.location.y)
         const shopData = this.shops.get(eventData.note);
-        const baseCost = shopData.get(itemId).cost;
+        const baseCost = shopData.get(parseInt(itemId)).cost;
         const totalCost = baseCost * quantity;
 
         if (inventory[key].quantity + quantity > 99) 
         {
-            return { success: false, error: "Not enough space." };
+            return { success: false, message: "Not enough space." };
         }
         else if (totalCost > characterData.gold) 
         {
-            return { success: false, error: "Not enough gold." };
+            return { success: false, message: "Not enough gold." };
         }
         else
         {
@@ -176,6 +193,31 @@ class ServerInventoryManager
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 const result = this.clientBuyItem(playerData, itemId, quantity);
                 cb(result);
+            });
+
+            socket.on('clientRequestOpenShop', (cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                playerData.preventMovement = true;
+                const location = playerData.characterData.location
+                const eventData = this.serverMapManager.getEventData(location.map, location.x, location.y);
+                const shopName = eventData.note;
+                if (this.shops.has(shopName))
+                {
+                    const shopInventory = this.buildShopInventory(this.shops.get(shopName));
+                    cb({ success: true, shopInventory: shopInventory });
+                }
+                else
+                {
+                    cb({ success: false, error: "Not a shop." });
+                }
+            });
+
+            socket.on('clientRequestCloseShop', (cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                playerData.preventMovement = false;
+                cb({ success: true });
             });
         });
     }

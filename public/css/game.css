@@ -59,7 +59,7 @@ body {
     border-radius: 1vw;
     z-index: 2;
 }
-.centerPanelChat, .centerPanelParty {
+.centerPanelChat, .centerPanelParty, .centerPanelShop {
     width: 95%;
     height: 95vh;
     opacity: 0.9;

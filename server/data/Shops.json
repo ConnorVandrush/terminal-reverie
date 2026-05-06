@@ -1,6 +1,9 @@
 {
     "Store1ItemMerchant":
     {
-        "1": { "cost": 5 }
+        "1": { "cost": 5 },
+        "2": { "cost": 10 },
+        "3": { "cost": 15 },
+        "4": { "cost": 20 }
     }
 }

@@ -347,18 +347,19 @@ BattleManager.endBattle = function(result) {
     _BattleManager_endBattle.call(this, result);
 };
 
-// Sync RMMZ gold amount
-const _Scene_Shop_create = Scene_Shop.prototype.create;
-Scene_Shop.prototype.create = function() {
-    _Scene_Shop_create.call(this);
+// Replace RMMZ shop interface with our own
+const _Game_Interpreter_command302 = Game_Interpreter.prototype.command302;
+Game_Interpreter.prototype.command302 = function(params) {
+    // params = [goodsType, itemId, priceOverride, allowSell]
+    // This is the "Open Shop Processing" command
 
-    // Sync gold immediately when the shop opens
-    window.clientGlobalManager.clientShopManager.syncGold();
-    window.clientGlobalManager.clientShopManager.syncPossesions();
+    window.clientGlobalManager.clientMapManager.isMoving = true;
+
+    window.clientGlobalManager.dispatchToReact({
+        type: 'shopWindow/clientRequestOpenShop'
+    });
+
+    // Prevent the shop scene from opening
+    return true; // skip original behavior
 };
 
-// This may or may not fix camera jumping on transfer
-const _Game_Player_center = Game_Player.prototype.center;
-Game_Player.prototype.center = function(x, y) {
-    _Game_Player_center.call(this, x, y);
-};

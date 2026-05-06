@@ -1,0 +1,136 @@
+.shopWindow {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.shopHeader {
+    height: 10%;
+    width: 100%;
+  display: flex;
+  padding: 2%;
+  box-sizing: border-box;
+    justify-content: space-between; /* title left, gold right */
+}
+
+.shopTitle {
+  box-sizing: border-box;
+}
+
+.characterGold {
+  color: #ffcc00;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+
+.shopHeader h2 {
+  margin: 0;
+}
+
+.shopItems {
+  height: 70%;
+  padding: 2%;
+  box-sizing: border-box;
+  flex-direction: column;
+  overflow-y: scroll;
+  display: flex;
+}
+
+.shopItem {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1%;
+  border-bottom: 1px solid #ccc;
+}
+
+.itemHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; /* name left, price right */
+  align-items: center;
+}
+
+.itemDescription {
+  width: 100%;
+  margin-top: 4px;
+  font-style: italic;
+  color: #cccccc;
+}
+
+.itemName {
+  font-weight: bold;
+}
+
+.itemPrice {
+  color: #ffcc00; /* retro gold */
+}
+
+.messageContainer {
+    height: 10%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2%;
+    display: flex;
+    justify-content: center; /* center horizontally */
+    align-items: center;     /* center vertically */
+}
+
+.buttonContainer {
+  height: 10%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2%;
+  display: flex;          /* <-- add this */
+  flex-direction: row;
+}
+
+.buyButtonContainer,
+.closeButtonContainer {
+  width: 50%;
+  display: flex;
+  justify-content: center;   /* <-- centers the button horizontally */
+  align-items: center;       /* <-- centers the button vertically */
+}
+
+.buyButton {
+  padding: 2%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.closeButton {
+  padding: 2%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.shopItemButton {
+    color: white;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1%;
+  text-align: left;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  border-bottom: 1px solid #ccc;
+}
+
+.shopItemButton:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.selectedShopItem {
+  background-color: rgba(255, 255, 255, 0.1);
+}

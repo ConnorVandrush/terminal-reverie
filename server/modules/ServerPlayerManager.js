@@ -35,7 +35,6 @@ class ServerPlayerManager
     {
         this.io.on('connection', (socket) => 
         {
-            // Handle new connections
         });
     }
 }

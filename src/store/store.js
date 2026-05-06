@@ -9,7 +9,9 @@ import chatWindowReducer from "./chatWindowSlice";
 import partWindowReducer from "./partyWindowSlice";
 import encounterReducer from "./encounterSlice";
 import inventoryReducer from "./inventorySlice";
+import shopWindowReducer from "./shopWindowSlice";
 import { rightPanelListener } from "./listeners/rightPanelListeners";
+import { centerPanelListener } from "./listeners/centerPanelListeners";
 
 export const store = configureStore(
 {
@@ -23,7 +25,8 @@ export const store = configureStore(
         chatWindow: chatWindowReducer,
         partyWindow: partWindowReducer,
         encounter: encounterReducer,
-        inventory: inventoryReducer
+        inventory: inventoryReducer,
+        shopWindow: shopWindowReducer
     },
     middleware: (getDefault) =>
     getDefault(
@@ -36,6 +39,7 @@ export const store = configureStore(
         }
     )
     .prepend(rightPanelListener.middleware)
+    .prepend(centerPanelListener.middleware)
     .concat(middleware),
 });
 

@@ -3,6 +3,7 @@ import chatWindowEmitters from "./emitters/chatWindowEmitters";
 import partyWindowEmitters from "./emitters/partyWindowEmitters";
 import encounterEmitters from "./emitters/encounterEmitters";
 import inventoryEmitters  from "./emitters/inventoryEmitter";
+import shopWindowEmitters from "./emitters/shopWindowEmitters";
 
 import { createCharacterListeners } from "./listeners/createCharacterListeners";
 import { createChatWindowListeners } from "./listeners/chatWindowListeners";
@@ -32,6 +33,7 @@ export const middleware = (store) =>
         partyWindowEmitters(action, store);
         encounterEmitters(action);
         inventoryEmitters(action, store);
+        shopWindowEmitters(action, store);
 
         return next(action);
     }

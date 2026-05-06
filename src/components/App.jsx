@@ -14,6 +14,7 @@ import EnemyInfo from './encounter/EnemyInfo';
 import AllyInfo from './encounter/AllyInfo';
 import TradeWindow from './ui/center_panel/trade/TradeWindow'; 
 import InventoryPanel from './ui/right_panel/inventory/InventoryPanel';
+import ShopWindow from './ui/center_panel/shop/ShopWindow';
 
 export default function App()
 {
@@ -50,6 +51,8 @@ export default function App()
                 return <EncounterInfo />;
             case 'tradeWindow':
                 return <TradeWindow />;
+            case 'shopWindow':
+                return <ShopWindow />;
             default:
                 return null;
         }
@@ -78,13 +81,14 @@ export default function App()
             <div id="leftPanel">{renderLeftPanel()}</div>
             <div id="gamePanel">
                 {centerPanel && <div
-                    className={[
-                        "centerPanel",
-                        centerPanel === "chatWindow" && "centerPanelChat", //game.css
-                        centerPanel === "partyWindow" && "centerPanelParty",
-                        centerPanel === "encounterInfo" && "centerPanelEncounterInfo",
-                    ].filter(Boolean).join(" ")}
-                    >
+                    className={`centerPanel ${
+                        centerPanel === "chatWindow" ? "centerPanelChat" :
+                        centerPanel === "partyWindow" ? "centerPanelParty" :
+                        centerPanel === "encounterInfo" ? "centerPanelEncounterInfo" :
+                        centerPanel === "shopWindow" ? "centerPanelShop" : 
+                        ""
+                    }`}
+                >
                     {renderCenterPanel()}
                 </div>}
             </div>

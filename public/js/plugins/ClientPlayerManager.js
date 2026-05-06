@@ -109,7 +109,6 @@ class ClientPlayerManager
     createRemotePlayer(playerId, characterData)
     {
         if (!SceneManager._scene?._spriteset) return;
-        console.log("hello", characterData);
 
         const eventId = this.getNextFreeEventId();
 
