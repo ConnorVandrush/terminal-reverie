@@ -42,3 +42,7 @@
     color: green;
     text-align: center;
 }
+
+.login button {
+    padding: 5%;
+}

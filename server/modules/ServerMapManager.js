@@ -189,7 +189,8 @@ class ServerMapManager
 
                 if (!playerData || playerData.isTransferring || playerData.preventMovement || playerData.inEncounter)
                 {
-                    return cb({ success: false });
+                    console.error(playerData);
+                    return cb({ success: false, message: 'Cannot move at this time because already transferring, preventing movement, or in an encounter' });
                 }
                 playerData.preventMovement = true;
                 setTimeout(() => playerData.preventMovement = false, 50); // simple movement rate limit
@@ -199,7 +200,7 @@ class ServerMapManager
                 const result = this.canMove(playerData, direction, newLocation, currentLoc);
                 if (!result.success) 
                 {
-                    return cb({ success: false });
+                    return cb({ success: false, message: 'Cannot move at this time because the tile is blocked' });
                 }
                 playerData.characterData.location = result.newLocation;
                 const encounter = await this.serverEncounterManager.rollForEncounter(currentLoc.map, this.getRegion(currentLoc.map, result.newLocation.x, result.newLocation.y), this.maps.get(currentLoc.map).mapData.battleback1Name, playerData);
@@ -212,6 +213,7 @@ class ServerMapManager
                 const leaderData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 if (!leaderData || leaderData.isTransferring || leaderData.preventMovement || leaderData.inEncounter)                
                 {
+                    console.error('Cannot move party at this time because already transferring, preventing movement, or in an encounter');
                     return;
                 }
                 leaderData.preventMovement = true;

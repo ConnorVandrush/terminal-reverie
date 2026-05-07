@@ -14,6 +14,7 @@ class ClientMapManager
             const response = await window.clientGlobalManager.clientPlayerManager.socket.emitWithAck('clientPlayerMove', direction); 
             if (!response?.success) 
             {
+                console.error('Move request failed or no response received', response);
                 this.rollbackPlayer($gamePlayer, oldLoc);
             } 
             else 

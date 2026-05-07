@@ -24,6 +24,7 @@ export const middleware = (store) =>
         {
             authenticated = true;
             window.clientGlobalManager.dispatchToReact = store.dispatch;
+            window.clientGlobalManager.getReactState = store.getState;
             createChatWindowListeners(store);
             createPartyWindowListeners(store);
         }

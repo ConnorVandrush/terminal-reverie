@@ -15,6 +15,7 @@ import AllyInfo from './encounter/AllyInfo';
 import TradeWindow from './ui/center_panel/trade/TradeWindow'; 
 import InventoryPanel from './ui/right_panel/inventory/InventoryPanel';
 import ShopWindow from './ui/center_panel/shop/ShopWindow';
+import PartyInvites from './ui/center_panel/party/PartyInvites';
 
 export default function App()
 {
@@ -53,6 +54,8 @@ export default function App()
                 return <TradeWindow />;
             case 'shopWindow':
                 return <ShopWindow />;
+            case 'partyInvites':
+                return <PartyInvites />;
             default:
                 return null;
         }
@@ -85,7 +88,8 @@ export default function App()
                         centerPanel === "chatWindow" ? "centerPanelChat" :
                         centerPanel === "partyWindow" ? "centerPanelParty" :
                         centerPanel === "encounterInfo" ? "centerPanelEncounterInfo" :
-                        centerPanel === "shopWindow" ? "centerPanelShop" : 
+                        centerPanel === "shopWindow" ? "centerPanelShop" :
+                        centerPanel === "partyInvites" ? "centerPanelPartyInvites" :
                         ""
                     }`}
                 >

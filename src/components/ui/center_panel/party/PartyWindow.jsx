@@ -1,107 +1,107 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { 
+    setSelectedPartyMember, 
+    clientSendPartyInvite, 
+    removePartyInvite, 
+    clientAcceptPartyInvite, 
+    clientLeaveParty, 
+    clientKickPartyMember 
+} from '@store/partyWindowSlice.js';
+
+import { setCenterPanel } from '@store/centerPanelSlice.js';
+
 import styles from './PartyWindow.module.css';
-import { clientSendPartyInvite, removePartyInvite, clientAcceptPartyInvite, clientLeaveParty } from '@store/partyWindowSlice.js';
 
 export default function PartyWindow() 
 {
     const dispatch = useDispatch();
 
-    const errorMessage = useSelector((state) => state.partyWindow.errorMessage);
-    const successMessage = useSelector((state) => state.partyWindow.successMessage);
-    const partyData = useSelector((state) => state.partyWindow.partyData);
-    const partyInvites = useSelector((state) => state.partyWindow.partyInvites);
-    const selectedItem = useSelector((state) => state.inventory.selectedItem)
-    const selectedPartyMember = useSelector((state) => state.partyWindow.selectedPartyMember);
-    const characterData = window.clientGlobalManager.clientPlayerManager.characterData
-    const playerId = characterData.playerId;
+    const partyData = useSelector(state => state.partyWindow.partyData);
+    const selectedPartyMember = useSelector(state => state.partyWindow.selectedPartyMember);
 
-    const invitedPlayerRef = useRef(null);
+    // Safe selector for characterData
+    const characterData = useSelector(state => {
+        const data = state.partyWindow.partyData;
+        if (!data || !data.members) return null;
 
-    function handleClientSendPartyInvite()
-    {
-        const invitedPlayer = invitedPlayerRef.current.value;
-        dispatch(clientSendPartyInvite(invitedPlayer));
-        invitedPlayerRef.current.value = '';
-    }
+        const playerId = window.clientGlobalManager.clientPlayerManager.characterData.playerId;
+        return data.members.find(m => m.playerId === playerId) || null;
+    });
+
+    const members = partyData?.members || [null, null, null, null];
 
     return (
         <div className={styles.partyWindow}>
+            
+            <div className={styles.partyMembers}>
+                {[0, 1, 2, 3].map(slotIndex => {
+                    const member = members[slotIndex];
+                    const isSelected = selectedPartyMember === slotIndex;
 
-            {(partyData === null || partyData.members[0].playerId === playerId) && (
-                <div className={styles.inputRow}>
-                    <input type="text" placeholder="Invite to party..." ref={invitedPlayerRef}/>
-                    <button onClick={handleClientSendPartyInvite}>Send</button>
-                </div>
-            )}
+                    return (
+                        <button
+                            key={slotIndex}
+                            disabled={!member}
+                            className={`${styles.partyMemberButton} ${
+                                isSelected ? styles.selectedPartyMember : ""
+                            }`}
+                            onClick={() => {
+                                if (!member) return;
 
-            {errorMessage && (
-                <div className={styles.statusMessages}>
-                    <div className={styles.errorMessage}>{errorMessage}</div>
-                </div>
-            )}
-
-            {successMessage && (
-                <div className={styles.statusMessages}>
-                    <div className={styles.successMessage}>{successMessage}</div>
-                </div>
-            )}
-
-            {partyInvites.length > 0 && (
-                <div className={styles.partyInvites}>
-                    {partyInvites.map((invite, index) => (
-                        <div key={index} className={styles.partyInvite}>
-                            {invite.fromPlayerName} has invited you to their party!
-                            <button onClick={() => dispatch(clientAcceptPartyInvite(invite.fromPlayerName))}>Accept</button>
-                            <button onClick={() => dispatch(removePartyInvite(invite.fromPlayerName))}>Decline</button>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {partyData && partyData.members && (
-                <>
-                    <div className={styles.partyMembers}>
-                        {partyData.members.map((member, index) => (
-                            <div
-                                key={index}
-                                className={`${styles.partyMember} ${
-                                    index === selectedPartyMember ? styles.selectedPartyMember : ""
-                                }`}
-                            >
-                                <div className={styles.memberName}>{member.name}</div>
-                                <div className={styles.memberLevel}>Level {member.level}</div>
-                                <div className={styles.memberHp}>
-                                    HP: {member.currentHp}/{member.maxHp}
+                                dispatch(
+                                    setSelectedPartyMember(
+                                        isSelected ? null : slotIndex
+                                    )
+                                );
+                            }}
+                        >
+                            <div className={styles.partyMemberHeader}>
+                                <div className={styles.partyMemberName}>
+                                    {member ? member.name : ""}
                                 </div>
 
-                                {partyData.members[0].playerId === playerId &&
-                                    member.playerId !== playerId && (
-                                        <div className={styles.kickPartyMemberButtonContainer}>
-                                            <button onClick={() => dispatch(clientKickPartyMember(member.playerId))}>
-                                                Kick
-                                            </button>
-                                        </div>
-                                    )}
+                                <div className={styles.partyMemberLevel}>
+                                    {member ? `Lv ${member.level}` : ""}
+                                </div>
                             </div>
-                        ))}
-                    </div>
 
-                    {partyData.members.length > 1 && (
-                    <div className={styles.leavePartyButtonContainer}>
-                        <button onClick={() => dispatch(clientLeaveParty(partyData.members[0].playerId))}>Leave Party</button>
-                    </div>
-                    )}
+                            {member && (
+                                <div className={styles.partyMemberStatus}>
+                                    HP: {member.currentHp}/{member.maxHp}
+                                </div>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
 
-                    {selectedItem && (
-                        <div className={styles.itemDescription}>
-                            {selectedItem.item.description}
-                        </div>
-                    )}
-                </>
-            )}
+            <div className={styles.buttonContainer}>
+                <button onClick={() => dispatch(setCenterPanel('partyInvites'))}>
+                    Join/Invite
+                </button>
 
+                <button
+                    disabled={!partyData || !partyData.members || !partyData.members[0]}
+                    onClick={() => dispatch(clientLeaveParty(partyData.members[0].playerId))}
+                >
+                    Leave
+                </button>
+
+                <button
+                    disabled={
+                        selectedPartyMember === null ||
+                        !members[selectedPartyMember]
+                    }
+                    onClick={() => {
+                        const member = members[selectedPartyMember];
+                        dispatch(clientKickPartyMember(member.playerId));
+                    }}
+                >
+                    Kick
+                </button>
+            </div>
         </div>
     );
 }

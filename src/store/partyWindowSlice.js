@@ -71,5 +71,5 @@ const partyWindowSlice = createSlice(
     },
 });
 
-export const { clientSendPartyInvite, setParty, setErrorMessage, setSuccessMessage, addPartyInvite, removePartyInvite, clientAcceptPartyInvite, serverSendPartyInvite, clientLeaveParty, clientKickPartyMember, updatePartyData, setSelectedPartyMember } = partyWindowSlice.actions;
+export const { clientSendPartyInvite, setPartyData, setErrorMessage, setSuccessMessage, addPartyInvite, removePartyInvite, clientAcceptPartyInvite, serverSendPartyInvite, clientLeaveParty, clientKickPartyMember, updatePartyData, setSelectedPartyMember } = partyWindowSlice.actions;
 export default partyWindowSlice.reducer;

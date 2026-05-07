@@ -51,6 +51,14 @@ class ClientPartyManager
                 this.clientMapManager.moveToLocation($gamePlayer, partyData.members[0].location);
                 this.isPartyFollower = true;
             }
+            // why is this preventing movement FIXME
+            // else if (partyData === null)
+            // {
+            //     this.isPartyFollower = false;
+            //     this.isPartyLeader = false;
+            //     window.clientGlobalManager.clientPartyManager.partyData = { members: [this.characterData] };
+            //     window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: { members: [window.clientGlobalManager.clientPlayerManager.characterData] } });
+            // }
         });
     }
 }

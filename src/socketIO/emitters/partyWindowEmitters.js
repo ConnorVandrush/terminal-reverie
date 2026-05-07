@@ -45,7 +45,9 @@ export default async function partyWindowEmitters(action, store)
         {
             store.dispatch(setSuccessMessage(response.message));
             store.dispatch(setErrorMessage(false));
-            store.dispatch({ type: 'partyWindow/setPartyData', payload: null });
+            // why is this preventing movement FIXME
+            // window.clientGlobalManager.clientPartyManager.partyData = { members: [window.clientGlobalManager.clientPlayerManager.characterData] };
+            // store.dispatch({ type: 'partyWindow/setPartyData', payload: { members: [window.clientGlobalManager.clientPlayerManager.characterData] } });
         }
         else
         {

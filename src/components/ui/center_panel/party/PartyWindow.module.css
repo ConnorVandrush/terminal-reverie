@@ -7,83 +7,78 @@
 }
 
 .partyMembers {
-  height: 70%;
-  padding: 2%;
+  height: 90%;
   box-sizing: border-box;
+  display: flex;
   flex-direction: column;
-  overflow-y: scroll;
-  display: flex;
+  overflow-y: auto;
 }
 
-.partyMember {
+.partyMemberButton {
+  margin: 2% 2% 0 2%;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+
   display: flex;
-  align-items: center;
-  padding: 1%;
+  flex-direction: column;
+
   border-bottom: 1px solid #ccc;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.partyInvite {
+  color: white;
   box-sizing: border-box;
-  padding: 2%;
+
+  flex: 1; /* makes all 4 slots equal height */
 }
 
-.statusMessages {
-  height: 15%;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 2%;
-  align-items: center;
-}
-
-.inputRow {
-  display: flex;
-  height: 15%;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 2%;
-  gap: 2%;
-}
-
-.inputRow input {
-  flex: 1; /* take all remaining space */
-}
-
-.inputRow button {
-  flex: 0 0 auto; /* size to content */
-}
-
-.errorMessage {
-  color: #ff4d4d; /* retro red */
-  font-weight: bold;
-  height: 100%;
-}
-
-.successMessage {
-  color: #4dff4d; /* retro green */
-  font-weight: bold;
-  height: 100%;
-}
-
-.leavePartyButtonContainer {
-  position: absolute;
-  bottom: 2%;
-  right: 2%;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.itemDescription {
-  margin-top: auto;
-  align-self: center;
-  padding: 2%;
+/* Hover highlight (same as shop) */
+.partyMemberButton:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .selectedPartyMember {
-  background: #0f0f5a;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  text-shadow: 1px 1px 2px #000;
+  animation: pulseSelected 1.2s infinite ease-in-out;
+}
+
+/* Header row (name left, level right) */
+.partyMemberHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Name styling */
+.partyMemberName {
+  font-weight: bold;
+}
+
+/* Status row (HP, MP, etc.) */
+.partyMemberStatus {
+  margin-top: 1%;
+  font-style: italic;
+  color: #cccccc;
+}
+
+.buttonContainer {
+  height: 10%;
+  display: flex;
+  box-sizing: border-box;
+  justify-content: space-evenly; /* buttons spread out */
+  text-align: center;
+}
+
+.buttonContainer button {
+  margin: 2%;
+}
+
+@keyframes pulseSelected {
+  0% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
 }
