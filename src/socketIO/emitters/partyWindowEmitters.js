@@ -45,9 +45,10 @@ export default async function partyWindowEmitters(action, store)
         {
             store.dispatch(setSuccessMessage(response.message));
             store.dispatch(setErrorMessage(false));
-            // why is this preventing movement FIXME
-            // window.clientGlobalManager.clientPartyManager.partyData = { members: [window.clientGlobalManager.clientPlayerManager.characterData] };
-            // store.dispatch({ type: 'partyWindow/setPartyData', payload: { members: [window.clientGlobalManager.clientPlayerManager.characterData] } });
+            // why is this preventing movement FIXME stale character data?
+            const characterData = window.clientGlobalManager.clientPartyManager.partyData?.members.find(m => m.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
+            window.clientGlobalManager.clientPartyManager.partyData = { members: characterData ? [characterData] : [] };
+            store.dispatch({ type: 'partyWindow/setPartyData', payload: { members: characterData ? [characterData] : [] } });
         }
         else
         {
