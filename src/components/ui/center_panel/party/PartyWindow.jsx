@@ -78,12 +78,16 @@ export default function PartyWindow()
             </div>
 
             <div className={styles.buttonContainer}>
-                <button onClick={() => dispatch(setCenterPanel('partyInvites'))}>
+                <button 
+                    disabled={partyData.members.length == 4 || 
+                    partyData.members[0].playerId !== characterData?.playerId && partyData.members.length > 1} 
+                    onClick={() => dispatch(setCenterPanel('partyInvites'))}
+                >
                     Join/Invite
                 </button>
 
                 <button
-                    disabled={!partyData || !partyData.members || !partyData.members[0]}
+                    disabled={partyData.members.length == 1}
                     onClick={() => dispatch(clientLeaveParty(partyData.members[0].playerId))}
                 >
                     Leave
@@ -91,8 +95,7 @@ export default function PartyWindow()
 
                 <button
                     disabled={
-                        selectedPartyMember === null ||
-                        !members[selectedPartyMember]
+                        partyData.members[0].playerId !== characterData?.playerId || !members[selectedPartyMember] || selectedPartyMember === 0
                     }
                     onClick={() => {
                         const member = members[selectedPartyMember];

@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCenterPanel } from '@store/centerPanelSlice.js';
 import { setSelectedPartyMember } from '@store/partyWindowSlice.js';
+import { setSelectedItem } from '@store/inventorySlice.js';
 
 import styles from './CancelButton.module.css';
 
@@ -19,6 +20,7 @@ export default function CancelButton()
         if (centerPanel !== null && centerPanel !== 'shopWindow') {
             dispatch(setCenterPanel(null));
             dispatch(setSelectedPartyMember(null));
+            dispatch(setSelectedItem(null));
         }
     }
 

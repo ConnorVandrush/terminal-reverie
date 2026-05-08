@@ -7,7 +7,7 @@
         },
         "1":
         {
-            "encounterChance": 30,
+            "encounterChance": 0,
             "1": {"troopId":1,"weight":100},
             "2": {"troopId":2,"weight":100}
         }
