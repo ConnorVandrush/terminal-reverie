@@ -28,12 +28,12 @@ class ClientMapManager
                     window.clientGlobalManager.clientEncounterManager.startEncounter(response.encounter);
                 }
             }
-        } 
+        }
         catch (err) 
         {
             this.rollbackPlayer($gamePlayer, oldLoc);
         } 
-        finally 
+        finally
         {
             this.waitForMovementEnd($gamePlayer);
         }
@@ -118,11 +118,12 @@ class ClientMapManager
         {
             if (this.isTransferring) return;
 
-            const eventId = window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId;
+            const eventId =
+                window.clientGlobalManager.clientPlayerManager.playersOnMap
+                    .get(playerId)?.eventId;
+
             const gameEvent = $gameMap._events[eventId];
             if (!gameEvent) return;
-
-            gameEvent._netMovementQueue = gameEvent._netMovementQueue || [];
 
             const startX = gameEvent.x;
             const startY = gameEvent.y;
@@ -132,14 +133,27 @@ class ClientMapManager
             let x = startX;
             let y = startY;
 
-            // Push intermediate steps until we reach the target
-            while (x !== targetX || y !== targetY) 
-            {
-                if (x < targetX) x++;
-                else if (x > targetX) x--;
+            // Replace outdated movement path
+            gameEvent._netMovementQueue = [];
 
-                if (y < targetY) y++;
-                else if (y > targetY) y--;
+            while (x !== targetX || y !== targetY)
+            {
+                if (x < targetX)
+                {
+                    x++;
+                }
+                else if (x > targetX)
+                {
+                    x--;
+                }
+                else if (y < targetY)
+                {
+                    y++;
+                }
+                else if (y > targetY)
+                {
+                    y--;
+                }
 
                 gameEvent._netMovementQueue.push({ x, y });
             }

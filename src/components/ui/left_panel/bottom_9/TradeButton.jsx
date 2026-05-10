@@ -10,13 +10,13 @@ export default function TradeButton() {
 
     function toggleTradeWindow() 
     {
-        if (centerPanelState === 'tradeWindow')
+        if (centerPanelState === 'tradeRequestWindow')
         {
             dispatch(setCenterPanel(null));
         }
         else
         {
-            dispatch(setCenterPanel('tradeWindow'));
+            dispatch(setCenterPanel('tradeRequestWindow'));
         }
     }
     return (

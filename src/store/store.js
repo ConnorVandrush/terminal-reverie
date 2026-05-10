@@ -10,6 +10,7 @@ import partWindowReducer from "./partyWindowSlice";
 import encounterReducer from "./encounterSlice";
 import inventoryReducer from "./inventorySlice";
 import shopWindowReducer from "./shopWindowSlice";
+import tradeWindowReducer from "./tradeWindowSlice";
 import { rightPanelListener } from "./listeners/rightPanelListeners";
 import { centerPanelListener } from "./listeners/centerPanelListeners";
 
@@ -26,7 +27,8 @@ export const store = configureStore(
         partyWindow: partWindowReducer,
         encounter: encounterReducer,
         inventory: inventoryReducer,
-        shopWindow: shopWindowReducer
+        shopWindow: shopWindowReducer,
+        tradeWindow: tradeWindowReducer,
     },
     middleware: (getDefault) =>
     getDefault(

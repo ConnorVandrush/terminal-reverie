@@ -1,0 +1,51 @@
+.tradeRequestsWindow {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.inputRow {
+  display: flex;
+  height: 15%;
+  box-sizing: border-box;
+}
+
+.inputRow input {
+  flex: 1; /* take all remaining space */
+  margin: 2%;
+}
+
+.inputRow button {
+  flex: 0 0 auto; /* size to content */
+    margin: 2%;
+}
+
+.message {
+    height: 5%;
+    box-sizing: border-box;
+    margin: 0 2%;
+}
+
+.errorMessage {
+    color: red;
+}
+
+.successMessage {
+    color: green;
+}
+
+.tradeRequestsList {
+    height: 80%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    margin: 0 2%;
+}
+
+.tradeRequestsList button {
+    margin-left: 1%;
+}

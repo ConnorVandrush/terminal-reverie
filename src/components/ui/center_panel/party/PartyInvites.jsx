@@ -38,84 +38,81 @@ export default function PartyInvites()
     };
 
     return (
-        <div className={styles.partyInvites}>
+            <div className={styles.partyInvites}>
 
-            {/* Input Row */}
-            <div className={styles.inputRow}>
-                <input 
-                    type="text" 
-                    placeholder="Enter player name to invite" 
-                    ref={invitedPlayerRef} 
-                    className={styles.inviteInput} 
-                />
+                {/* Input Row */}
+                <div className={styles.inputRow}>
+                    <input 
+                        type="text" 
+                        placeholder="Enter player name to invite" 
+                        ref={invitedPlayerRef} 
+                        className={styles.inviteInput} 
+                    />
 
-                <button 
-                    className={styles.sendInviteButton} 
-                    onClick={handleClientSendPartyInvite}
-                >
-                    Send Invite
-                </button>
+                    <button 
+                        className={styles.sendInviteButton} 
+                        onClick={handleClientSendPartyInvite}
+                    >
+                        Send Invite
+                    </button>
 
-                <button 
-                    className={styles.backButton} 
-                    onClick={() => dispatch(setCenterPanel('partyWindow'))}
-                >
-                    Back
-                </button>
-            </div>
+                    <button 
+                        className={styles.backButton} 
+                        onClick={() => dispatch(setCenterPanel('partyWindow'))}
+                    >
+                        Back
+                    </button>
+                </div>
 
-            {/* Messages */}
-            <div className={styles.message}>
-                {errorMessage && (
-                    <div className={styles.inviteMessage}>
-                        <div className={styles.errorMessage}>{errorMessage}</div>
-                    </div>
-                )}
-
-                {successMessage && (
-                    <div className={styles.inviteMessage}>
-                        <div className={styles.successMessage}>{successMessage}</div>
-                    </div>
-                )}
-            </div>
-
-            {/* Invite List */}
-            <div className={styles.invitesList}>
-                <h3 className={styles.invitesTitle}>Party Invites</h3>
-
-                {partyInvites.length > 0 ? (
-                    partyInvites.map(invite => (
-                        <div 
-                            key={invite.fromPlayerName} 
-                            className={styles.invite}
-                        >
-                            <span className={styles.inviteText}>
-                                {invite.fromPlayerName} has invited you to join their party.
-                            </span>
-
-                            <button 
-                                className={styles.acceptButton}
-                                onClick={() => handleAcceptInvite(invite.fromPlayerName)}
-                            >
-                                Accept
-                            </button>
-
-                            <button 
-                                className={styles.declineButton}
-                                onClick={() => dispatch(removePartyInvite(invite.fromPlayerName))}
-                            >
-                                Decline
-                            </button>
+                {/* Messages */}
+                <div className={styles.message}>
+                    {errorMessage && (
+                        <div className={styles.inviteMessage}>
+                            <div className={styles.errorMessage}>{errorMessage}</div>
                         </div>
-                    ))
-                ) : (
-                    <div className={styles.noInvites}>No party invites</div>
-                )}
+                    )}
+
+                    {successMessage && (
+                        <div className={styles.inviteMessage}>
+                            <div className={styles.successMessage}>{successMessage}</div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Invite List */}
+                <div className={styles.invitesList}>
+                    <h3 className={styles.invitesTitle}>Party Invites</h3>
+
+                    {partyInvites.length > 0 ? (
+                        partyInvites.map(invite => (
+                            <div 
+                                key={invite.fromPlayerName} 
+                                className={styles.invite}
+                            >
+                                <span className={styles.inviteText}>
+                                    {invite.fromPlayerName} has invited you to join their party.
+                                </span>
+
+                                <button 
+                                    className={styles.acceptButton}
+                                    onClick={() => handleAcceptInvite(invite.fromPlayerName)}
+                                >
+                                    Accept
+                                </button>
+
+                                <button 
+                                    className={styles.declineButton}
+                                    onClick={() => dispatch(removePartyInvite(invite.fromPlayerName))}
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <div className={styles.noInvites}>No party invites</div>
+                    )}
+                </div>
+                
             </div>
-
-            {/* Empty footer container (kept for layout consistency) */}
-            <div className={styles.buttonContainer}></div>
-
-        </div>
     );
 }
