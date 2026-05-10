@@ -34,6 +34,10 @@ class ClientPartyManager
             this.isPartyFollower = false;
             this.isPartyLeader = false;
             this.partyData = partyData;
+            const state = window.clientGlobalManager.getReactState();
+            const oldPartyData = state.partyWindow.partyData;
+            const characterData = oldPartyData?.members?.find(m => m.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId) || null;
+            console.log('Received party data update:', characterData );
             const frozenReactPartyData = structuredClone(partyData)
             window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: frozenReactPartyData });
             if (partyData !== null && partyData.members[0].playerId === this.clientPlayerManager.characterData.playerId)
@@ -55,7 +59,6 @@ class ClientPartyManager
             {
                 this.isPartyFollower = false;
                 this.isPartyLeader = false;
-                const characterData = window.clientGlobalManager.clientPartyManager.partyData?.members.find(m => m.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
                 window.clientGlobalManager.clientPartyManager.partyData = { members: characterData ? [characterData] : [] };
                 window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: { members: characterData ? [characterData] : [] } });
             }

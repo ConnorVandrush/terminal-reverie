@@ -1,4 +1,4 @@
-import { clientSendPartyInvite, setErrorMessage, setSuccessMessage, clientAcceptPartyInvite, clientLeaveParty } from "@store/partyWindowSlice";
+import { clientSendPartyInvite, setErrorMessage, setSuccessMessage, clientAcceptPartyInvite, clientLeaveParty, clientKickPartyMember } from "@store/partyWindowSlice";
 import { removePartyInvite } from "../../store/partyWindowSlice";
 
 export default async function partyWindowEmitters(action, store)
@@ -22,6 +22,7 @@ export default async function partyWindowEmitters(action, store)
 
     if (action.type === clientAcceptPartyInvite.type)
     {
+        console.log('Emitting clientAcceptPartyInvite with payload:', action.payload);
         const response = await socket.emitWithAck('clientAcceptPartyInvite', action.payload);
 
         if (response.success)
@@ -45,12 +46,27 @@ export default async function partyWindowEmitters(action, store)
         {
             store.dispatch(setSuccessMessage(response.message));
             store.dispatch(setErrorMessage(false));
-            // why is this preventing movement FIXME stale character data?
             const characterData = window.clientGlobalManager.clientPartyManager.partyData?.members.find(m => m.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId);
             window.clientGlobalManager.clientPartyManager.partyData = { members: characterData ? [characterData] : [] };
             store.dispatch({ type: 'partyWindow/setPartyData', payload: { members: characterData ? [characterData] : [] } });
         }
         else
+        {
+            store.dispatch(setErrorMessage(response.message));
+            store.dispatch(setSuccessMessage(false));
+        }
+    }
+
+    if (action.type === clientKickPartyMember.type)
+    {
+        const response = await socket.emitWithAck('clientKickPartyMember', action.payload);
+
+        if (response.success)        
+        {
+            store.dispatch(setSuccessMessage(response.message));
+            store.dispatch(setErrorMessage(false));
+        }
+        else        
         {
             store.dispatch(setErrorMessage(response.message));
             store.dispatch(setSuccessMessage(false));

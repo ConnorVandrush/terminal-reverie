@@ -176,6 +176,47 @@ class ServerPartyManager
                     this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', partyData);
                 }
             });
+
+            socket.on('clientKickPartyMember', ({ partyLeaderId, memberPlayerId }, cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const partyData = this.playerParties.get(partyLeaderId);
+                if (!playerData || !partyData)                 
+                {
+                    return cb({ success: false, message: 'Party not found' });
+                }
+                if (partyLeaderId !== socket.playerId)
+                {
+                    return cb({ success: false, message: 'Only the party leader can kick members' });
+                }
+                const memberIndex = partyData.members.findIndex(member => member.playerId === memberPlayerId);
+                if (memberIndex === -1) 
+                {
+                    return cb({ success: false, message: 'Player is not a member of this party' });
+                }
+                const member = partyData.members[memberIndex];
+                partyData.members.splice(memberIndex, 1);
+                const memberSocket = this.serverPlayerManager.playersOnline.get(memberPlayerId)?.socketId;
+                if (memberSocket)                
+                {
+                    this.io.to(memberSocket).emit('serverUpdatePartyData', null);
+                    this.io.to(memberSocket).socketsLeave(`party_${partyLeaderId}`);
+                }
+                if (partyData.members.length === 1)
+                {
+                    this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', null);
+                    this.io.in(`party_${partyLeaderId}`).socketsLeave('party_' + partyLeaderId);
+                    this.updatePartyData(partyData, null, [])
+                    this.playerParties.delete(partyLeaderId);
+                    cb({ success: true, message: 'Member has been kicked. The party has been disbanded since there was only one member left.' });
+                }
+                else
+                {
+                    this.updatePartyData(partyData, partyLeaderId, partyData.members)
+                    cb({ success: true, message: 'Member has been kicked' });
+                    this.io.to('party_' + partyLeaderId).emit('serverUpdatePartyData', partyData);
+                }
+            });
         });
     }
 }

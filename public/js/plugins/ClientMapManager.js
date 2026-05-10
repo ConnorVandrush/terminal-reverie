@@ -116,46 +116,87 @@ class ClientMapManager
         const socket = window.clientGlobalManager.clientPlayerManager.socket;
         socket.on('serverPlayerMoved', ({ playerId, newLocation }) =>
         {
-            if (this.isTransferring) return; // ignore movements during transfer
+            if (this.isTransferring) return;
+
             const eventId = window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId;
             const gameEvent = $gameMap._events[eventId];
-            if (gameEvent) 
-            {
-                gameEvent._netMovementQueue = gameEvent._netMovementQueue || [];
+            if (!gameEvent) return;
 
-                gameEvent._netMovementQueue.push({
-                    x: newLocation.x,
-                    y: newLocation.y,
-                });
+            gameEvent._netMovementQueue = gameEvent._netMovementQueue || [];
+
+            const startX = gameEvent.x;
+            const startY = gameEvent.y;
+            const targetX = newLocation.x;
+            const targetY = newLocation.y;
+
+            let x = startX;
+            let y = startY;
+
+            // Push intermediate steps until we reach the target
+            while (x !== targetX || y !== targetY) 
+            {
+                if (x < targetX) x++;
+                else if (x > targetX) x--;
+
+                if (y < targetY) y++;
+                else if (y > targetY) y--;
+
+                gameEvent._netMovementQueue.push({ x, y });
             }
         });
 
         socket.on('serverPartyMoved', ({ newLocations, inEncounter }) =>
         {
             if (this.isTransferring) return;
+
             for (const { playerId, newLocation } of newLocations)
             {
-                if (playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId)
-                {
-                    const player = $gamePlayer;
-                    player._netMovementQueue = player._netMovementQueue || [];
-                    player._netMovementQueue.push({
-                        x: newLocation.x,
-                        y: newLocation.y,
-                    });
-                    continue;
-                }
+                const isLocalPlayer =
+                    playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId;
 
-                const eventId = window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId;
-                const gameEvent = $gameMap._events[eventId];
-                if (gameEvent) 
-                {
-                    gameEvent._netMovementQueue = gameEvent._netMovementQueue || [];
+                const character = isLocalPlayer
+                    ? $gamePlayer
+                    : $gameMap._events[
+                        window.clientGlobalManager.clientPlayerManager.playersOnMap.get(playerId)?.eventId
+                    ];
 
-                    gameEvent._netMovementQueue.push({
-                        x: newLocation.x,
-                        y: newLocation.y,
-                    });
+                if (!character) continue;
+
+                character._netMovementQueue = character._netMovementQueue || [];
+
+                const startX = character.x;
+                const startY = character.y;
+                const targetX = newLocation.x;
+                const targetY = newLocation.y;
+
+                let x = startX;
+                let y = startY;
+
+                // Clear old stale movement if needed
+                character._netMovementQueue.length = 0;
+
+                while (x !== targetX || y !== targetY)
+                {
+                    // Move horizontally first
+                    if (x < targetX)
+                    {
+                        x++;
+                    }
+                    else if (x > targetX)
+                    {
+                        x--;
+                    }
+                    // Then move vertically
+                    else if (y < targetY)
+                    {
+                        y++;
+                    }
+                    else if (y > targetY)
+                    {
+                        y--;
+                    }
+
+                    character._netMovementQueue.push({ x, y });
                 }
             }
         });

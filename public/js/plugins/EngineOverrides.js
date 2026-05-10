@@ -206,9 +206,8 @@ Scene_Map.prototype.onMapLoaded = function() {
 // Look for pending player changes (new players, disconnects) on each update and process them
 const _Scene_Map_update = Scene_Map.prototype.update;
 Scene_Map.prototype.update = function() {
-    _Scene_Map_update.call(this);   // correct `this`
+    _Scene_Map_update.call(this);
 
-    // your logic
     if (window.clientGlobalManager?.clientMapManager.isTransferring) return; // don't process pending changes during transfer
     window.clientGlobalManager.clientPlayerManager.processPendingPlayerChanges();
 };
