@@ -87,6 +87,10 @@ class ServerPartyManager
                     {
                         return cb({ success: false, message: `You cannot accept an invite from yourself` });
                     }
+                    if (toPlayer.isBusy || fromPlayer.isBusy)                    
+                    {
+                        return cb({ success: false, message: `${fromPlayerName} is currently busy` });
+                    }
                     try
                     {
                         const partyLeaderId = this.serverPlayerManager.characterNameToId.get(fromPlayerName);

@@ -53,6 +53,7 @@ class ClientPlayerManager
         this.gamePlayer = $gamePlayer;
         AudioManager.stopBgm();
         SceneManager.goto(Scene_Map);
+        window.clientGlobalManager.dispatchToReact({ type: 'rightPanel/setRightPanel', payload: 'statsPanel' });
     }
 
     processPendingPlayerChanges()

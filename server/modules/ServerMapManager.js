@@ -187,7 +187,7 @@ class ServerMapManager
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 playerData.characterData.location.d = direction;
 
-                if (!playerData || playerData.isTransferring || playerData.preventMovement || playerData.inEncounter)
+                if (!playerData || playerData.isTransferring || playerData.preventMovement || playerData.inEncounter || playerData.isBusy)
                 {
                     console.error(playerData);
                     return cb({ success: false, message: 'Cannot move at this time because already transferring, preventing movement, or in an encounter' });

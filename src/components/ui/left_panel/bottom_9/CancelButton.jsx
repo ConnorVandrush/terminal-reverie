@@ -17,7 +17,7 @@ export default function CancelButton()
         Input.virtualClick('cancel');
 
         // If a center panel is open AND it's not the shop window → close it
-        if (centerPanel !== null && centerPanel !== 'shopWindow') {
+        if (centerPanel !== null && centerPanel !== 'shopWindow' && centerPanel !== 'tradeWindow') {
             dispatch(setCenterPanel(null));
             dispatch(setSelectedPartyMember(null));
             dispatch(setSelectedItem(null));

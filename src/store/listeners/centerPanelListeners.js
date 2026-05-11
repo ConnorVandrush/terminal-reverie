@@ -14,11 +14,18 @@ centerPanelListener.startListening({
         const originalState = listenerApi.getOriginalState();
         const currentPanel = originalState.centerPanel.centerPanel;
 
-        // Block panel changes while shop window is open
+        // 🔒 Block panel changes while shop window is open
         if (currentPanel === 'shopWindow' && newPanel !== null) 
         {
-            // Restore shop window since reducer already updated state
             listenerApi.dispatch(setCenterPanel('shopWindow'));
+            return;
+        }
+
+        // 🔒 Block panel changes while in a trade, but allow closing the trade window
+        if (currentPanel === 'tradeWindow' && newPanel !== null)
+        {
+            listenerApi.dispatch(setCenterPanel('tradeWindow'));
+            return;
         }
     }
 });

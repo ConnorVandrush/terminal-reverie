@@ -205,6 +205,7 @@ class ServerInventoryManager
                 if (this.shops.has(shopName))
                 {
                     const shopInventory = this.buildShopInventory(this.shops.get(shopName));
+                    playerData.isBusy = true;
                     cb({ success: true, shopInventory: shopInventory });
                 }
                 else
@@ -217,6 +218,70 @@ class ServerInventoryManager
             {
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 playerData.preventMovement = false;
+                playerData.isBusy = false;
+                cb({ success: true });
+            });
+
+            socket.on('clientSendTradeRequest', async ({ toPlayerName }, cb) =>
+            {
+                const toPlayer = this.serverPlayerManager.playersOnline.get(this.serverPlayerManager.characterNameToId.get(toPlayerName));
+                const toPlayerSocket = toPlayer ? toPlayer.socketId : null;
+                const fromPlayerName = this.serverPlayerManager.playersOnline.get(socket.playerId)?.characterData.name || "Unknown";
+                if (!toPlayerSocket) 
+                {
+                    return cb({ success: false, message: `Player ${toPlayerName} not found` });
+                }
+                if (toPlayerSocket.id === socket.id)
+                {
+                    return cb({ success: false, message: `You cannot send a trade request to yourself` });
+                }
+                cb({ success: true, message: `Trade request sent to ${toPlayerName}` });
+                this.io.to(toPlayerSocket).emit('serverSendTradeRequest', { fromPlayerName });
+            });
+
+            socket.on('clientAcceptTradeRequest', async ({ fromPlayerName }, cb) =>
+            {
+                if (this.serverPartyManager.checkOrthogonalAdjacency(socket.playerId, this.serverPlayerManager.characterNameToId.get(fromPlayerName)))
+                {
+                    const fromPlayer = this.serverPlayerManager.playersOnline.get(this.serverPlayerManager.characterNameToId.get(fromPlayerName));
+                    fromPlayer.partyData.partyLeaderId = fromPlayer.characterData.playerId;
+                    const fromPlayerSocket = fromPlayer ? fromPlayer.socketId : null;
+                    const toPlayer = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                    toPlayer.partyData.partyLeaderId = fromPlayer.characterData.playerId;
+                    if (!fromPlayerSocket) 
+                    {
+                        return cb({ success: false, message: `Player ${fromPlayerName} not found` });
+                    }
+                    if (fromPlayerSocket.id === socket.id)
+                    {
+                        return cb({ success: false, message: `You cannot accept an invite from yourself` });
+                    }
+                    if (toPlayer.isBusy || fromPlayer.isBusy)                    
+                    {
+                        return cb({ success: false, message: `${fromPlayerName} is currently busy` });
+                    }
+                    toPlayer.isBusy = true;
+                    fromPlayer.isBusy = true;
+                    this.io.to(fromPlayerSocket).emit('serverTradeRequestAccepted', { fromPlayerName: toPlayer.characterData.name });
+                    cb({ success: true, fromPlayerName: fromPlayerName, message: `Trade request accepted. Starting trade with ${fromPlayerName}` });
+                }
+                else
+                {
+                    cb({ success: false, message: `You must be adjacent to ${fromPlayerName} to accept the party invite` });
+                }
+            });
+
+            socket.on('clientTradeDeclined', async ({ tradePartner }, cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const partnerPlayerData = this.serverPlayerManager.playersOnline.get(this.serverPlayerManager.characterNameToId.get(tradePartner));
+                const partnerSocket = partnerPlayerData ? partnerPlayerData.socketId : null;
+                if (partnerSocket)                
+                {
+                    this.io.to(partnerSocket).emit('serverTradeDeclined', { fromPlayerName: playerData.characterData.name });
+                }
+                partnerPlayerData.isBusy = false;
+                playerData.isBusy = false;
                 cb({ success: true });
             });
         });
