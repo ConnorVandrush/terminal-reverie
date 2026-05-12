@@ -34,7 +34,8 @@ export default async function tradeWindowEmitters(action, store)
     }
     else if (action.type === 'tradeWindow/clientTradeDeclined')
     {
-        const response = await socket.emitWithAck('clientTradeDeclined', { tradePartner: action.payload });
+        const tradePartner = store.getState().tradeWindow.tradePartner;
+        const response = await socket.emitWithAck('clientTradeDeclined', { tradePartner });
         if (response.success)
         {
             store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
@@ -49,6 +50,57 @@ export default async function tradeWindowEmitters(action, store)
         {
             store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: response.message });
             store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: null });
+        }
+    }
+    else if (action.type === 'tradeWindow/clientOfferItemInTrade')
+    {
+        const tradePartner = store.getState().tradeWindow.tradePartner;
+        const response = await socket.emitWithAck('clientOfferItemInTrade', { qty: action.payload.qty, item: action.payload.item, tradePartner: tradePartner });
+        if (!response.success)
+        {
+            store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: response.message });
+            store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: null });
+        }
+        if (response.success)
+        {
+            store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: null });
+            store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: response.message });
+            store.dispatch({ type: 'tradeWindow/setYourOfferItems', payload: action.payload });
+        }
+    }
+    else if (action.type === 'tradeWindow/clientOfferGoldInTrade')
+    {
+        const tradePartner = store.getState().tradeWindow.tradePartner;
+        const response = await socket.emitWithAck('clientOfferGoldInTrade', { amt: action.payload, tradePartner: tradePartner });
+        if (!response.success)
+        {
+            store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: response.message });
+            store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: null });
+        }
+        if (response.success)
+        {
+            store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: null });
+            store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: response.message });
+            store.dispatch({ type: 'tradeWindow/setYourOfferGold', payload: action.payload });
+        }
+    }
+    else if (action.type === 'tradeWindow/clientTradeAccepted')
+    {
+        const tradePartner = store.getState().tradeWindow.tradePartner;
+        const theirOfferGold = store.getState().tradeWindow.theirOfferGold;
+        const theirOfferItems = store.getState().tradeWindow.theirOfferItems;
+        const yourOfferGold = store.getState().tradeWindow.yourOfferGold;
+        const yourOfferItems = store.getState().tradeWindow.yourOfferItems;
+        const response = await socket.emitWithAck('clientTradeAccepted', { tradePartner, theirOfferGold, theirOfferItems, yourOfferGold, yourOfferItems });
+        if (!response.success)
+        {
+            store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: response.message });
+            store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: null });
+        }
+        if (response.success)
+        {
+            store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: null });
+            store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: response.message });
         }
     }
 }

@@ -37,7 +37,6 @@ class ClientPartyManager
             const state = window.clientGlobalManager.getReactState();
             const oldPartyData = state.partyWindow.partyData;
             const characterData = oldPartyData?.members?.find(m => m.playerId === window.clientGlobalManager.clientPlayerManager.characterData.playerId) || null;
-            console.log('Received party data update:', characterData );
             const frozenReactPartyData = structuredClone(partyData)
             window.clientGlobalManager.dispatchToReact({ type: 'partyWindow/setPartyData', payload: frozenReactPartyData });
             if (partyData !== null && partyData.members[0].playerId === this.clientPlayerManager.characterData.playerId)

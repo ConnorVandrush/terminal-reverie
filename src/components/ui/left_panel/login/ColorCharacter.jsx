@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './ColorCharacter.module.css';
@@ -21,6 +21,12 @@ export default function ColorCharacter()
     const pantsColor = useSelector((state) => state.createCharacter.pantsColor);
     const createCharacterCB = useSelector((state) => state.createCharacter.createCharacterCB);
     const template = origin + job + gender + hairStyle + clothingStyle;
+
+    const HAIR_COLORS = ["blondeHair", "blackHair", "brownHair", "redHair", "greyHair"];
+    const EYE_COLORS = ["blueEyes", "darkBrownEyes", "brownEyes", "greenEyes"];
+    const SKIN_COLORS = ["rosySkin", "richSkin", "tanSkin", "fairSkin"];
+    const SHIRT_COLORS = ["greenShirt", "redShirt", "blueShirt"];
+    const PANTS_COLORS = ["greenPants", "redPants", "bluePants"];
 
     const handleCreateCharacter = () => 
     {
@@ -74,6 +80,33 @@ export default function ColorCharacter()
         }
         dispatch(recolorSprite(option));
     };
+    
+    const randomFrom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    const handleRandomizeAppearance = async () =>
+    {
+        const newHair = randomFrom(HAIR_COLORS);
+        const newEyes = randomFrom(EYE_COLORS);
+        const newSkin = randomFrom(SKIN_COLORS);
+        const newShirt = randomFrom(SHIRT_COLORS);
+        const newPants = randomFrom(PANTS_COLORS);
+
+        dispatch(setHairColor(newHair));
+        dispatch(setEyeColor(newEyes));
+        dispatch(setSkinColor(newSkin));
+        dispatch(setShirtColor(newShirt));
+        dispatch(setPantsColor(newPants));
+
+        await dispatch(recolorSprite("hair"));
+        await dispatch(recolorSprite("eyes"));
+        await dispatch(recolorSprite("skin"));
+        await dispatch(recolorSprite("shirt"));
+        await dispatch(recolorSprite("pants"));
+    };
+
+    useEffect(() => {
+        handleRandomizeAppearance();
+    }, []);
 
     return (
         <div className={styles.colorCharacter}>
@@ -82,11 +115,11 @@ export default function ColorCharacter()
                 <div>
                     <label htmlFor="hairColor">Hair Color:</label>
                     <select id="hairColor" name="hairColor" value={hairColor} className={styles.input} onChange={handleRecolorSprite}>
-                        <option value="blondeHair">Blonde</option>
                         <option value="blackHair">Black</option>
+                        <option value="blondeHair">Blonde</option>
                         <option value="brownHair">Brown</option>
-                        <option value="redHair">Red</option>
                         <option value="greyHair">Grey</option>
+                        <option value="redHair">Red</option>
                     </select>
                 </div>
 
@@ -94,8 +127,8 @@ export default function ColorCharacter()
                     <label htmlFor="eyeColor">Eye Color:</label>
                     <select id="eyeColor" name="eyeColor" value={eyeColor} className={styles.input} onChange={handleRecolorSprite}>
                         <option value="blueEyes">Blue</option>
-                        <option value="darkBrownEyes">Dark Brown</option>
                         <option value="brownEyes">Brown</option>
+                        <option value="darkBrownEyes">Dark Brown</option>
                         <option value="greenEyes">Green</option>
                     </select>
                 </div>
@@ -103,30 +136,32 @@ export default function ColorCharacter()
                 <div>
                     <label htmlFor="skinColor">Skin Tone:</label>
                     <select id="skinColor" name="skinColor" value={skinColor} className={styles.input} onChange={handleRecolorSprite}>
-                        <option value="rosySkin">Rosy</option>
-                        <option value="richSkin">Rich</option>
-                        <option value="tanSkin">Tan</option>
                         <option value="fairSkin">Fair</option>
+                        <option value="richSkin">Rich</option>
+                        <option value="rosySkin">Rosy</option>
+                        <option value="tanSkin">Tan</option>
                     </select>
                 </div>
 
                 <div>
                     <label htmlFor="shirtColor">Shirt Color:</label>
                     <select id="shirtColor" name="shirtColor" value={shirtColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="blueShirt">Blue</option>
                         <option value="greenShirt">Green</option>
                         <option value="redShirt">Red</option>
-                        <option value="blueShirt">Blue</option>
                     </select>
                 </div>
 
                 <div>
                     <label htmlFor="pantsColor">Pants Color:</label>
                     <select id="pantsColor" name="pantsColor" value={pantsColor} className={styles.input} onChange={handleRecolorSprite}>
+                        <option value="bluePants">Blue</option>
                         <option value="greenPants">Green</option>
                         <option value="redPants">Red</option>
-                        <option value="bluePants">Blue</option>
                     </select>
                 </div>
+
+                <button type="button" id="createCharacterButton" onClick={handleRandomizeAppearance} >Randomize Appearance</button>
 
                 <button type="button" id="createCharacterButton" onClick={handleCreateCharacter} >Create Character</button>
 

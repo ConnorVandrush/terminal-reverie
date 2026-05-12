@@ -284,6 +284,80 @@ class ServerInventoryManager
                 playerData.isBusy = false;
                 cb({ success: true });
             });
+
+            socket.on('clientOfferGoldInTrade', async ({ amt, tradePartner }, cb) =>
+            {
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const partnerPlayerData = this.serverPlayerManager.playersOnline.get(this.serverPlayerManager.characterNameToId.get(tradePartner));
+                const partnerSocket = partnerPlayerData ? partnerPlayerData.socketId : null;
+                if (amt < 0)
+                {
+                    return cb({ success: false, message: "Amount must be positive" });
+                }
+                if (amt > playerData.characterData.gold)
+                {
+                    return cb({ success: false, message: "You do not have that much gold" });
+                }
+                playerData.characterData.gold -= amt;
+                if (partnerSocket)                
+                {
+                    this.io.to(partnerSocket).emit('serverUpdateTheirOfferGold', { amt: amt, fromPlayerName: playerData.characterData.name });
+                }
+                cb({ success: true });
+            });
+
+            socket.on('clientOfferItemInTrade', async ({ qty, item, tradePartner }, cb) =>
+            {
+                const itemId = item.id;
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const playerInventory = playerData.characterData.inventory;
+
+                const partnerPlayerData = this.serverPlayerManager.playersOnline.get(
+                    this.serverPlayerManager.characterNameToId.get(tradePartner)
+                );
+                const partnerInventory = partnerPlayerData.characterData.inventory;
+                const partnerSocket = partnerPlayerData ? partnerPlayerData.socketId : null;
+
+                // Validate qty
+                if (qty < 0) {
+                    return cb({ success: false, message: "Amount must be positive" });
+                }
+
+                // Offering player must own the item
+                const invItem = playerInventory[itemId];
+                if (!invItem) {
+                    return cb({ success: false, message: "You do not have that item" });
+                }
+
+                // Offering player must have enough quantity
+                if (invItem.quantity < qty) {
+                    return cb({ success: false, message: "You do not have enough of that item" });
+                }
+
+                // Receiving player must not exceed 99
+                const partnerInvItem = partnerInventory[itemId];
+                const partnerCurrentQty = partnerInvItem ? partnerInvItem.quantity : 0;
+
+                if (partnerCurrentQty + qty > 99) {
+                    return cb({ success: false, message: "They cannot hold more than 99 of that item" });
+                }
+
+                // Notify partner
+                if (partnerSocket) {
+                    this.io.to(partnerSocket).emit('serverUpdateTheirOfferItems', {
+                        qty,
+                        item,
+                        fromPlayerName: playerData.characterData.name
+                    });
+                }
+
+                cb({ success: true });
+            });
+
+            socket.on('clientTradeAccepted', async ({ tradePartner, theirOfferGold, theirOfferItems, yourOfferGold, yourOfferItems }, cb) =>
+            {
+                console.log(tradePartner, theirOfferGold, theirOfferItems, yourOfferGold, yourOfferItems);
+            });
         });
     }
 }

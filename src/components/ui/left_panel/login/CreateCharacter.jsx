@@ -61,17 +61,17 @@ export default function CreateCharacter()
                 <div>
                     <label htmlFor="job">Job:</label><br />
                     <select id="job" name="job" value={job} className={styles.input} onChange={handleNewSpriteTemplate}>
-                        <option value="warrior">Warrior</option>
                         <option value="mage">Mage</option>
                         <option value="rogue">Rogue</option>
+                        <option value="warrior">Warrior</option>
                     </select>
                 </div>
 
                 <div>
                     <label htmlFor="gender">Gender:</label><br />
                     <select id="gender" name="gender" value={gender} className={styles.input} onChange={handleNewSpriteTemplate}>
-                        <option value="male">Male</option>
                         <option value="female">Female</option>
+                        <option value="male">Male</option>
                     </select>
                 </div>
 

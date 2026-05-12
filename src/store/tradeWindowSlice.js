@@ -9,8 +9,10 @@ const tradeWindowSlice = createSlice(
         successMessage: null,
         tradeRequests: [],
         tradePartner: null,
-        theirOffer: { items: [], gold: 0 },
-        yourOffer: { items: [], gold: 0 }
+        theirOfferItems: {},
+        yourOfferItems: {},
+        theirOfferGold: 0,
+        yourOfferGold: 0
     },
     reducers:
     {
@@ -62,16 +64,46 @@ const tradeWindowSlice = createSlice(
         {
             state.tradePartner = action.payload;
         },
-        setTheirOffer: (state, action) =>
+        setTheirOfferItems: (state, action) =>
         {
-            state.theirOffer = action.payload;
+            const itemName = action.payload.item.item.name;
+            const qty = action.payload.qty;
+            if (!state.theirOfferItems) {
+                state.theirOfferItems = {};
+            }
+            state.theirOfferItems[itemName] = qty;
         },
-        setYourOffer: (state, action) =>
+        setYourOfferItems: (state, action) =>
         {
-            state.yourOffer = action.payload;
-        }
+            const itemName = action.payload.item.item.name;
+            const qty = action.payload.qty;
+            if (!state.yourOfferItems) {
+                state.yourOfferItems = {};
+            }
+            state.yourOfferItems[itemName] = qty;
+        },
+        setTheirOfferGold: (state, action) =>
+        {
+            state.theirOfferGold = action.payload;
+        },
+        setYourOfferGold: (state, action) =>
+        {
+            state.yourOfferGold = action.payload;
+        },
+        clientOfferItemInTrade: (state, action) =>
+        {
+            // emit handled in tradeWindowEmitters.js
+        },
+        clientOfferGoldInTrade: (state, action) =>
+        {
+            // emit handled in tradeWindowEmitters.js
+        },
+        clientTradeAccepted: (state, action) =>
+        {
+            // emit handled in tradeWindowEmitters.js
+        },
     }
 });
 
-export const { setErrorMessage, setSuccessMessage, clientSendTradeRequest, serverReceiveTradeRequest, clientAcceptTradeRequest, removeTradeRequest, serverSendTradeRequest, serverTradeRequestAccepted, clientTradeDeclined, setTradePartner, setTheirOffer, setYourOffer } = tradeWindowSlice.actions;
+export const { clientTradeAccepted, setErrorMessage, setSuccessMessage, clientSendTradeRequest, serverReceiveTradeRequest, clientAcceptTradeRequest, removeTradeRequest, serverSendTradeRequest, serverTradeRequestAccepted, clientTradeDeclined, setTradePartner, setTheirOffer, setYourOffer, clientOfferItemInTrade, clientOfferGoldInTrade } = tradeWindowSlice.actions;
 export default tradeWindowSlice.reducer;

@@ -26,4 +26,14 @@ export function createTradeWindowListeners(store)
         store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: null });
         window.clientGlobalManager.clientMapManager.isMoving = false;
     });
+
+    window.clientGlobalManager.clientPlayerManager.socket.on('serverUpdateTheirOfferGold', (data) =>
+    {
+        store.dispatch({ type: 'tradeWindow/setTheirOfferGold', payload: data.amt });
+    });
+
+    window.clientGlobalManager.clientPlayerManager.socket.on('serverUpdateTheirOfferItems', (data) =>
+    {
+        store.dispatch({ type: 'tradeWindow/setTheirOfferItems', payload: data });
+    });
 }

@@ -22,7 +22,6 @@ export default async function partyWindowEmitters(action, store)
 
     if (action.type === clientAcceptPartyInvite.type)
     {
-        console.log('Emitting clientAcceptPartyInvite with payload:', action.payload);
         const response = await socket.emitWithAck('clientAcceptPartyInvite', action.payload);
 
         if (response.success)

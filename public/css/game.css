@@ -31,7 +31,12 @@ body {
 #leftPanel, #rightPanel {
     display: flex;
     flex: 1;
-    background-color: #0000aa;
+    background: linear-gradient(
+    to bottom,
+    #1a1aff 0%,
+    #0000aa 60%,
+    #000066 100%
+    );
     border: .4vw solid #ffffff;
     box-shadow: inset 0 0 0 .4vw #0a0a6a;
     font-family: 'Press Start 2P', monospace;
@@ -49,7 +54,12 @@ body {
 .centerPanel {
     position: absolute;
     display: flex;
-    background-color: #0000aa;
+    background: linear-gradient(
+    to bottom,
+    #1a1aff 0%,
+    #0000aa 60%,
+    #000066 100%
+    );
     border: .4vw solid #ffffff;
     box-shadow: inset 0 0 0 .4vw #0a0a6a;
     font-family: 'Press Start 2P', monospace;

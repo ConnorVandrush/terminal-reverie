@@ -13,7 +13,7 @@ class CharacterData
         this.gold = 0;
         this.maxHp = 100;
         this.currentHp = this.maxHp;
-        this.inventory = {}
+        this.inventory = {} //{ '1': { id: 1, name: 'Herb', description: 'Restores 25% of max HP', effects: { restoreHP: 25 }, quantity: 10 } }
         this.appearance = 
         {
             template: null,
