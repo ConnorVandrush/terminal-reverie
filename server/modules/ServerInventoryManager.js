@@ -64,6 +64,19 @@ class ServerInventoryManager
         };
     }
 
+    removeItemFromInventory(inventory, itemId, amount) 
+    {
+        const key = String(itemId);
+
+        if (!inventory[key]) return;
+
+        inventory[key].quantity -= amount;
+
+        if (inventory[key].quantity <= 0) {
+            delete inventory[key];
+        }
+    }
+
     clientUseItem(playerData, itemId, targetMemberId, partyData) 
     {
         const characterData = playerData.characterData
@@ -171,6 +184,90 @@ class ServerInventoryManager
             return { success: true, characterData: characterData };
         }
     }
+
+    normalizeTradeOffer(tradeOffer) 
+    {
+        return Object.fromEntries(
+            Object.entries(tradeOffer)
+                .sort(([playerA], [playerB]) => playerA.localeCompare(playerB))
+                .map(([player, data]) => [
+                    player,
+                    {
+                        gold: data.gold,
+                        items: data.items
+                            .map(item => ({
+                                itemId: String(item.itemId),
+                                itemName: item.itemName,
+                                qty: item.qty
+                            }))
+                            .sort((a, b) => a.itemId.localeCompare(b.itemId))
+                    }
+                ])
+        );
+    }
+
+    tradeOffersMatch(a, b) 
+    {
+        const normA = this.normalizeTradeOffer(a);
+        const normB = this.normalizeTradeOffer(b);
+
+        const matches = JSON.stringify(normA) === JSON.stringify(normB);
+
+        return matches;
+    }
+
+    finalizeTrade(playerA, playerB) 
+    {
+        const aData = playerA.characterData;
+        const bData = playerB.characterData;
+
+        const aOffer = aData.tradeOffer[playerA.characterData.name];
+        const bOffer = aData.tradeOffer[playerB.characterData.name];
+
+        // 1. GOLD TRANSFER
+        aData.gold -= aOffer.gold;
+        bData.gold += aOffer.gold;
+
+        bData.gold -= bOffer.gold;
+        aData.gold += bOffer.gold;
+
+        // 2. ITEM TRANSFER
+        for (const item of aOffer.items) {
+            this.removeItemFromInventory(aData.inventory, item.itemId, item.qty);
+            this.addItemToInventory(bData.inventory, item.itemId, item.qty);
+        }
+
+        for (const item of bOffer.items) {
+            this.removeItemFromInventory(bData.inventory, item.itemId, item.qty);
+            this.addItemToInventory(aData.inventory, item.itemId, item.qty);
+        }
+
+        // 3. CLEAR TRADE STATE
+        aData.tradeOffer = null;
+        bData.tradeOffer = null;
+
+        // 4. NOTIFY CLIENTS
+        const aSocket = playerA.socketId;
+        const bSocket = playerB.socketId;
+
+        if (aSocket) {
+            this.io.to(aSocket).emit("serverTradeComplete", {
+                message: "Trade completed successfully.",
+                characterData: aData
+            });
+        }
+
+        if (bSocket) {
+            this.io.to(bSocket).emit("serverTradeComplete", {
+                message: "Trade completed successfully.",
+                characterData: bData
+            });
+        }
+
+        playerA.isBusy = false;
+        playerB.isBusy = false;
+    }
+
 
     startListeners()
     {
@@ -298,17 +395,17 @@ class ServerInventoryManager
                 {
                     return cb({ success: false, message: "You do not have that much gold" });
                 }
-                playerData.characterData.gold -= amt;
                 if (partnerSocket)                
                 {
+                    playerData.characterData.tradeOffer = null;
+                    partnerPlayerData.characterData.tradeOffer = null;
                     this.io.to(partnerSocket).emit('serverUpdateTheirOfferGold', { amt: amt, fromPlayerName: playerData.characterData.name });
                 }
                 cb({ success: true });
             });
 
-            socket.on('clientOfferItemInTrade', async ({ qty, item, tradePartner }, cb) =>
+            socket.on('clientOfferItemInTrade', async ({ qty, itemId, itemName, tradePartner }, cb) =>
             {
-                const itemId = item.id;
                 const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
                 const playerInventory = playerData.characterData.inventory;
 
@@ -344,9 +441,12 @@ class ServerInventoryManager
 
                 // Notify partner
                 if (partnerSocket) {
+                    playerData.characterData.tradeOffer = null;
+                    partnerPlayerData.characterData.tradeOffer = null;
                     this.io.to(partnerSocket).emit('serverUpdateTheirOfferItems', {
                         qty,
-                        item,
+                        itemId,
+                        itemName,
                         fromPlayerName: playerData.characterData.name
                     });
                 }
@@ -356,7 +456,47 @@ class ServerInventoryManager
 
             socket.on('clientTradeAccepted', async ({ tradePartner, theirOfferGold, theirOfferItems, yourOfferGold, yourOfferItems }, cb) =>
             {
-                console.log(tradePartner, theirOfferGold, theirOfferItems, yourOfferGold, yourOfferItems);
+                const playerData = this.serverPlayerManager.playersOnline.get(socket.playerId);
+                const characterData = playerData.characterData;
+                const name = characterData.name;
+                const tradeOffer = {
+                    [name]: {
+                        "gold": yourOfferGold,
+                        "items": yourOfferItems
+                    },
+                    [tradePartner]: {
+                        "gold": theirOfferGold,
+                        "items": theirOfferItems
+                    }
+                }
+                characterData.tradeOffer = tradeOffer;
+                const partnerPlayerData = this.serverPlayerManager.playersOnline.get(
+                    this.serverPlayerManager.characterNameToId.get(tradePartner)
+                );
+                const partnerSocket = partnerPlayerData ? partnerPlayerData.socketId : null;
+                const partnerCharacterData = partnerPlayerData.characterData;
+                if (partnerCharacterData.tradeOffer == null)
+                {
+                    if (partnerSocket) {
+                        this.io.to(partnerSocket).emit('serverTradePartnerAcceptedTrade', {
+                            message: `${characterData.name} accepts the trade.`
+                        });
+                    }
+                    return cb({ success: true, message: `${characterData.name} accepts the trade.` });
+                }
+                else if (this.tradeOffersMatch(characterData.tradeOffer, partnerCharacterData.tradeOffer))
+                {
+                    this.finalizeTrade(playerData, partnerPlayerData);
+                    return cb({ success: true });
+                }
+                else
+                {
+                    if (partnerSocket) 
+                    {
+                        this.io.to(partnerSocket).emit('serverTradeError', { message: "There was an error trading. Please close the trade window." });
+                    }
+                    return cb({ success: false, message: "There was an error trading. Please close the trade window." });
+                }
             });
         });
     }

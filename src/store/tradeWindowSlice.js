@@ -12,7 +12,7 @@ const tradeWindowSlice = createSlice(
         theirOfferItems: {},
         yourOfferItems: {},
         theirOfferGold: 0,
-        yourOfferGold: 0
+        yourOfferGold: 0,
     },
     reducers:
     {
@@ -66,21 +66,19 @@ const tradeWindowSlice = createSlice(
         },
         setTheirOfferItems: (state, action) =>
         {
-            const itemName = action.payload.item.item.name;
-            const qty = action.payload.qty;
-            if (!state.theirOfferItems) {
-                state.theirOfferItems = {};
-            }
-            state.theirOfferItems[itemName] = qty;
+            const { itemId, itemName, qty } = action.payload;
+            state.theirOfferItems[itemId] = {
+                itemName,
+                qty
+            };
         },
         setYourOfferItems: (state, action) =>
         {
-            const itemName = action.payload.item.item.name;
-            const qty = action.payload.qty;
-            if (!state.yourOfferItems) {
-                state.yourOfferItems = {};
-            }
-            state.yourOfferItems[itemName] = qty;
+            const { itemId, itemName, qty } = action.payload;
+            state.yourOfferItems[itemId] = {
+                itemName,
+                qty
+            };
         },
         setTheirOfferGold: (state, action) =>
         {

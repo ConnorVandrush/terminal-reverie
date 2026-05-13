@@ -70,6 +70,7 @@ class ServerLoginManager
                         existingUser.characterData.location.d = 2;
                         existingUser.characterData.location.map = 'Town1';
                         this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 1, 10); // add 10 herb
+                        this.serverInventoryManager.addItemToInventory(existingUser.characterData.inventory, 4, 10); // add 10 shot
                         existingUser.characterData.gold = 100;
                         existingUser.characterData.isDead = false;
                         existingUser.isDead = false;

@@ -1,8 +1,12 @@
-import React, { use, useRef } from 'react';
-
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { clientTradeDeclined, clientOfferGoldInTrade, clientOfferItemInTrade, clientTradeAccepted } from '@store/tradeWindowSlice.js';
+import {
+    clientTradeDeclined,
+    clientOfferGoldInTrade,
+    clientOfferItemInTrade,
+    clientTradeAccepted
+} from '@store/tradeWindowSlice.js';
 
 import styles from './TradeWindow.module.css';
 
@@ -11,9 +15,10 @@ export default function TradeWindow()
     const dispatch = useDispatch();
 
     const playerName = window.clientGlobalManager.clientPlayerManager.characterData.name;
+
     const tradePartner = useSelector(state => state.tradeWindow.tradePartner);
-    const theirOfferItems = useSelector(state => state.tradeWindow.theirOfferItems);
-    const yourOfferItems = useSelector(state => state.tradeWindow.yourOfferItems);
+    const theirOfferItems = useSelector(state => state.tradeWindow.theirOfferItems) || {};
+    const yourOfferItems = useSelector(state => state.tradeWindow.yourOfferItems) || {};
     const theirOfferGold = useSelector(state => state.tradeWindow.theirOfferGold);
     const yourOfferGold = useSelector(state => state.tradeWindow.yourOfferGold);
     const selectedItem = useSelector(state => state.inventory.selectedItem);
@@ -26,42 +31,60 @@ export default function TradeWindow()
     const handleClientOfferItemInTrade = () => 
     {
         if (!selectedItem) return;
+
         const qty = parseInt(itemQty.current.value);
         if (isNaN(qty) || qty < 0) return;
-        dispatch(clientOfferItemInTrade({qty: qty, item: selectedItem}));
+
+        dispatch(clientOfferItemInTrade({
+            itemId: selectedItem.item.id,
+            itemName: selectedItem.item.name,
+            qty
+        }));
+
         itemQty.current.value = '';
-    }
+    };
 
     const handleClientOfferGoldInTrade = () => 
     {
         const amt = parseInt(goldAmt.current.value);
         if (isNaN(amt) || amt < 0) return;
+
         dispatch(clientOfferGoldInTrade(amt));
         goldAmt.current.value = '';
-    }
+    };
+
+    // Convert item objects into sorted arrays for deterministic rendering
+    const sortedTheirItems = Object.entries(theirOfferItems)
+        .map(([itemId, data]) => ({ itemId, ...data }))
+        .filter(item => item.qty > 0)
+        .sort((a, b) => a.itemName.localeCompare(b.itemName));
+
+    const sortedYourItems = Object.entries(yourOfferItems)
+        .map(([itemId, data]) => ({ itemId, ...data }))
+        .filter(item => item.qty > 0)
+        .sort((a, b) => a.itemName.localeCompare(b.itemName));
 
     return (
         <div className={styles.tradeWindow}>
 
             <div className={styles.offers}>
+
                 {/* THEIR OFFER */}
                 <div className={styles.theirOffer}>
                     <h2>{tradePartner} offers</h2>
 
-                    {/* Only show gold if > 0 */}
                     {theirOfferGold > 0 && (
                         <div className={styles.theirGoldOffer}>
                             {theirOfferGold} gold
                         </div>
                     )}
 
-                    {/* Only show items with qty > 0 */}
                     <div className={styles.theirItemsOffer}>
-                        {Object.entries(theirOfferItems)
-                            .filter(([_, qty]) => qty > 0)
-                            .map(([name, qty]) => (
-                                <div key={name}>{name} x{qty}</div>
-                            ))}
+                        {sortedTheirItems.map(item => (
+                            <div key={item.itemId}>
+                                {item.itemName} x{item.qty}
+                            </div>
+                        ))}
                     </div>
                 </div>
 
@@ -76,24 +99,29 @@ export default function TradeWindow()
                     )}
 
                     <div className={styles.yourItemsOffer}>
-                        {Object.entries(yourOfferItems)
-                            .filter(([_, qty]) => qty > 0)
-                            .map(([name, qty]) => (
-                                <div key={name}>{name} x{qty}</div>
-                            ))}
+                        {sortedYourItems.map(item => (
+                            <div key={item.itemId}>
+                                {item.itemName} x{item.qty}
+                            </div>
+                        ))}
                     </div>
                 </div>
+
             </div>
 
             <div className={styles.offerActions}>
                 <div className={styles.offerItems}>
                     <input type="number" placeholder="Qty" ref={itemQty} />
-                    <button className={styles.addItemButton} onClick={() => handleClientOfferItemInTrade()}>Set Item Quantity</button>
+                    <button className={styles.addItemButton} onClick={handleClientOfferItemInTrade}>
+                        Set Item Quantity
+                    </button>
                 </div>
 
                 <div className={styles.offerGold}>
                     <input type="number" placeholder="Amt" ref={goldAmt} />
-                    <button className={styles.addItemButton} onClick={() => handleClientOfferGoldInTrade()}>Set Gold Amount</button>
+                    <button className={styles.addItemButton} onClick={handleClientOfferGoldInTrade}>
+                        Set Gold Amount
+                    </button>
                 </div>
             </div>
 
@@ -107,8 +135,12 @@ export default function TradeWindow()
             </div>
 
             <div className={styles.tradeActions}>
-                <button className={styles.acceptButton} onClick={() => dispatch(clientTradeAccepted())}>Accept</button>
-                <button className={styles.declineButton} onClick={() => dispatch(clientTradeDeclined())}>Decline</button>
+                <button className={styles.acceptButton} onClick={() => dispatch(clientTradeAccepted())}>
+                    Accept
+                </button>
+                <button className={styles.declineButton} onClick={() => dispatch(clientTradeDeclined())}>
+                    Decline
+                </button>
             </div>
 
         </div>

@@ -27,6 +27,7 @@ class CharacterData
             }
         };
         this.availableActions = ["attack", "defend", "item", "run"];
+        this.tradeOffer = null;
     }
 
     static checkIfActionAvailable(characterData, action)

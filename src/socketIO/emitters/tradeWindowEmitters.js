@@ -55,17 +55,31 @@ export default async function tradeWindowEmitters(action, store)
     else if (action.type === 'tradeWindow/clientOfferItemInTrade')
     {
         const tradePartner = store.getState().tradeWindow.tradePartner;
-        const response = await socket.emitWithAck('clientOfferItemInTrade', { qty: action.payload.qty, item: action.payload.item, tradePartner: tradePartner });
+
+        const { itemId, itemName, qty } = action.payload;
+
+        const response = await socket.emitWithAck('clientOfferItemInTrade', {
+            itemId,
+            itemName,
+            qty,
+            tradePartner
+        });
+
         if (!response.success)
         {
             store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: response.message });
             store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: null });
         }
-        if (response.success)
+        else
         {
             store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: null });
             store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: response.message });
-            store.dispatch({ type: 'tradeWindow/setYourOfferItems', payload: action.payload });
+
+            // Update your offer items in Redux
+            store.dispatch({
+                type: 'tradeWindow/setYourOfferItems',
+                payload: { itemId, itemName, qty }
+            });
         }
     }
     else if (action.type === 'tradeWindow/clientOfferGoldInTrade')
@@ -91,16 +105,34 @@ export default async function tradeWindowEmitters(action, store)
         const theirOfferItems = store.getState().tradeWindow.theirOfferItems;
         const yourOfferGold = store.getState().tradeWindow.yourOfferGold;
         const yourOfferItems = store.getState().tradeWindow.yourOfferItems;
-        const response = await socket.emitWithAck('clientTradeAccepted', { tradePartner, theirOfferGold, theirOfferItems, yourOfferGold, yourOfferItems });
+
+        const convertToArray = (obj) =>
+            Object.entries(obj).map(([itemId, data]) => ({
+                itemId,
+                itemName: data.itemName,
+                qty: data.qty
+            }));
+
+        const payload = {
+            tradePartner,
+            theirOfferGold,
+            theirOfferItems: convertToArray(theirOfferItems),
+            yourOfferGold,
+            yourOfferItems: convertToArray(yourOfferItems)
+        };
+
+        const response = await socket.emitWithAck('clientTradeAccepted', payload);
+
         if (!response.success)
         {
             store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: response.message });
             store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: null });
         }
-        if (response.success)
+        else
         {
             store.dispatch({ type: 'tradeWindow/setErrorMessage', payload: null });
             store.dispatch({ type: 'tradeWindow/setSuccessMessage', payload: response.message });
         }
     }
+
 }
