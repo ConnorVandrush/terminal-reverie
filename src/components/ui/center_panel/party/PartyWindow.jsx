@@ -1,202 +1,149 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
-    setSelectedPartyMember,
-    clientSendPartyInvite,
-    removePartyInvite,
-    clientAcceptPartyInvite,
-    clientLeaveParty,
-    clientKickPartyMember
-} from '@store/partyWindowSlice.js';
+  setSelectedPartyMember,
+  clientSendPartyInvite,
+  removePartyInvite,
+  clientAcceptPartyInvite,
+  clientLeaveParty,
+  clientKickPartyMember,
+} from "@store/partyWindowSlice.js";
 
-import { setCenterPanel } from '@store/centerPanelSlice.js';
+import { setCenterPanel } from "@store/centerPanelSlice.js";
 
-import styles from './PartyWindow.module.css';
+import styles from "./PartyWindow.module.css";
 
 export default function PartyWindow() {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const partyData = useSelector(
-        state => state.partyWindow.partyData
-    );
+  const partyData = useSelector((state) => state.partyWindow.partyData);
 
-    const selectedPartyMember = useSelector(
-        state => state.partyWindow.selectedPartyMember
-    );
+  const selectedPartyMember = useSelector(
+    (state) => state.partyWindow.selectedPartyMember,
+  );
 
-    const characterData = useSelector(state => {
-        const data = state.partyWindow.partyData;
+  const characterData = useSelector((state) => {
+    const data = state.partyWindow.partyData;
 
-        if (!data?.members?.length) {
-            return null;
-        }
-
-        const playerId =
-            window.clientGlobalManager?.clientPlayerManager
-                ?.characterData?.playerId;
-
-        return (
-            data.members.find(
-                member => member?.playerId === playerId
-            ) || null
-        );
-    });
-
-    // Safe members array
-    const partyMembers = partyData?.members || [];
-
-    // Safe leader reference
-    const leader = partyMembers[0] || null;
-
-    // Ensure exactly 4 UI slots
-    const members = [...partyMembers]
-        .filter(Boolean)
-        .slice(0, 4);
-
-    while (members.length < 4) {
-        members.push(null);
+    if (!data?.members?.length) {
+      return null;
     }
 
-    const isLeader =
-        leader?.playerId === characterData?.playerId;
+    const playerId =
+      window.clientGlobalManager?.clientPlayerManager?.characterData?.playerId;
 
-    const selectedMember =
-        selectedPartyMember != null
-            ? members[selectedPartyMember]
-            : null;
+    return data.members.find((member) => member?.playerId === playerId) || null;
+  });
 
-    const canInvite =
-        leader &&
-        partyMembers.length < 4 &&
-        (
-            isLeader ||
-            partyMembers.length === 1
-        );
+  // Safe members array
+  const partyMembers = partyData?.members || [];
 
-    const canLeave =
-        leader &&
-        partyMembers.length > 1;
+  // Safe leader reference
+  const leader = partyMembers[0] || null;
 
-    const canKick =
-        leader &&
-        isLeader &&
-        selectedMember &&
-        selectedPartyMember !== 0;
+  // Ensure exactly 4 UI slots
+  const members = [...partyMembers].filter(Boolean).slice(0, 4);
 
-    const handleSelectMember = (slotIndex, member) => {
-        if (!member) return;
+  while (members.length < 4) {
+    members.push(null);
+  }
 
-        dispatch(
-            setSelectedPartyMember(
-                selectedPartyMember === slotIndex
-                    ? null
-                    : slotIndex
-            )
-        );
-    };
+  const isLeader = leader?.playerId === characterData?.playerId;
 
-    const handleLeave = () => {
-        if (!leader) return;
+  const selectedMember =
+    selectedPartyMember != null ? members[selectedPartyMember] : null;
 
-        dispatch(
-            clientLeaveParty(leader.playerId)
-        );
-    };
+  const canInvite =
+    leader &&
+    partyMembers.length < 4 &&
+    (isLeader || partyMembers.length === 1);
 
-    const handleKick = () => {
-        if (!leader || !selectedMember) return;
+  const canLeave = leader && partyMembers.length > 1;
 
-        dispatch(
-            clientKickPartyMember({
-                partyLeaderId: leader.playerId,
-                memberPlayerId: selectedMember.playerId
-            })
-        );
-    };
+  const canKick =
+    leader && isLeader && selectedMember && selectedPartyMember !== 0;
 
-    return (
-        <div className={styles.partyWindow}>
-            <div className={styles.partyMembers}>
-                {[0, 1, 2, 3].map(slotIndex => {
-                    const member = members[slotIndex];
-                    const isSelected =
-                        selectedPartyMember === slotIndex;
+  const handleSelectMember = (slotIndex, member) => {
+    if (!member) return;
 
-                    return (
-                        <button
-                            key={slotIndex}
-                            disabled={!member}
-                            className={`
-                                ${styles.partyMemberButton}
-                                ${
-                                    isSelected
-                                        ? styles.selectedPartyMember
-                                        : ''
-                                }
-                            `}
-                            onClick={() =>
-                                handleSelectMember(
-                                    slotIndex,
-                                    member
-                                )
-                            }
-                        >
-                            <div className={styles.partyMemberHeader}>
-                                <div className={styles.partyMemberName}>
-                                    {member?.name || ''}
-                                </div>
-
-                                <div className={styles.partyMemberLevel}>
-                                    {member
-                                        ? `Lv ${member.level}`
-                                        : ''}
-                                </div>
-                            </div>
-
-                            {member && (
-                                <div
-                                    className={
-                                        styles.partyMemberStatus
-                                    }
-                                >
-                                    HP: {member.currentHp}/
-                                    {member.maxHp}
-                                </div>
-                            )}
-                        </button>
-                    );
-                })}
-            </div>
-
-            <div className={styles.buttonContainer}>
-                <button
-                    disabled={!canInvite}
-                    onClick={() =>
-                        dispatch(
-                            setCenterPanel(
-                                'partyInvites'
-                            )
-                        )
-                    }
-                >
-                    Join/Invite
-                </button>
-
-                <button
-                    disabled={!canLeave}
-                    onClick={handleLeave}
-                >
-                    Leave
-                </button>
-
-                <button
-                    disabled={!canKick}
-                    onClick={handleKick}
-                >
-                    Kick
-                </button>
-            </div>
-        </div>
+    dispatch(
+      setSelectedPartyMember(
+        selectedPartyMember === slotIndex ? null : slotIndex,
+      ),
     );
+  };
+
+  const handleLeave = () => {
+    if (!leader) return;
+
+    dispatch(clientLeaveParty(leader.playerId));
+  };
+
+  const handleKick = () => {
+    if (!leader || !selectedMember) return;
+
+    dispatch(
+      clientKickPartyMember({
+        partyLeaderId: leader.playerId,
+        memberPlayerId: selectedMember.playerId,
+      }),
+    );
+  };
+
+  return (
+    <div className={styles.partyWindow}>
+      <div className={styles.partyMembers}>
+        {[0, 1, 2, 3].map((slotIndex) => {
+          const member = members[slotIndex];
+          const isSelected = selectedPartyMember === slotIndex;
+
+          return (
+            <button
+              key={slotIndex}
+              disabled={!member}
+              className={`
+                                ${styles.partyMemberButton}
+                                ${isSelected ? styles.selectedPartyMember : ""}
+                            `}
+              onClick={() => handleSelectMember(slotIndex, member)}
+            >
+              <div className={styles.partyMemberHeader}>
+                <div className={styles.partyMemberName}>
+                  {member?.name || ""}
+                </div>
+
+                <div className={styles.partyMemberLevel}>
+                  {member ? `Lv ${member.level}` : ""}
+                </div>
+              </div>
+
+              {member && (
+                <div className={styles.partyMemberStatus}>
+                  HP: {member.currentHp}/{member.maxHp}
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={styles.buttonContainer}>
+        <button
+          disabled={!canInvite}
+          onClick={() => dispatch(setCenterPanel("partyInvites"))}
+        >
+          Join/Invite
+        </button>
+
+        <button disabled={!canLeave} onClick={handleLeave}>
+          Leave
+        </button>
+
+        <button disabled={!canKick} onClick={handleKick}>
+          Kick
+        </button>
+      </div>
+    </div>
+  );
 }

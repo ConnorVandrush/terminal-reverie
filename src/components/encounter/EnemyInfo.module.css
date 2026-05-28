@@ -1,8 +1,8 @@
 .enemyList {
   display: flex;
   flex-direction: column;
-  height: auto;        /* fill the panel vertically */
-  width: 100%;       /* fill horizontally */
+  height: auto; /* fill the panel vertically */
+  width: 100%; /* fill horizontally */
   margin-top: 6%;
   margin-left: 6%;
   margin-bottom: 6%;
@@ -10,32 +10,32 @@
 }
 
 .enemyButton {
-    flex: 1;             /* each button gets equal vertical space */
-    width: 100%;         /* stretch full width */
-    display: flex;       /* center text nicely */
-    align-items: center;
-    justify-content: center;
+  flex: 1; /* each button gets equal vertical space */
+  width: 100%; /* stretch full width */
+  display: flex; /* center text nicely */
+  align-items: center;
+  justify-content: center;
 
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    margin: auto;
-    cursor: pointer;
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  margin: auto;
+  cursor: pointer;
 
-    background: #1a1a8a; /* same blue vibe as your panels */
-    color: #fff;
-    text-shadow: 1px 1px 2px #000;
+  background: #1a1a8a; /* same blue vibe as your panels */
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
 
-    border: 4px solid #ffffff;
-    box-shadow:
-    inset 0 0 0 4px #0a0a6a, /* inner dark border */
-    0 0 0 2px #000000;       /* outer black outline */
+  border: 4px solid #ffffff;
+  box-shadow:
+    inset 0 0 0 4px #0a0a6a,
+    /* inner dark border */ 0 0 0 2px #000000; /* outer black outline */
 
-    border-radius: 12px;
-    image-rendering: pixelated;
+  border-radius: 12px;
+  image-rendering: pixelated;
 
-    transform: scale(0.95);
-    opacity: 0;
-    animation: panelPop 0.35s ease-out forwards;
+  transform: scale(0.95);
+  opacity: 0;
+  animation: panelPop 0.35s ease-out forwards;
 }
 
 .enemyButton:hover {
@@ -45,8 +45,8 @@
 .enemyButton.selected {
   background: #0f0f5a;
   box-shadow:
-    inset 0 0 0 4px #000000, /* deeper inset */
-    0 0 0 2px #000000;
+    inset 0 0 0 4px #000000,
+    /* deeper inset */ 0 0 0 2px #000000;
   transform: scale(0.92); /* pressed in */
 }
 

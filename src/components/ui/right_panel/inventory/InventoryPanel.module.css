@@ -1,21 +1,21 @@
 .inventory {
   width: 100%;
   height: 95%;
-  margin: auto
+  margin: auto;
 }
 
 .itemList {
   display: flex;
   flex-direction: column;
-  gap: 6px;              /* spacing between buttons */
+  gap: 6px; /* spacing between buttons */
   padding: 0;
   margin: 0;
 
-  width: 90%;            /* take up 90% of parent width */
+  width: 90%; /* take up 90% of parent width */
   max-height: 100%;
-  overflow-y: auto;      /* enable vertical scrolling */
+  overflow-y: auto; /* enable vertical scrolling */
 
-  margin-left: auto;     /* center horizontally */
+  margin-left: auto; /* center horizontally */
   margin-right: auto;
 }
 
@@ -23,7 +23,7 @@
   width: 100%;
   padding: 10px 6px;
 
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 12px;
   cursor: pointer;
 
@@ -33,13 +33,11 @@
 
   border: 4px solid #ffffff;
   box-shadow:
-    inset 0 0 0 4px #0a0a6a, /* inner dark border */
-    0 0 0 2px #000000;       /* outer black outline */
+    inset 0 0 0 4px #0a0a6a,
+    /* inner dark border */ 0 0 0 2px #000000; /* outer black outline */
 
   border-radius: 12px;
   image-rendering: pixelated;
-
-
 }
 
 .itemButton:hover {
@@ -60,8 +58,7 @@
   cursor: default; /* optional: no pointer change */
 }
 
-css
-.itemList::-webkit-scrollbar {
+css .itemList::-webkit-scrollbar {
   width: 10px;
 }
 

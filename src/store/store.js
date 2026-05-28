@@ -14,35 +14,30 @@ import tradeWindowReducer from "./tradeWindowSlice";
 import { rightPanelListener } from "./listeners/rightPanelListeners";
 import { centerPanelListener } from "./listeners/centerPanelListeners";
 
-export const store = configureStore(
-{
-    reducer: 
-    {
-        leftPanel: leftPanelReducer,
-        login: loginReducer,
-        createCharacter: createCharacterReducer,
-        centerPanel: centerPanelReducer,
-        rightPanel: rightPanelReducer,
-        chatWindow: chatWindowReducer,
-        partyWindow: partWindowReducer,
-        encounter: encounterReducer,
-        inventory: inventoryReducer,
-        shopWindow: shopWindowReducer,
-        tradeWindow: tradeWindowReducer,
-    },
-    middleware: (getDefault) =>
-    getDefault(
-        {
-            serializableCheck:
-            {
-                ignoredActions: ['createCharacter/setCreateCharacterCB'], // Ignore the createCharacterCB action for serializability checks
-                ignoredPaths: ['createCharacter.createCharacterCB'], // Ignore the createCharacterCB field in the state for serializability checks
-            }
-        }
-    )
-    .prepend(rightPanelListener.middleware)
-    .prepend(centerPanelListener.middleware)
-    .concat(middleware),
+export const store = configureStore({
+  reducer: {
+    leftPanel: leftPanelReducer,
+    login: loginReducer,
+    createCharacter: createCharacterReducer,
+    centerPanel: centerPanelReducer,
+    rightPanel: rightPanelReducer,
+    chatWindow: chatWindowReducer,
+    partyWindow: partWindowReducer,
+    encounter: encounterReducer,
+    inventory: inventoryReducer,
+    shopWindow: shopWindowReducer,
+    tradeWindow: tradeWindowReducer,
+  },
+  middleware: (getDefault) =>
+    getDefault({
+      serializableCheck: {
+        ignoredActions: ["createCharacter/setCreateCharacterCB"], // Ignore the createCharacterCB action for serializability checks
+        ignoredPaths: ["createCharacter.createCharacterCB"], // Ignore the createCharacterCB field in the state for serializability checks
+      },
+    })
+      .prepend(rightPanelListener.middleware)
+      .prepend(centerPanelListener.middleware)
+      .concat(middleware),
 });
 
 export default store;

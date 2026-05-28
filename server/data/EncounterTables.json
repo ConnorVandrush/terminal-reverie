@@ -1,15 +1,12 @@
 {
-    "Town1": 
-    {
-        "0":
-        {
-            "encounterChance": 0
-        },
-        "1":
-        {
-            "encounterChance": 20,
-            "1": {"troopId":1,"weight":100},
-            "2": {"troopId":2,"weight":100}
-        }
+  "Town1": {
+    "0": {
+      "encounterChance": 0
+    },
+    "1": {
+      "encounterChance": 20,
+      "1": { "troopId": 1, "weight": 100 },
+      "2": { "troopId": 2, "weight": 100 }
     }
+  }
 }

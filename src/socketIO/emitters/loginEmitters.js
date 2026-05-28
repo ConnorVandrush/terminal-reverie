@@ -1,46 +1,68 @@
 import { clientLogin, clientRegister } from "@/store/loginSlice.js";
 
-export default async function loginEmitters(store, action)
-{
-    const publicNamespace = window.clientGlobalManager.clientPlayerManager.publicNamespace;
-    
-    if (action.type === clientLogin.type)
-    {
-        const response = await publicNamespace.emitWithAck('clientLogin', action.payload);
+export default async function loginEmitters(store, action) {
+  const publicNamespace =
+    window.clientGlobalManager.clientPlayerManager.publicNamespace;
 
-        if (response.error)
-        {
-            store.dispatch({ type: 'login/setErrorMessage', payload: response.error });
-            store.dispatch({ type: 'login/setSuccessMessage', payload: false });
-        }
-        else if (response.success)
-        {
-            const { JWT } = response;
-            localStorage.setItem('JWT', JWT);
-            window.clientGlobalManager.clientPlayerManager.login(response.characterData, response.mapData, response.playersOnMap);
-            window.clientGlobalManager.clientPlayerManager.publicNamespace.disconnect();
-            store.dispatch({ type: 'leftPanel/setLeftPanel', payload: 'userInterface' });
-            store.dispatch({ type: 'centerPanel/setCenterPanel', payload: null });
-            const partyDataClone = structuredClone(window.clientGlobalManager.clientPartyManager.partyData);
-            store.dispatch({ type: 'partyWindow/setPartyData', payload: partyDataClone });
-            store.dispatch({ type: 'inventory/setInventory', payload: response.characterData.inventory });
-            store.dispatch({ type: 'rightPanel/setRightPanel', payload: null });
-        }
+  if (action.type === clientLogin.type) {
+    const response = await publicNamespace.emitWithAck(
+      "clientLogin",
+      action.payload,
+    );
+
+    if (response.error) {
+      store.dispatch({
+        type: "login/setErrorMessage",
+        payload: response.error,
+      });
+      store.dispatch({ type: "login/setSuccessMessage", payload: false });
+    } else if (response.success) {
+      const { JWT } = response;
+      localStorage.setItem("JWT", JWT);
+      window.clientGlobalManager.clientPlayerManager.login(
+        response.characterData,
+        response.mapData,
+        response.playersOnMap,
+      );
+      window.clientGlobalManager.clientPlayerManager.publicNamespace.disconnect();
+      store.dispatch({
+        type: "leftPanel/setLeftPanel",
+        payload: "userInterface",
+      });
+      store.dispatch({ type: "centerPanel/setCenterPanel", payload: null });
+      const partyDataClone = structuredClone(
+        window.clientGlobalManager.clientPartyManager.partyData,
+      );
+      store.dispatch({
+        type: "partyWindow/setPartyData",
+        payload: partyDataClone,
+      });
+      store.dispatch({
+        type: "inventory/setInventory",
+        payload: response.characterData.inventory,
+      });
+      store.dispatch({ type: "rightPanel/setRightPanel", payload: null });
     }
+  }
 
-    if (action.type === clientRegister.type)
-    {
-        const response = await publicNamespace.emitWithAck('clientRegister', action.payload);
+  if (action.type === clientRegister.type) {
+    const response = await publicNamespace.emitWithAck(
+      "clientRegister",
+      action.payload,
+    );
 
-        if (response.error)
-        {
-            store.dispatch({ type: 'login/setErrorMessage', payload: response.error });
-            store.dispatch({ type: 'login/setSuccessMessage', payload: false });
-        }
-        else if (response.success)
-        {
-            store.dispatch({ type: 'login/setSuccessMessage', payload: response.message });
-            store.dispatch({ type: 'login/setErrorMessage', payload: false });
-        }
+    if (response.error) {
+      store.dispatch({
+        type: "login/setErrorMessage",
+        payload: response.error,
+      });
+      store.dispatch({ type: "login/setSuccessMessage", payload: false });
+    } else if (response.success) {
+      store.dispatch({
+        type: "login/setSuccessMessage",
+        payload: response.message,
+      });
+      store.dispatch({ type: "login/setErrorMessage", payload: false });
     }
+  }
 }

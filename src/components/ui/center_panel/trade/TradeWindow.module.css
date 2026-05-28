@@ -13,7 +13,8 @@
   flex-direction: row;
 }
 
-.theirOffer, .yourOffer {
+.theirOffer,
+.yourOffer {
   display: flex;
   width: 50%;
   height: 100%;
@@ -43,17 +44,21 @@
   width: 20%;
 }
 
-.theirItemsOffer, .theirGoldOffer, .yourItemsOffer, .yourGoldOffer {
-  display: flex;       
-  flex-direction: column; 
+.theirItemsOffer,
+.theirGoldOffer,
+.yourItemsOffer,
+.yourGoldOffer {
+  display: flex;
+  flex-direction: column;
   padding-left: 5%;
 }
 
-.offerItems, .offerGold {
+.offerItems,
+.offerGold {
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex: 1;              
+  flex: 1;
   justify-content: center;
 }
 

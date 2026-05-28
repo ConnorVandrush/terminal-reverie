@@ -7,12 +7,12 @@
 }
 
 .shopHeader {
-    height: 10%;
-    width: 100%;
+  height: 10%;
+  width: 100%;
   display: flex;
   padding: 2%;
   box-sizing: border-box;
-    justify-content: space-between; /* title left, gold right */
+  justify-content: space-between; /* title left, gold right */
 }
 
 .shopTitle {
@@ -71,13 +71,13 @@
 }
 
 .messageContainer {
-    height: 10%;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 2%;
-    display: flex;
-    justify-content: center; /* center horizontally */
-    align-items: center;     /* center vertically */
+  height: 10%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2%;
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center; /* center vertically */
 }
 
 .buttonContainer {
@@ -85,7 +85,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 2%;
-  display: flex;          /* <-- add this */
+  display: flex; /* <-- add this */
   flex-direction: row;
 }
 
@@ -93,8 +93,8 @@
 .closeButtonContainer {
   width: 50%;
   display: flex;
-  justify-content: center;   /* <-- centers the button horizontally */
-  align-items: center;       /* <-- centers the button vertically */
+  justify-content: center; /* <-- centers the button horizontally */
+  align-items: center; /* <-- centers the button vertically */
 }
 
 .buyButton {
@@ -112,7 +112,7 @@
 }
 
 .shopItemButton {
-    color: white;
+  color: white;
   width: 100%;
   background: none;
   border: none;

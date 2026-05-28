@@ -14,18 +14,18 @@
       this._originalOnKeyDown = Input._onKeyDown;
 
       // Disable the hamburger button in the map scene
-      Scene_Map.prototype.createButtons = function() {
-          // Do nothing — prevents the hamburger button from being created
+      Scene_Map.prototype.createButtons = function () {
+        // Do nothing — prevents the hamburger button from being created
       };
 
       // Disable all touch input
-      TouchInput.update = function() {};
-      TouchInput._onTouchStart = function() {};
-      TouchInput._onTouchMove = function() {};
-      TouchInput._onTouchEnd = function() {};
-      TouchInput._onTouchCancel = function() {};
-      TouchInput._onPointerDown = function() {};
-      TouchInput._onPointerUp = function() {};
+      TouchInput.update = function () {};
+      TouchInput._onTouchStart = function () {};
+      TouchInput._onTouchMove = function () {};
+      TouchInput._onTouchEnd = function () {};
+      TouchInput._onTouchCancel = function () {};
+      TouchInput._onPointerDown = function () {};
+      TouchInput._onPointerUp = function () {};
     }
 
     enableDomMode() {
@@ -35,11 +35,9 @@
         const active = document.activeElement;
         const isEditable =
           active &&
-          (
-            active.tagName === "INPUT" ||
+          (active.tagName === "INPUT" ||
             active.tagName === "TEXTAREA" ||
-            active.isContentEditable
-          );
+            active.isContentEditable);
 
         if (this.domMode && isEditable) {
           // Let browser/React handle typing & Backspace

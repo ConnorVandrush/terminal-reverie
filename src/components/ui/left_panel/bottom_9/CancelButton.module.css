@@ -11,7 +11,7 @@
   justify-content: center;
 
   box-shadow: 0 3px 0 #0d0d0d; /* subtle depth */
-  transition: 
+  transition:
     background-color 0.15s ease,
     transform 0.1s ease,
     box-shadow 0.1s ease;

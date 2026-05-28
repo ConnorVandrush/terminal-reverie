@@ -1,19 +1,15 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-const rightPanelSlice = createSlice(
-{
-    name: 'rightPanel',
-    initialState: 
-    {
-        rightPanel: null,
+const rightPanelSlice = createSlice({
+  name: "rightPanel",
+  initialState: {
+    rightPanel: null,
+  },
+  reducers: {
+    setRightPanel: (state, action) => {
+      state.rightPanel = action.payload;
     },
-    reducers: 
-    {
-        setRightPanel: (state, action) => 
-        {
-            state.rightPanel = action.payload;
-        },
-    },
+  },
 });
 
 export const { setRightPanel } = rightPanelSlice.actions;
