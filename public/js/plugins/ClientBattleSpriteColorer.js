@@ -26,7 +26,6 @@ class ClientBattleSpriteColorer {
         ]),
       );
     } catch (err) {
-      console.error("Failed to load appearance data:", err);
       throw err;
     } finally {
       this.loading = false;

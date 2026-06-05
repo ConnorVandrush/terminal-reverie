@@ -58,5 +58,133 @@
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
     "quantity": 0
+  },
+  "10001": {
+    "name": "Iron Dagger",
+    "rank": 1
+  },
+  "10002": {
+    "name": "Steel Dagger",
+    "rank": 2
+  },
+  "10003": {
+    "name": "Mithril Dagger",
+    "rank": 3
+  },
+  "10004": {
+    "name": "Adamantium Dagger",
+    "rank": 4
+  },
+  "11001": {
+    "name": "Iron Longsword",
+    "rank": 1
+  },
+  "11002": {
+    "name": "Steel Longsword",
+    "rank": 2
+  },
+  "11003": {
+    "name": "Mithril Longsword",
+    "rank": 3
+  },
+  "11004": {
+    "name": "Adamantium Longsword",
+    "rank": 4
+  },
+  "12001": {
+    "name": "Iron Katana",
+    "rank": 1
+  },
+  "12002": {
+    "name": "Steel Katana",
+    "rank": 2
+  },
+  "12003": {
+    "name": "Mithril Katana",
+    "rank": 3
+  },
+  "12004": {
+    "name": "Adamantium Katana",
+    "rank": 4
+  },
+  "13001": {
+    "name": "Iron Great Sword",
+    "rank": 1
+  },
+  "13002": {
+    "name": "Steel Great Sword",
+    "rank": 2
+  },
+  "13003": {
+    "name": "Mithril Great Sword",
+    "rank": 3
+  },
+  "13004": {
+    "name": "Adamantium Great Sword",
+    "rank": 4
+  },
+  "14001": {
+    "name": "Iron Hand Axe",
+    "rank": 1
+  },
+  "14002": {
+    "name": "Steel Hand Axe",
+    "rank": 2
+  },
+  "14003": {
+    "name": "Mithril Hand Axe",
+    "rank": 3
+  },
+  "14004": {
+    "name": "Adamantium Hand Axe",
+    "rank": 4
+  },
+  "15001": {
+    "name": "Iron Battle Axe",
+    "rank": 1
+  },
+  "15002": {
+    "name": "Steel Battle Axe",
+    "rank": 2
+  },
+  "15003": {
+    "name": "Mithril Battle Axe",
+    "rank": 3
+  },
+  "15004": {
+    "name": "Adamantium Battle Axe",
+    "rank": 4
+  },
+  "16001": {
+    "name": "Iron Great Axe",
+    "rank": 1
+  },
+  "16002": {
+    "name": "Steel Great Axe",
+    "rank": 2
+  },
+  "16003": {
+    "name": "Mithril Great Axe",
+    "rank": 3
+  },
+  "16004": {
+    "name": "Adamantium Great Axe",
+    "rank": 4
+  },
+  "17001": {
+    "name": "Iron Scythe",
+    "rank": 1
+  },
+  "17002": {
+    "name": "Steel Scythe",
+    "rank": 2
+  },
+  "17003": {
+    "name": "Mithril Scythe",
+    "rank": 3
+  },
+  "17004": {
+    "name": "Adamantium Scythe",
+    "rank": 4
   }
 }

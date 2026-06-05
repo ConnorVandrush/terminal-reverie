@@ -36,6 +36,10 @@ export default function PartyWindow() {
     return data.members.find((member) => member?.playerId === playerId) || null;
   });
 
+  const selectedItem = useSelector((state) => {
+    return state.inventory.selectedItem;
+  });
+
   // Safe members array
   const partyMembers = partyData?.members || [];
 
@@ -103,9 +107,9 @@ export default function PartyWindow() {
               key={slotIndex}
               disabled={!member}
               className={`
-                                ${styles.partyMemberButton}
-                                ${isSelected ? styles.selectedPartyMember : ""}
-                            `}
+          ${styles.partyMemberButton}
+          ${isSelected ? styles.selectedPartyMember : ""}
+        `}
               onClick={() => handleSelectMember(slotIndex, member)}
             >
               <div className={styles.partyMemberHeader}>
@@ -113,23 +117,50 @@ export default function PartyWindow() {
                   {member?.name || ""}
                 </div>
 
+                <div className={styles.partyMemberHP}>
+                  {member && (
+                    <>
+                      HP: {member.currentHp}/{member.maxHp}
+                    </>
+                  )}
+                </div>
+
                 <div className={styles.partyMemberLevel}>
                   {member ? `Lv ${member.level}` : ""}
                 </div>
               </div>
 
-              {member && (
-                <div className={styles.partyMemberStatus}>
-                  HP: {member.currentHp}/{member.maxHp}
-                </div>
-              )}
+              <div className={styles.partyMemberEquipment}>
+                {member && (
+                  <>
+                    <div className={styles.partyMemberWAA}>
+                      <div>Weapon: {member.equipment.weapon || "None"}</div>
+                      <div>Armor: {member.equipment.armor || "None"}</div>
+                      <div>
+                        Accessory: {member.equipment.accessory || "None"}
+                      </div>
+                    </div>
+
+                    <div className={styles.partyMemberEquippedItems}>
+                      <div>Item 1: {member.equipment.item1 || "None"}</div>
+                      <div>Item 2: {member.equipment.item2 || "None"}</div>
+                      <div>Item 3: {member.equipment.item3 || "None"}</div>
+                    </div>
+                  </>
+                )}
+              </div>
             </button>
           );
         })}
       </div>
 
+      <div className={styles.itemInfo}>
+        {selectedItem && selectedItem.item.description}
+      </div>
+
       <div className={styles.buttonContainer}>
         <button
+          data-testid="join-invite-button"
           disabled={!canInvite}
           onClick={() => dispatch(setCenterPanel("partyInvites"))}
         >

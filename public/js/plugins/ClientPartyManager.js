@@ -10,9 +10,7 @@ class ClientPartyManager {
   async requestPartyMove(dir) {
     try {
       this.clientPlayerManager.socket.emit("clientPartyMove", dir);
-    } catch (err) {
-      console.error("Error occurred while requesting party move:", err);
-    }
+    } catch (err) {}
   }
 
   findPartyIndex(playerId) {

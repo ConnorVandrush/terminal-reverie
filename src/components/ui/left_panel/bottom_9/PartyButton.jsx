@@ -19,5 +19,11 @@ export default function InviteToPartyButton() {
     }
   }
 
-  return <button className={styles.chatButton} onClick={toggleInviteToParty} />;
+  return (
+    <button
+      data-testid="invite-to-party-button"
+      className={styles.chatButton}
+      onClick={toggleInviteToParty}
+    />
+  );
 }

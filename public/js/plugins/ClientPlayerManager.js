@@ -35,7 +35,6 @@ class ClientPlayerManager {
     window.clientGlobalManager.clientPartyManager.partyData = {
       members: [this.characterData],
     };
-    this.pendingRemotePlayers = new Map(playersOnMap);
 
     const appearance = await this.spriteColorer.recolorSpritesheet(
       "/img/characters/$" + characterData.appearance.template + ".png",
@@ -58,7 +57,6 @@ class ClientPlayerManager {
     map.id = Date.now(); // Unique ID forces reload, if we reuse the same map id it doesn't load properly
     $dataMap = map;
 
-    $gameParty.gainGold(characterData.gold);
     $gamePlayer.reserveTransfer(
       map.id,
       characterData.location.x,
@@ -109,8 +107,10 @@ class ClientPlayerManager {
         this.pendingRemotePlayers.delete(playerId);
         continue;
       }
-      this.createRemotePlayer(playerId, characterData);
-      this.pendingRemotePlayers.delete(playerId);
+      const success = this.createRemotePlayer(playerId, characterData);
+      if (success) {
+        this.pendingRemotePlayers.delete(playerId);
+      }
     }
   }
 
@@ -122,7 +122,8 @@ class ClientPlayerManager {
   }
 
   createRemotePlayer(playerId, characterData) {
-    if (!SceneManager._scene?._spriteset) return;
+    const spriteset = SceneManager._scene?._spriteset;
+    if (!spriteset || !$dataMap || !$gameMap) return false;
 
     const eventId = this.getNextFreeEventId();
 
@@ -184,6 +185,8 @@ class ClientPlayerManager {
 
     SceneManager._scene._spriteset._tilemap.addChild(sprite);
     SceneManager._scene._spriteset._characterSprites.push(sprite);
+
+    return true;
   }
 
   applyBattlerSprite(member, actorId) {
@@ -231,6 +234,10 @@ class ClientPlayerManager {
   }
 
   startListeners() {
+    this.socket.on("serverPlayersOnMap", (playersOnMapArray) => {
+      this.pendingRemotePlayers = new Map(playersOnMapArray);
+    });
+
     this.socket.on("serverPlayerJoinedMap", ({ playerId, characterData }) => {
       this.pendingRemotePlayers.set(playerId, characterData);
     });

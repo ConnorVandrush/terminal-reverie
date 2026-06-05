@@ -7,7 +7,7 @@
 }
 
 .partyMembers {
-  height: 90%;
+  height: 85%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -52,11 +52,35 @@
   font-weight: bold;
 }
 
-/* Status row (HP, MP, etc.) */
-.partyMemberStatus {
+.partyMemberEquipment {
+  display: flex;
+  width: 100%;
   margin-top: 1%;
-  font-style: italic;
-  color: #cccccc;
+}
+
+/* Left column (Weapon / Armor / Accessory) */
+.partyMemberWAA {
+  width: 50%;
+  display: flex;
+  flex-direction: column; /* stack vertically */
+  gap: 4px;
+}
+
+/* Right column (Item1 / Item2 / Item3) */
+.partyMemberEquippedItems {
+  width: 50%;
+  display: flex;
+  flex-direction: column; /* stack vertically */
+  gap: 4px;
+}
+
+.itemInfo {
+  height: 5%;
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center; /* vertical */
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .buttonContainer {

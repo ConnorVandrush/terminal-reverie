@@ -13,7 +13,6 @@ class ClientMapManager {
           direction,
         );
       if (!response?.success) {
-        console.error("Move request failed or no response received", response);
         this.rollbackPlayer($gamePlayer, oldLoc);
       } else {
         const loc =

@@ -18,7 +18,7 @@ body {
   display: flex;
   height: 100%;
   max-width: 100vw;
-  aspect-ratio: 19.5 / 9;
+  aspect-ratio: auto;
 }
 #layout button {
   font-family: "Press Start 2P", cursive;

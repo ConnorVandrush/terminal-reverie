@@ -134,7 +134,6 @@ class ServerPartyManager {
                 this.playerParties.get(partyLeaderId),
               );
           } catch (error) {
-            console.error("Error accepting party invite:", error);
             cb({
               success: false,
               message: "An error occurred while accepting the party invite",

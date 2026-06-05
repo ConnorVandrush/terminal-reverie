@@ -15,9 +15,7 @@ class ServerManager {
   connectToDatabase = async () => {
     try {
       await mongoose.connect(this.uri);
-    } catch (error) {
-      console.error("Error connecting to database", error);
-    }
+    } catch (error) {}
   };
 
   serveStaticFiles = (dir) => {

@@ -31,6 +31,7 @@ export default function MovementButton({ direction }) {
 
   return (
     <button
+      data-testid={`move-${direction.toLowerCase()}`}
       className={`${styles.arrow} ${styles[`arrow${direction}`]} ${pressed ? styles.pressed : ""}`}
       onTouchStart={() => setPressed(true)}
       onTouchEnd={() => setPressed(false)}

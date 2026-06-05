@@ -12,6 +12,14 @@ class CharacterData {
     this.maxHp = 100;
     this.currentHp = this.maxHp;
     this.inventory = {}; //{ '1': { id: 1, name: 'Herb', description: 'Restores 25% of max HP', effects: { restoreHP: 25 }, quantity: 10 } }
+    this.equipment = {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      item1: null,
+      item2: null,
+      item3: null,
+    };
     this.appearance = {
       template: null,
       colors: {
@@ -24,6 +32,10 @@ class CharacterData {
     };
     this.availableActions = ["attack", "defend", "item", "run"];
     this.tradeOffer = null;
+  }
+
+  static randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   static checkIfActionAvailable(characterData, action) {
@@ -42,13 +54,9 @@ class CharacterData {
         case "defend":
           return this.defend(characterData);
         default:
-          console.warn(`Unknown action type: ${allyAction.actionType}`);
           return false;
       }
     } else {
-      console.warn(
-        `Action ${allyAction.actionType} is not available for character ${characterData.name}`,
-      );
       return false;
     }
   }
@@ -58,7 +66,7 @@ class CharacterData {
     if (target.currentHp <= 0) {
       targetAlreadyDead = true;
     }
-    const damage = 150; // Fixed damage for simplicity
+    const damage = this.randInt(20, 30);
     target.currentHp = Math.max(target.currentHp - damage, 0);
     const turnResults = {
       actionType: "attack",

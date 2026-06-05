@@ -29,7 +29,6 @@ playerAccountSchema.pre("save", async function () {
 
       this.playerId = counter.seq;
     } catch (err) {
-      console.error("Error generating playerId:", err);
       throw err;
     }
   } else {

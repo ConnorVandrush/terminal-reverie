@@ -11,10 +11,21 @@ class ServerPlayerManager {
     if (!this.playersOnMaps.has(mapName)) {
       this.playersOnMaps.set(mapName, new Map());
     }
-    socket.join(mapName);
+
+    const map = this.playersOnMaps.get(mapName);
+
+    // 1. Add player FIRST (atomic update)
     const characterData = this.playersOnline.get(playerId).characterData;
-    this.playersOnMaps.get(mapName).set(playerId, characterData);
-    this.io
+    map.set(playerId, characterData);
+
+    // 2. Join the room AFTER the map is updated
+    socket.join(mapName);
+
+    // 3. Send FULL updated list to the joining player
+    socket.emit("serverPlayersOnMap", Array.from(map.entries()));
+
+    // 4. Notify all other players that someone joined
+    socket
       .to(mapName)
       .emit("serverPlayerJoinedMap", { playerId, characterData });
   }

@@ -9,7 +9,6 @@ export function createEnemy(enemyName) {
   if (EnemyClass) {
     return new EnemyClass();
   } else {
-    console.warn(`Enemy class not found for name: ${enemyName}`);
     return null;
   }
 }

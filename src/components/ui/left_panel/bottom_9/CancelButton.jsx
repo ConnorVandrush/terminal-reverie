@@ -26,5 +26,11 @@ export default function CancelButton() {
     }
   }
 
-  return <button className={styles.cancelButton} onClick={cancel} />;
+  return (
+    <button
+      data-testid="cancel-button"
+      className={styles.cancelButton}
+      onClick={cancel}
+    />
+  );
 }

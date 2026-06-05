@@ -213,7 +213,6 @@ class ServerMapManager {
           playerData.inEncounter ||
           playerData.isBusy
         ) {
-          console.error(playerData);
           return cb({
             success: false,
             message:
@@ -248,14 +247,11 @@ class ServerMapManager {
           this.maps.get(currentLoc.map).mapData.battleback1Name,
           playerData,
         );
-        this.io
-          .to(currentLoc.map)
-          .except(socket.id)
-          .emit("serverPlayerMoved", {
-            playerId: socket.playerId,
-            newLocation: result.newLocation,
-            inEncounter: playerData.inEncounter,
-          });
+        this.io.to(currentLoc.map).except(socket.id).emit("serverPlayerMoved", {
+          playerId: socket.playerId,
+          newLocation: result.newLocation,
+          inEncounter: playerData.inEncounter,
+        });
         return cb({
           success: true,
           newLocation: result.newLocation,
@@ -273,9 +269,6 @@ class ServerMapManager {
           leaderData.preventMovement ||
           leaderData.inEncounter
         ) {
-          console.error(
-            "Cannot move party at this time because already transferring, preventing movement, or in an encounter",
-          );
           return;
         }
         leaderData.preventMovement = true;

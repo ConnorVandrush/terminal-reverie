@@ -116,7 +116,6 @@ class ServerLoginManager {
             playersOnMap,
           });
         } catch (error) {
-          console.error("Login error:", error);
           return cb({ error: "An error occurred during login" });
         }
       });

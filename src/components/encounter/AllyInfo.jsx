@@ -25,7 +25,7 @@ export default function AllyInfo() {
   };
 
   return (
-    <div className={styles.allyList}>
+    <div data-testid="ally-list" className={styles.allyList}>
       {allies.map((ally, index) => {
         const isSelected =
           currentTarget?.side === "ally" && currentTarget?.index === index;

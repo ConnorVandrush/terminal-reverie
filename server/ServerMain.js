@@ -10,9 +10,6 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 //     './colorPixelRanges.json'
 // );
 
-console.log("stop here");
-console.log("me next");
-
 const ServerManager = require("./modules/ServerManager.js");
 const serverManager = new ServerManager();
 serverManager.connectToDatabase();
