@@ -45,6 +45,9 @@ export default function PartyWindow() {
     return state.inventory.selectedItem;
   });
 
+  console.log("selectedItem:", selectedItem);
+  console.log("selectedItem.item.type:", selectedItem?.item?.type);
+
   // Safe members array
   const partyMembers = partyData?.members || [];
 
@@ -72,6 +75,11 @@ export default function PartyWindow() {
 
   const canKick =
     leader && isLeader && selectedMember && selectedPartyMember !== 0;
+
+  const canEquip =
+    selectedItem &&
+    selectedEquipmentSlot &&
+    selectedItem.item.type === selectedEquipmentSlot.replace(/\d+$/, "");
 
   const handleSelectMember = (slotIndex, member) => {
     if (!member) return;
@@ -111,6 +119,8 @@ export default function PartyWindow() {
       }),
     );
   };
+
+  const handleEquip = () => {};
 
   return (
     <div className={styles.partyWindow}>
@@ -269,6 +279,10 @@ export default function PartyWindow() {
 
         <button disabled={!canKick} onClick={handleKick}>
           Kick
+        </button>
+
+        <button disabled={!canEquip} onClick={handleEquip}>
+          Equip
         </button>
       </div>
     </div>

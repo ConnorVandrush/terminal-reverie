@@ -3,220 +3,262 @@
     "name": "Herb",
     "effects": { "restoreHP": 25 },
     "description": "Restores 25% of max HP",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "2": {
     "name": "Ointment",
     "effects": { "restoreHP": 50 },
     "description": "Restores 50% of max HP",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "3": {
     "name": "Potion",
     "effects": { "restoreHP": 75 },
     "description": "Restores 75% of max HP",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "4": {
     "name": "Shot",
     "effects": { "restoreHP": 100 },
     "description": "Restores 100% of max HP",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "5": {
     "name": "Dummy",
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "6": {
     "name": "Dummy",
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "7": {
     "name": "Dummy",
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "8": {
     "name": "Dummy",
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "9": {
     "name": "Dummy",
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "10": {
     "name": "Dummy",
     "effects": { "restoreHP": 100 },
     "description": "Dummy item",
-    "quantity": 0
+    "quantity": 0,
+    "type": "item"
   },
   "10001": {
     "name": "Iron Dagger",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "10002": {
     "name": "Steel Dagger",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "10003": {
     "name": "Mithril Dagger",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "10004": {
     "name": "Adamantium Dagger",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "11001": {
     "name": "Iron Longsword",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "11002": {
     "name": "Steel Longsword",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "11003": {
     "name": "Mithril Longsword",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "11004": {
     "name": "Adamantium Longsword",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "12001": {
     "name": "Iron Katana",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "12002": {
     "name": "Steel Katana",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "12003": {
     "name": "Mithril Katana",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "12004": {
     "name": "Adamantium Katana",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "13001": {
     "name": "Iron Great Sword",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "13002": {
     "name": "Steel Great Sword",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "13003": {
     "name": "Mithril Great Sword",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "13004": {
     "name": "Adamantium Great Sword",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "14001": {
     "name": "Iron Hand Axe",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "14002": {
     "name": "Steel Hand Axe",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "14003": {
     "name": "Mithril Hand Axe",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "14004": {
     "name": "Adamantium Hand Axe",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "15001": {
     "name": "Iron Battle Axe",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "15002": {
     "name": "Steel Battle Axe",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "15003": {
     "name": "Mithril Battle Axe",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "15004": {
     "name": "Adamantium Battle Axe",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "16001": {
     "name": "Iron Great Axe",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "16002": {
     "name": "Steel Great Axe",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "16003": {
     "name": "Mithril Great Axe",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "16004": {
     "name": "Adamantium Great Axe",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "17001": {
     "name": "Iron Scythe",
     "rank": 1,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "17002": {
     "name": "Steel Scythe",
     "rank": 2,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "17003": {
     "name": "Mithril Scythe",
     "rank": 3,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   },
   "17004": {
     "name": "Adamantium Scythe",
     "rank": 4,
-    "quantity": 0
+    "quantity": 0,
+    "type": "weapon"
   }
 }

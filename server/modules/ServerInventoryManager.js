@@ -53,6 +53,7 @@ class ServerInventoryManager {
       description: baseItem.description,
       effects: baseItem.effects,
       quantity: amount,
+      type: baseItem.type,
     };
   }
 

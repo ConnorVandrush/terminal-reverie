@@ -19,12 +19,6 @@ export default function InventoryPanel() {
     } else {
       dispatch({ type: "inventory/setSelectedItem", payload: { id, item } });
       dispatch({ type: "centerPanel/setCenterPanel", payload: "partyWindow" });
-      dispatch({
-        type: "partyWindow/setSelectedPartyMember",
-        payload: window.clientGlobalManager.clientPartyManager.findPartyIndex(
-          window.clientGlobalManager.clientPlayerManager.characterData.playerId,
-        ),
-      });
     }
   };
 
