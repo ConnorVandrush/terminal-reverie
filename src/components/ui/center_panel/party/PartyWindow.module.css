@@ -14,12 +14,12 @@
   overflow-y: auto;
 }
 
-.partyMemberButton {
+.partyMemberDiv {
   margin: 2% 2% 0 2%;
   background: none;
   border: none;
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 
   display: flex;
   flex-direction: column;
@@ -31,12 +31,26 @@
   flex: 1; /* makes all 4 slots equal height */
 }
 
+.partyMemberHeaderButton {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: white;
+}
+
 /* Hover highlight (same as shop) */
-.partyMemberButton:hover {
+.partyMemberHeaderButton:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
 .selectedPartyMember {
+  animation: pulseSelected 1.2s infinite ease-in-out;
+}
+
+.selectedEquipmentSlot {
   animation: pulseSelected 1.2s infinite ease-in-out;
 }
 

@@ -280,7 +280,6 @@ class ServerInventoryManager {
       });
 
       socket.on("clientRequestOpenShop", (cb) => {
-        console.log("open shop");
         const playerData = this.serverPlayerManager.playersOnline.get(
           socket.playerId,
         );

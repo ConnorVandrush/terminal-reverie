@@ -7,6 +7,7 @@ const partyWindowSlice = createSlice({
     errorMessage: null,
     successMessage: null,
     selectedPartyMember: null,
+    selectedEquipmentSlot: null,
     partyInvites: [],
   },
   reducers: {
@@ -58,6 +59,9 @@ const partyWindowSlice = createSlice({
     setSelectedPartyMember: (state, action) => {
       state.selectedPartyMember = action.payload;
     },
+    setSelectedEquipmentSlot: (state, action) => {
+      state.selectedEquipmentSlot = action.payload;
+    },
   },
 });
 
@@ -74,5 +78,6 @@ export const {
   clientKickPartyMember,
   updatePartyData,
   setSelectedPartyMember,
+  setSelectedEquipmentSlot,
 } = partyWindowSlice.actions;
 export default partyWindowSlice.reducer;

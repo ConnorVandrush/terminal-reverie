@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   setSelectedPartyMember,
+  setSelectedEquipmentSlot,
   clientSendPartyInvite,
   removePartyInvite,
   clientAcceptPartyInvite,
@@ -21,6 +22,10 @@ export default function PartyWindow() {
 
   const selectedPartyMember = useSelector(
     (state) => state.partyWindow.selectedPartyMember,
+  );
+
+  const selectedEquipmentSlot = useSelector(
+    (state) => state.partyWindow.selectedEquipmentSlot,
   );
 
   const characterData = useSelector((state) => {
@@ -71,10 +76,22 @@ export default function PartyWindow() {
   const handleSelectMember = (slotIndex, member) => {
     if (!member) return;
 
+    dispatch(setSelectedEquipmentSlot(null));
+
     dispatch(
       setSelectedPartyMember(
         selectedPartyMember === slotIndex ? null : slotIndex,
       ),
+    );
+  };
+
+  const handleSelectEquipmentSlot = (slot, member) => {
+    if (!member) return;
+
+    dispatch(setSelectedPartyMember(null));
+
+    dispatch(
+      setSelectedEquipmentSlot(selectedEquipmentSlot === slot ? null : slot),
     );
   };
 
@@ -102,54 +119,133 @@ export default function PartyWindow() {
           const member = members[slotIndex];
           const isSelected = selectedPartyMember === slotIndex;
 
+          const weaponSelected = selectedEquipmentSlot === "weapon" + slotIndex;
+          const armorSelected = selectedEquipmentSlot === "armor" + slotIndex;
+          const accessorySelected =
+            selectedEquipmentSlot === "accessory" + slotIndex;
+          const item1Selected = selectedEquipmentSlot === "item1" + slotIndex;
+          const item2Selected = selectedEquipmentSlot === "item2" + slotIndex;
+          const item3Selected = selectedEquipmentSlot === "item3" + slotIndex;
+
           return (
-            <button
-              key={slotIndex}
-              disabled={!member}
-              className={`
-          ${styles.partyMemberButton}
-          ${isSelected ? styles.selectedPartyMember : ""}
-        `}
-              onClick={() => handleSelectMember(slotIndex, member)}
-            >
-              <div className={styles.partyMemberHeader}>
-                <div className={styles.partyMemberName}>
-                  {member?.name || ""}
-                </div>
+            <div key={slotIndex} className={styles.partyMemberDiv}>
+              <button
+                disabled={!member}
+                className={`
+      ${styles.partyMemberHeaderButton}
+      ${isSelected ? styles.selectedPartyMember : ""}
+    `}
+                onClick={() => handleSelectMember(slotIndex, member)}
+              >
+                <div className={styles.partyMemberHeader}>
+                  <div className={styles.partyMemberName}>
+                    {member?.name || ""}
+                  </div>
 
-                <div className={styles.partyMemberHP}>
-                  {member && (
-                    <>
-                      HP: {member.currentHp}/{member.maxHp}
-                    </>
-                  )}
-                </div>
+                  <div className={styles.partyMemberHP}>
+                    {member && (
+                      <>
+                        HP: {member.currentHp}/{member.maxHp}
+                      </>
+                    )}
+                  </div>
 
-                <div className={styles.partyMemberLevel}>
-                  {member ? `Lv ${member.level}` : ""}
+                  <div className={styles.partyMemberLevel}>
+                    {member ? `Lv ${member.level}` : ""}
+                  </div>
                 </div>
-              </div>
+              </button>
 
               <div className={styles.partyMemberEquipment}>
                 {member && (
                   <>
                     <div className={styles.partyMemberWAA}>
-                      <div>Weapon: {member.equipment.weapon || "None"}</div>
-                      <div>Armor: {member.equipment.armor || "None"}</div>
-                      <div>
-                        Accessory: {member.equipment.accessory || "None"}
-                      </div>
+                      <button
+                        className={`
+            ${styles.partyMemberHeaderButton}
+            ${selectedEquipmentSlot === "weapon" + slotIndex ? styles.selectedEquipmentSlot : ""}
+          `}
+                        onClick={() =>
+                          handleSelectEquipmentSlot(
+                            "weapon" + slotIndex,
+                            member,
+                          )
+                        }
+                      >
+                        <div>Weapon: {member.equipment.weapon || "None"}</div>
+                      </button>
+
+                      <button
+                        className={`
+            ${styles.partyMemberHeaderButton}
+            ${selectedEquipmentSlot === "armor" + slotIndex ? styles.selectedEquipmentSlot : ""}
+          `}
+                        onClick={() =>
+                          handleSelectEquipmentSlot("armor" + slotIndex, member)
+                        }
+                      >
+                        <div>Armor: {member.equipment.armor || "None"}</div>
+                      </button>
+
+                      <button
+                        className={`
+            ${styles.partyMemberHeaderButton}
+            ${selectedEquipmentSlot === "accessory" + slotIndex ? styles.selectedEquipmentSlot : ""}
+          `}
+                        onClick={() =>
+                          handleSelectEquipmentSlot(
+                            "accessory" + slotIndex,
+                            member,
+                          )
+                        }
+                      >
+                        <div>
+                          Accessory: {member.equipment.accessory || "None"}
+                        </div>
+                      </button>
                     </div>
 
                     <div className={styles.partyMemberEquippedItems}>
-                      <div>Item 1: {member.equipment.item1 || "None"}</div>
-                      <div>Item 2: {member.equipment.item2 || "None"}</div>
-                      <div>Item 3: {member.equipment.item3 || "None"}</div>
+                      <button
+                        className={`
+            ${styles.partyMemberHeaderButton}
+            ${selectedEquipmentSlot === "item1" + slotIndex ? styles.selectedEquipmentSlot : ""}
+          `}
+                        onClick={() =>
+                          handleSelectEquipmentSlot("item1" + slotIndex, member)
+                        }
+                      >
+                        <div>Item 1: {member.equipment.item1 || "None"}</div>
+                      </button>
+
+                      <button
+                        className={`
+            ${styles.partyMemberHeaderButton}
+            ${selectedEquipmentSlot === "item2" + slotIndex ? styles.selectedEquipmentSlot : ""}
+          `}
+                        onClick={() =>
+                          handleSelectEquipmentSlot("item2" + slotIndex, member)
+                        }
+                      >
+                        <div>Item 2: {member.equipment.item2 || "None"}</div>
+                      </button>
+
+                      <button
+                        className={`
+            ${styles.partyMemberHeaderButton}
+            ${selectedEquipmentSlot === "item3" + slotIndex ? styles.selectedEquipmentSlot : ""}
+          `}
+                        onClick={() =>
+                          handleSelectEquipmentSlot("item3" + slotIndex, member)
+                        }
+                      >
+                        <div>Item 3: {member.equipment.item3 || "None"}</div>
+                      </button>
                     </div>
                   </>
                 )}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
