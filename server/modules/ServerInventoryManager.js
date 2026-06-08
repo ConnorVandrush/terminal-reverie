@@ -46,7 +46,7 @@ class ServerInventoryManager {
       return;
     }
 
-    const baseItem = this.items.get(itemId);
+    const baseItem = this.items.get(+itemId);
     inventory[key] = {
       id: itemId,
       name: baseItem.name,
@@ -154,7 +154,7 @@ class ServerInventoryManager {
     const baseCost = shopData.get(parseInt(itemId)).cost;
     const totalCost = baseCost * quantity;
 
-    if (inventory[key].quantity + quantity > 99) {
+    if (inventory[key] && inventory[key].quantity + quantity > 99) {
       return { success: false, message: "Not enough space." };
     } else if (totalCost > characterData.gold) {
       return { success: false, message: "Not enough gold." };
@@ -280,6 +280,7 @@ class ServerInventoryManager {
       });
 
       socket.on("clientRequestOpenShop", (cb) => {
+        console.log("open shop");
         const playerData = this.serverPlayerManager.playersOnline.get(
           socket.playerId,
         );
@@ -374,11 +375,9 @@ class ServerInventoryManager {
           }
           toPlayer.isBusy = true;
           fromPlayer.isBusy = true;
-          this.io
-            .to(fromPlayerSocket)
-            .emit("serverTradeRequestAccepted", {
-              fromPlayerName: toPlayer.characterData.name,
-            });
+          this.io.to(fromPlayerSocket).emit("serverTradeRequestAccepted", {
+            fromPlayerName: toPlayer.characterData.name,
+          });
           cb({
             success: true,
             fromPlayerName: fromPlayerName,
@@ -403,11 +402,9 @@ class ServerInventoryManager {
           ? partnerPlayerData.socketId
           : null;
         if (partnerSocket) {
-          this.io
-            .to(partnerSocket)
-            .emit("serverTradeDeclined", {
-              fromPlayerName: playerData.characterData.name,
-            });
+          this.io.to(partnerSocket).emit("serverTradeDeclined", {
+            fromPlayerName: playerData.characterData.name,
+          });
         }
         partnerPlayerData.isBusy = false;
         playerData.isBusy = false;
@@ -436,12 +433,10 @@ class ServerInventoryManager {
         if (partnerSocket) {
           playerData.characterData.tradeOffer = null;
           partnerPlayerData.characterData.tradeOffer = null;
-          this.io
-            .to(partnerSocket)
-            .emit("serverUpdateTheirOfferGold", {
-              amt: amt,
-              fromPlayerName: playerData.characterData.name,
-            });
+          this.io.to(partnerSocket).emit("serverUpdateTheirOfferGold", {
+            amt: amt,
+            fromPlayerName: playerData.characterData.name,
+          });
         }
         cb({ success: true });
       });
@@ -567,12 +562,10 @@ class ServerInventoryManager {
             return cb({ success: true });
           } else {
             if (partnerSocket) {
-              this.io
-                .to(partnerSocket)
-                .emit("serverTradeError", {
-                  message:
-                    "There was an error trading. Please close the trade window.",
-                });
+              this.io.to(partnerSocket).emit("serverTradeError", {
+                message:
+                  "There was an error trading. Please close the trade window.",
+              });
             }
             return cb({
               success: false,

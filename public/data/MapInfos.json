@@ -2,7 +2,7 @@
 null,
 {"id":1,"expanded":true,"name":"Town1","order":1,"parentId":0,"scrollX":6469.5,"scrollY":6147},
 {"id":2,"expanded":true,"name":"ItemShop","order":2,"parentId":1,"scrollX":1216.5,"scrollY":676.5,"quick":false},
-{"id":3,"expanded":false,"name":"Store2","order":3,"parentId":1,"scrollX":1216.5,"scrollY":674.25,"quick":false},
+{"id":3,"expanded":false,"name":"WeaponShop","order":3,"parentId":1,"scrollX":1216.5,"scrollY":674.25,"quick":false},
 {"id":4,"expanded":false,"name":"Store3","order":4,"parentId":1,"scrollX":1216.5,"scrollY":674.25,"quick":false},
 {"id":5,"expanded":false,"name":"Store4","order":5,"parentId":1,"scrollX":1216.5,"scrollY":674.25,"quick":false}
 ]

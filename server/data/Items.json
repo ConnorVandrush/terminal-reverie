@@ -61,130 +61,162 @@
   },
   "10001": {
     "name": "Iron Dagger",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "10002": {
     "name": "Steel Dagger",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "10003": {
     "name": "Mithril Dagger",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "10004": {
     "name": "Adamantium Dagger",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "11001": {
     "name": "Iron Longsword",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "11002": {
     "name": "Steel Longsword",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "11003": {
     "name": "Mithril Longsword",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "11004": {
     "name": "Adamantium Longsword",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "12001": {
     "name": "Iron Katana",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "12002": {
     "name": "Steel Katana",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "12003": {
     "name": "Mithril Katana",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "12004": {
     "name": "Adamantium Katana",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "13001": {
     "name": "Iron Great Sword",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "13002": {
     "name": "Steel Great Sword",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "13003": {
     "name": "Mithril Great Sword",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "13004": {
     "name": "Adamantium Great Sword",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "14001": {
     "name": "Iron Hand Axe",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "14002": {
     "name": "Steel Hand Axe",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "14003": {
     "name": "Mithril Hand Axe",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "14004": {
     "name": "Adamantium Hand Axe",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "15001": {
     "name": "Iron Battle Axe",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "15002": {
     "name": "Steel Battle Axe",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "15003": {
     "name": "Mithril Battle Axe",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "15004": {
     "name": "Adamantium Battle Axe",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "16001": {
     "name": "Iron Great Axe",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "16002": {
     "name": "Steel Great Axe",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "16003": {
     "name": "Mithril Great Axe",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "16004": {
     "name": "Adamantium Great Axe",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   },
   "17001": {
     "name": "Iron Scythe",
-    "rank": 1
+    "rank": 1,
+    "quantity": 0
   },
   "17002": {
     "name": "Steel Scythe",
-    "rank": 2
+    "rank": 2,
+    "quantity": 0
   },
   "17003": {
     "name": "Mithril Scythe",
-    "rank": 3
+    "rank": 3,
+    "quantity": 0
   },
   "17004": {
     "name": "Adamantium Scythe",
-    "rank": 4
+    "rank": 4,
+    "quantity": 0
   }
 }
