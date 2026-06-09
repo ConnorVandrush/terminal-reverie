@@ -10,6 +10,20 @@ export default function ConirmButton() {
   const selectedPartyMemberIndex = useSelector(
     (state) => state.partyWindow.selectedPartyMember,
   );
+  const selectedEquipmentSlot = useSelector(
+    (state) => state.partyWindow.selectedEquipmentSlot,
+  );
+  const isOwnEquipmentSlot = useSelector(
+    (state) => state.partyWindow.isOwnEquipmentSlot,
+  );
+  const canEquip =
+    selectedItem &&
+    selectedEquipmentSlot &&
+    selectedItem.item.type === selectedEquipmentSlot.replace(/\d+$/, "");
+
+  const equipmentSlot = selectedEquipmentSlot
+    ? selectedEquipmentSlot.slice(0, -1)
+    : null;
 
   function confirm() {
     if (selectedItem !== null && selectedPartyMemberIndex !== null) {
@@ -20,6 +34,16 @@ export default function ConirmButton() {
       dispatch({
         type: "inventory/clientUseItem",
         payload: { selectedItem, selectedPartyMemberId },
+      });
+    } else if (
+      selectedItem !== null &&
+      selectedEquipmentSlot !== null &&
+      isOwnEquipmentSlot &&
+      canEquip
+    ) {
+      dispatch({
+        type: "inventory/clientEquipItem",
+        payload: { selectedItem, equipmentSlot },
       });
     } else {
       Input.virtualClick("ok");

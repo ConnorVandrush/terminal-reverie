@@ -8,9 +8,48 @@ const partyWindowSlice = createSlice({
     successMessage: null,
     selectedPartyMember: null,
     selectedEquipmentSlot: null,
+    isOwnEquipmentSlot: false,
     partyInvites: [],
+    equipment: [
+      {
+        weapon: null,
+        armor: null,
+        accessory: null,
+        item1: null,
+        item2: null,
+        item3: null,
+      }, // member 0
+      {
+        weapon: null,
+        armor: null,
+        accessory: null,
+        item1: null,
+        item2: null,
+        item3: null,
+      }, // member 1
+      {
+        weapon: null,
+        armor: null,
+        accessory: null,
+        item1: null,
+        item2: null,
+        item3: null,
+      }, // member 2
+      {
+        weapon: null,
+        armor: null,
+        accessory: null,
+        item1: null,
+        item2: null,
+        item3: null,
+      }, // member 3
+    ],
   },
   reducers: {
+    setMemberEquipment: (state, action) => {
+      const { memberIndex, equipmentSlot, itemName } = action.payload;
+      state.equipment[memberIndex][equipmentSlot] = itemName;
+    },
     clientSendPartyInvite: (state, action) => {
       // emit handled in partyWindowEmitters.js
     },
@@ -62,6 +101,9 @@ const partyWindowSlice = createSlice({
     setSelectedEquipmentSlot: (state, action) => {
       state.selectedEquipmentSlot = action.payload;
     },
+    setIsOwnEquipmentSlot: (state, action) => {
+      state.isOwnEquipmentSlot = action.payload;
+    },
   },
 });
 
@@ -79,5 +121,7 @@ export const {
   updatePartyData,
   setSelectedPartyMember,
   setSelectedEquipmentSlot,
+  setIsOwnEquipmentSlot,
+  setMemberEquipment,
 } = partyWindowSlice.actions;
 export default partyWindowSlice.reducer;

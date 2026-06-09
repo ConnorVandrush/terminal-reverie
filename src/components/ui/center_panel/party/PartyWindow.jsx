@@ -4,9 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setSelectedPartyMember,
   setSelectedEquipmentSlot,
-  clientSendPartyInvite,
-  removePartyInvite,
-  clientAcceptPartyInvite,
+  setIsOwnEquipmentSlot,
   clientLeaveParty,
   clientKickPartyMember,
 } from "@store/partyWindowSlice.js";
@@ -18,74 +16,54 @@ import styles from "./PartyWindow.module.css";
 export default function PartyWindow() {
   const dispatch = useDispatch();
 
+  // --- Redux State ---
+  const equipment2 = useSelector((state) => state.partyWindow.equipment);
+  console.log(equipment2);
   const partyData = useSelector((state) => state.partyWindow.partyData);
-
+  const equipment = useSelector((state) => state.partyWindow.equipment); // 🔥 unified equipment array
   const selectedPartyMember = useSelector(
     (state) => state.partyWindow.selectedPartyMember,
   );
-
   const selectedEquipmentSlot = useSelector(
     (state) => state.partyWindow.selectedEquipmentSlot,
   );
+  const selectedItem = useSelector((state) => state.inventory.selectedItem);
 
+  // --- Player Character ---
   const characterData = useSelector((state) => {
     const data = state.partyWindow.partyData;
-
-    if (!data?.members?.length) {
-      return null;
-    }
+    if (!data?.members?.length) return null;
 
     const playerId =
       window.clientGlobalManager?.clientPlayerManager?.characterData?.playerId;
 
-    return data.members.find((member) => member?.playerId === playerId) || null;
+    return data.members.find((m) => m?.playerId === playerId) || null;
   });
 
-  const selectedItem = useSelector((state) => {
-    return state.inventory.selectedItem;
-  });
-
-  console.log("selectedItem:", selectedItem);
-  console.log("selectedItem.item.type:", selectedItem?.item?.type);
-
-  // Safe members array
+  // --- Party Members ---
   const partyMembers = partyData?.members || [];
-
-  // Safe leader reference
-  const leader = partyMembers[0] || null;
-
-  // Ensure exactly 4 UI slots
   const members = [...partyMembers].filter(Boolean).slice(0, 4);
+  while (members.length < 4) members.push(null);
 
-  while (members.length < 4) {
-    members.push(null);
-  }
-
+  const leader = members[0];
   const isLeader = leader?.playerId === characterData?.playerId;
 
   const selectedMember =
     selectedPartyMember != null ? members[selectedPartyMember] : null;
 
   const canInvite =
-    leader &&
-    partyMembers.length < 4 &&
-    (isLeader || partyMembers.length === 1);
+    leader && members.length < 4 && (isLeader || members.length === 1);
 
-  const canLeave = leader && partyMembers.length > 1;
+  const canLeave = leader && members.length > 1;
 
   const canKick =
     leader && isLeader && selectedMember && selectedPartyMember !== 0;
 
-  const canEquip =
-    selectedItem &&
-    selectedEquipmentSlot &&
-    selectedItem.item.type === selectedEquipmentSlot.replace(/\d+$/, "");
-
+  // --- Handlers ---
   const handleSelectMember = (slotIndex, member) => {
     if (!member) return;
 
     dispatch(setSelectedEquipmentSlot(null));
-
     dispatch(
       setSelectedPartyMember(
         selectedPartyMember === slotIndex ? null : slotIndex,
@@ -93,19 +71,25 @@ export default function PartyWindow() {
     );
   };
 
-  const handleSelectEquipmentSlot = (slot, member) => {
+  const handleSelectEquipmentSlot = (slot, member, slotIndex) => {
     if (!member) return;
 
     dispatch(setSelectedPartyMember(null));
 
+    const isOwn = member.playerId === characterData.playerId;
+    dispatch(setIsOwnEquipmentSlot(isOwn));
+
     dispatch(
-      setSelectedEquipmentSlot(selectedEquipmentSlot === slot ? null : slot),
+      setSelectedEquipmentSlot(
+        selectedEquipmentSlot === `${slot}${slotIndex}`
+          ? null
+          : `${slot}${slotIndex}`,
+      ),
     );
   };
 
   const handleLeave = () => {
     if (!leader) return;
-
     dispatch(clientLeaveParty(leader.playerId));
   };
 
@@ -120,8 +104,7 @@ export default function PartyWindow() {
     );
   };
 
-  const handleEquip = () => {};
-
+  // --- Render ---
   return (
     <div className={styles.partyWindow}>
       <div className={styles.partyMembers}>
@@ -129,22 +112,16 @@ export default function PartyWindow() {
           const member = members[slotIndex];
           const isSelected = selectedPartyMember === slotIndex;
 
-          const weaponSelected = selectedEquipmentSlot === "weapon" + slotIndex;
-          const armorSelected = selectedEquipmentSlot === "armor" + slotIndex;
-          const accessorySelected =
-            selectedEquipmentSlot === "accessory" + slotIndex;
-          const item1Selected = selectedEquipmentSlot === "item1" + slotIndex;
-          const item2Selected = selectedEquipmentSlot === "item2" + slotIndex;
-          const item3Selected = selectedEquipmentSlot === "item3" + slotIndex;
+          const equip = equipment[slotIndex]; // 🔥 Redux equipment for this member
 
           return (
             <div key={slotIndex} className={styles.partyMemberDiv}>
+              {/* --- Member Header --- */}
               <button
                 disabled={!member}
-                className={`
-      ${styles.partyMemberHeaderButton}
-      ${isSelected ? styles.selectedPartyMember : ""}
-    `}
+                className={`${styles.partyMemberHeaderButton} ${
+                  isSelected ? styles.selectedPartyMember : ""
+                }`}
                 onClick={() => handleSelectMember(slotIndex, member)}
               >
                 <div className={styles.partyMemberHeader}>
@@ -166,107 +143,65 @@ export default function PartyWindow() {
                 </div>
               </button>
 
-              <div className={styles.partyMemberEquipment}>
-                {member && (
-                  <>
-                    <div className={styles.partyMemberWAA}>
+              {/* --- Equipment --- */}
+              {member && (
+                <div className={styles.partyMemberEquipment}>
+                  <div className={styles.partyMemberWAA}>
+                    {["weapon", "armor", "accessory"].map((slot) => (
                       <button
-                        className={`
-            ${styles.partyMemberHeaderButton}
-            ${selectedEquipmentSlot === "weapon" + slotIndex ? styles.selectedEquipmentSlot : ""}
-          `}
+                        key={slot}
+                        className={`${styles.partyMemberHeaderButton} ${
+                          selectedEquipmentSlot === `${slot}${slotIndex}`
+                            ? styles.selectedEquipmentSlot
+                            : ""
+                        }`}
                         onClick={() =>
-                          handleSelectEquipmentSlot(
-                            "weapon" + slotIndex,
-                            member,
-                          )
-                        }
-                      >
-                        <div>Weapon: {member.equipment.weapon || "None"}</div>
-                      </button>
-
-                      <button
-                        className={`
-            ${styles.partyMemberHeaderButton}
-            ${selectedEquipmentSlot === "armor" + slotIndex ? styles.selectedEquipmentSlot : ""}
-          `}
-                        onClick={() =>
-                          handleSelectEquipmentSlot("armor" + slotIndex, member)
-                        }
-                      >
-                        <div>Armor: {member.equipment.armor || "None"}</div>
-                      </button>
-
-                      <button
-                        className={`
-            ${styles.partyMemberHeaderButton}
-            ${selectedEquipmentSlot === "accessory" + slotIndex ? styles.selectedEquipmentSlot : ""}
-          `}
-                        onClick={() =>
-                          handleSelectEquipmentSlot(
-                            "accessory" + slotIndex,
-                            member,
-                          )
+                          handleSelectEquipmentSlot(slot, member, slotIndex)
                         }
                       >
                         <div>
-                          Accessory: {member.equipment.accessory || "None"}
+                          {slot.charAt(0).toUpperCase() + slot.slice(1)}:{" "}
+                          {equip[slot] || "None"}
                         </div>
                       </button>
-                    </div>
+                    ))}
+                  </div>
 
-                    <div className={styles.partyMemberEquippedItems}>
+                  <div className={styles.partyMemberEquippedItems}>
+                    {["item1", "item2", "item3"].map((slot) => (
                       <button
-                        className={`
-            ${styles.partyMemberHeaderButton}
-            ${selectedEquipmentSlot === "item1" + slotIndex ? styles.selectedEquipmentSlot : ""}
-          `}
+                        key={slot}
+                        className={`${styles.partyMemberHeaderButton} ${
+                          selectedEquipmentSlot === `${slot}${slotIndex}`
+                            ? styles.selectedEquipmentSlot
+                            : ""
+                        }`}
                         onClick={() =>
-                          handleSelectEquipmentSlot("item1" + slotIndex, member)
+                          handleSelectEquipmentSlot(slot, member, slotIndex)
                         }
                       >
-                        <div>Item 1: {member.equipment.item1 || "None"}</div>
+                        <div>
+                          {slot.replace("item", "Item ")}:{" "}
+                          {equip[slot] || "None"}
+                        </div>
                       </button>
-
-                      <button
-                        className={`
-            ${styles.partyMemberHeaderButton}
-            ${selectedEquipmentSlot === "item2" + slotIndex ? styles.selectedEquipmentSlot : ""}
-          `}
-                        onClick={() =>
-                          handleSelectEquipmentSlot("item2" + slotIndex, member)
-                        }
-                      >
-                        <div>Item 2: {member.equipment.item2 || "None"}</div>
-                      </button>
-
-                      <button
-                        className={`
-            ${styles.partyMemberHeaderButton}
-            ${selectedEquipmentSlot === "item3" + slotIndex ? styles.selectedEquipmentSlot : ""}
-          `}
-                        onClick={() =>
-                          handleSelectEquipmentSlot("item3" + slotIndex, member)
-                        }
-                      >
-                        <div>Item 3: {member.equipment.item3 || "None"}</div>
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
+      {/* --- Item Description --- */}
       <div className={styles.itemInfo}>
         {selectedItem && selectedItem.item.description}
       </div>
 
+      {/* --- Buttons --- */}
       <div className={styles.buttonContainer}>
         <button
-          data-testid="join-invite-button"
           disabled={!canInvite}
           onClick={() => dispatch(setCenterPanel("partyInvites"))}
         >
@@ -279,10 +214,6 @@ export default function PartyWindow() {
 
         <button disabled={!canKick} onClick={handleKick}>
           Kick
-        </button>
-
-        <button disabled={!canEquip} onClick={handleEquip}>
-          Equip
         </button>
       </div>
     </div>

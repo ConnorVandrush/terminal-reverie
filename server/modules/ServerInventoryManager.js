@@ -125,6 +125,56 @@ class ServerInventoryManager {
     };
   }
 
+  clientEquipItem(playerData, itemToEquip, partyData, equipmentSlot) {
+    const characterData = playerData.characterData;
+    const inventory = characterData.inventory;
+
+    // 1. Validate inventory
+    const key = String(itemToEquip.id);
+    if (!inventory[key] || inventory[key].quantity <= 0) {
+      return { success: false, error: "Item not in inventory" };
+    }
+
+    let target = characterData;
+
+    // 3. Validate equipment object exists
+    if (!target.equipment) {
+      target.equipment = {
+        weapon: null,
+        armor: null,
+        accessory: null,
+        item1: null,
+        item2: null,
+        item3: null,
+      };
+    }
+
+    const playerEquipment = target.equipment;
+
+    // 4. Swap logic
+    const currentlyInSlot = playerEquipment[equipmentSlot];
+
+    // If something is already equipped, return it to inventory
+    if (currentlyInSlot) {
+      this.addItemToInventory(characterData.inventory, currentlyInSlot.id, 1);
+    }
+
+    // Remove the new item from inventory
+    this.removeItemFromInventory(characterData.inventory, itemToEquip.id, 1);
+
+    // Equip the new item
+    playerEquipment[equipmentSlot] = itemToEquip;
+
+    // 5. Return updated data (same shape as clientUseItem)
+    return {
+      success: true,
+      itemUsed: itemToEquip,
+      updatedInventory: inventory,
+      updatedEquipment: playerEquipment,
+      updatedTarget: target,
+    };
+  }
+
   buildShopInventory(shopData) {
     const result = {};
 
@@ -265,12 +315,33 @@ class ServerInventoryManager {
           );
           if (partyData) {
             this.io
-              .to("party_${playerData.partyData.partyLeaderId}")
+              .to(`party_${playerData.partyData.partyLeaderId}`)
               .emit("serverPartyStatusUpdate", { partyData });
           }
           cb(result);
         },
       );
+
+      socket.on("clientEquipItem", ({ selectedItem, equipmentSlot }, cb) => {
+        const playerData = this.serverPlayerManager.playersOnline.get(
+          socket.playerId,
+        );
+        const partyData = this.serverPartyManager.playerParties.get(
+          playerData.partyData.partyLeaderId,
+        );
+        const result = this.clientEquipItem(
+          playerData,
+          selectedItem,
+          partyData,
+          equipmentSlot,
+        );
+        if (partyData) {
+          this.io
+            .to(`party_${playerData.partyData.partyLeaderId}`)
+            .emit("serverPartyStatusUpdate", { partyData });
+        }
+        cb(result);
+      });
 
       socket.on("clientBuyItem", ({ itemId, quantity }, cb) => {
         const playerData = this.serverPlayerManager.playersOnline.get(

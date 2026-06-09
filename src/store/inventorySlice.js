@@ -16,9 +16,17 @@ const inventorySlice = createSlice({
     clientUseItem: (state, action) => {
       // emit handled in inventoryEmitters.js
     },
+    clientEquipItem: (state, action) => {
+      // emit handled in inventoryEmitters.js
+    },
   },
 });
 
-export const { setInventory, setSelectedItem, clientUseItem } =
-  inventorySlice.actions;
+export const {
+  setInventory,
+  setEquipment,
+  setSelectedItem,
+  clientUseItem,
+  clientEquipItem,
+} = inventorySlice.actions;
 export default inventorySlice.reducer;
