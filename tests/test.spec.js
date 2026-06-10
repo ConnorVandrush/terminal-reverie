@@ -14,7 +14,7 @@ test("4 player login and party battle", async ({ context }) => {
   const loginUser = async (user) => {
     const page = await context.newPage();
 
-    await page.goto("http://46.110.113.183:5173/", {
+    await page.goto(process.env.VITE_ORIGIN_ADDRESS, {
       waitUntil: "networkidle",
     });
 

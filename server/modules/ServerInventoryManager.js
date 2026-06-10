@@ -130,6 +130,9 @@ class ServerInventoryManager {
     const inventory = characterData.inventory;
 
     // 1. Validate inventory
+    if (!itemToEquip.id) {
+      return { success: false, error: "No item id provided" };
+    }
     const key = String(itemToEquip.id);
     if (!inventory[key] || inventory[key].quantity <= 0) {
       return { success: false, error: "Item not in inventory" };
@@ -172,6 +175,44 @@ class ServerInventoryManager {
       updatedInventory: inventory,
       updatedEquipment: playerEquipment,
       updatedTarget: target,
+    };
+  }
+
+  clientUnequipItem(playerData, partyData, equipmentSlot) {
+    const characterData = playerData.characterData;
+    const inventory = characterData.inventory;
+
+    // 1. Validate equipment object exists
+    if (!characterData.equipment) {
+      return { success: false, error: "No equipment data found" };
+    }
+
+    const playerEquipment = characterData.equipment;
+
+    // 2. Validate slot exists
+    if (!(equipmentSlot in playerEquipment)) {
+      return { success: false, error: "Invalid equipment slot" };
+    }
+
+    const currentlyEquipped = playerEquipment[equipmentSlot];
+
+    // 3. Nothing equipped
+    if (!currentlyEquipped) {
+      return { success: false, error: "No item equipped in this slot" };
+    }
+
+    // 4. Return item to inventory
+    this.addItemToInventory(inventory, currentlyEquipped.id, 1);
+
+    // 5. Clear the slot
+    playerEquipment[equipmentSlot] = null;
+
+    // 6. Return updated data (same shape as clientUseItem)
+    return {
+      success: true,
+      updatedInventory: inventory,
+      updatedEquipment: playerEquipment,
+      updatedTarget: characterData,
     };
   }
 
@@ -316,7 +357,7 @@ class ServerInventoryManager {
           if (partyData) {
             this.io
               .to(`party_${playerData.partyData.partyLeaderId}`)
-              .emit("serverPartyStatusUpdate", { partyData });
+              .emit("serverPartyStatusUpdate", { partyData, result });
           }
           cb(result);
         },
@@ -338,7 +379,27 @@ class ServerInventoryManager {
         if (partyData) {
           this.io
             .to(`party_${playerData.partyData.partyLeaderId}`)
-            .emit("serverPartyStatusUpdate", { partyData });
+            .emit("serverPartyStatusUpdate", { partyData, result });
+        }
+        cb(result);
+      });
+
+      socket.on("clientUnequipItem", ({ equipmentSlot }, cb) => {
+        const playerData = this.serverPlayerManager.playersOnline.get(
+          socket.playerId,
+        );
+        const partyData = this.serverPartyManager.playerParties.get(
+          playerData.partyData.partyLeaderId,
+        );
+        const result = this.clientUnequipItem(
+          playerData,
+          partyData,
+          equipmentSlot,
+        );
+        if (partyData) {
+          this.io
+            .to(`party_${playerData.partyData.partyLeaderId}`)
+            .emit("serverPartyStatusUpdate", { partyData, result });
         }
         cb(result);
       });

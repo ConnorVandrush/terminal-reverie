@@ -19,6 +19,9 @@ const inventorySlice = createSlice({
     clientEquipItem: (state, action) => {
       // emit handled in inventoryEmitters.js
     },
+    clientUnequipItem: (state, action) => {
+      // emit handled in inventoryEmitters.js
+    },
   },
 });
 
@@ -28,5 +31,6 @@ export const {
   setSelectedItem,
   clientUseItem,
   clientEquipItem,
+  clientUnequipItem,
 } = inventorySlice.actions;
 export default inventorySlice.reducer;

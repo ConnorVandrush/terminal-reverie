@@ -18,7 +18,6 @@ export default function PartyWindow() {
 
   // --- Redux State ---
   const equipment2 = useSelector((state) => state.partyWindow.equipment);
-  console.log(equipment2);
   const partyData = useSelector((state) => state.partyWindow.partyData);
   const equipment = useSelector((state) => state.partyWindow.equipment); // 🔥 unified equipment array
   const selectedPartyMember = useSelector(
@@ -51,8 +50,10 @@ export default function PartyWindow() {
   const selectedMember =
     selectedPartyMember != null ? members[selectedPartyMember] : null;
 
+  const realMemberCount = partyMembers.filter(Boolean).length;
+
   const canInvite =
-    leader && members.length < 4 && (isLeader || members.length === 1);
+    leader && realMemberCount < 4 && (isLeader || realMemberCount === 1);
 
   const canLeave = leader && members.length > 1;
 

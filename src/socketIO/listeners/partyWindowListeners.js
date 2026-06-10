@@ -7,4 +7,10 @@ export function createPartyWindowListeners(store) {
       store.dispatch(serverSendPartyInvite(data));
     },
   );
+  window.clientGlobalManager.clientPlayerManager.socket.on(
+    "serverPartyStatusUpdate",
+    (data) => {
+      console.log(data);
+    },
+  );
 }

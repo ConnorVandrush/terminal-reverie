@@ -45,6 +45,15 @@ export default function ConirmButton() {
         type: "inventory/clientEquipItem",
         payload: { selectedItem, equipmentSlot },
       });
+    } else if (
+      selectedItem == null &&
+      selectedEquipmentSlot !== null &&
+      isOwnEquipmentSlot
+    ) {
+      dispatch({
+        type: "inventory/clientUnequipItem",
+        payload: { equipmentSlot },
+      });
     } else {
       Input.virtualClick("ok");
     }

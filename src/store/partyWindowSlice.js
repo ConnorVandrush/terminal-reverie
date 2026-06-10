@@ -48,7 +48,11 @@ const partyWindowSlice = createSlice({
   reducers: {
     setMemberEquipment: (state, action) => {
       const { memberIndex, equipmentSlot, itemName } = action.payload;
-      state.equipment[memberIndex][equipmentSlot] = itemName;
+      if (itemName === null) {
+        state.equipment[memberIndex][equipmentSlot] = null;
+      } else {
+        state.equipment[memberIndex][equipmentSlot] = itemName;
+      }
     },
     clientSendPartyInvite: (state, action) => {
       // emit handled in partyWindowEmitters.js
