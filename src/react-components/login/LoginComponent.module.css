@@ -1,0 +1,33 @@
+.loginComponentStyle {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.title {
+  text-align: center;
+  flex: 1;
+}
+
+.loginForm {
+  flex: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.emailInput,
+.passwordInput,
+.loginButton,
+.registerButton,
+.messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.loginButton,
+.registerButton {
+  align-items: center;
+}

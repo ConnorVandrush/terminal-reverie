@@ -2,14 +2,17 @@
   display: flex;
 }
 #game {
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 #gameCanvas {
   flex: 2;
   position: static !important;
-  height: 100vh !important;
+  height: 100dvh !important;
   width: auto !important;
+}
+button {
+  font-family: "Press Start 2P", monospace;
 }
 
 body {

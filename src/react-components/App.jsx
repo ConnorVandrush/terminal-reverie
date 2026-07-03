@@ -1,12 +1,12 @@
-import LeftPanel from "./ui/LeftPanel";
-import RightPanel from "./ui/RightPanel";
+import LeftPanelComponent from "./ui/LeftPanelComponent";
+import RightPanelComponent from "./ui/RightPanelComponent";
 
 function App() {
   return (
     <div id="layout">
-      <LeftPanel></LeftPanel>
+      <LeftPanelComponent></LeftPanelComponent>
       <div id="game"></div>
-      <RightPanel></RightPanel>
+      <RightPanelComponent></RightPanelComponent>
     </div>
   );
 }

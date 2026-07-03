@@ -1,0 +1,17 @@
+.leftPanel {
+  flex: 1;
+  box-sizing: border-box;
+  background: black;
+  border: 0.4dvw solid #4a4a4a;
+  box-shadow:
+    inset 0 0 0 0.4dvw #c8c8c8,
+    inset 0 0 0 0.8dvw #4a4a4a;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(10px, 1.25dvw, 16px);
+  color: #ffffff;
+  text-shadow: 1px 1px 3px #000000;
+  height: 100dvh;
+  border-top-left-radius: 4dvw;
+  border-bottom-left-radius: 4dvw;
+  padding: 1dvw;
+}
