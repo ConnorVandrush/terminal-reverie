@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import LoginSliceReducer from "./LoginSlice";
-import LeftPanelReducer from "./LeftPanelSlice";
-import RightPanelReducer from "./RightPanelSlice";
+import { CustomMiddleware } from "./CustomMiddleware";
+import LoginSliceReducer from "./login/LoginSlice";
+import LeftPanelReducer from "./ui/LeftPanelSlice";
+import RightPanelReducer from "./ui/RightPanelSlice";
 
 export const Store = configureStore({
   reducer: {
@@ -10,7 +11,7 @@ export const Store = configureStore({
     LeftPanelSlice: LeftPanelReducer,
     RightPanelSlice: RightPanelReducer,
   },
-  middleware: (getDefault) => getDefault({}),
+  middleware: (getDefault) => getDefault().concat(CustomMiddleware),
 });
 
 export default Store;

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./LeftPanelComponent.module.css";
-import LoginComponent from "../login/LoginComponent";
+import LoginComponent from "@components/login/LoginComponent";
 
 export default function LeftPanel() {
   const leftPanel = useSelector((state) => state.LeftPanelSlice.leftPanel);

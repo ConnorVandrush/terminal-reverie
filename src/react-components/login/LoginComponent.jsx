@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./LoginComponent.module.css";
-import { clientLogin, clientRegister } from "@store/LoginSlice";
+import { clientLogin, clientRegister } from "@store/login/LoginSlice";
 
 export default function Login() {
   const dispatch = useDispatch();

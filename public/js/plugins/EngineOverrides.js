@@ -11,6 +11,9 @@ Graphics._createCanvas = function () {
   }
 };
 
+// Disable touch input
+TouchInput.update = function () {};
+
 // Hide title screen commands to prevent starting a new game or loading a save
 const _Scene_Title_createCommandWindow =
   Scene_Title.prototype.createCommandWindow;
@@ -18,6 +21,28 @@ Scene_Title.prototype.createCommandWindow = function () {
   _Scene_Title_createCommandWindow.call(this);
 
   this._commandWindow.hide();
+};
+
+// Disable the hamburger button in the map scene
+Scene_Map.prototype.createButtons = function () {
+  // Do nothing — prevents the hamburger button from being created
+};
+
+// Let React handle text inputs
+Input._onKeyDown = function (event) {
+  const active = document.activeElement;
+  const isEditable =
+    active &&
+    (active.tagName === "INPUT" ||
+      active.tagName === "TEXTAREA" ||
+      active.isContentEditable);
+
+  if (isEditable) {
+    return; // React handles it
+  }
+
+  // Otherwise let RPG Maker handle it
+  this._originalOnKeyDown.call(Input, event);
 };
 
 // Override DataManager.loadMapData to prevent loading maps from disk because we inject the MMO map directly into $dataMap.

@@ -26,8 +26,3 @@
   justify-content: center;
   align-items: flex-start;
 }
-
-.loginButton,
-.registerButton {
-  align-items: center;
-}

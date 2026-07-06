@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      "@components": "/src/react-components",
       "@store": "/src/redux-store",
+      "@io": "/src/socket-io",
     },
   },
 });

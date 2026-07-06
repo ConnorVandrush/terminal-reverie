@@ -10,10 +10,10 @@ const LoginSlice = createSlice({
 
   reducers: {
     clientLogin: () => {
-      // emit handled in LoginEmitters.js
+      // emit handled in LoginSliceEmitters.js
     },
     clientRegister: () => {
-      // emit handled in LoginEmitters.js
+      // emit handled in LoginSliceEmitters.js
     },
     setErrorMessage: (state, action) => {
       state.successMessage = null;

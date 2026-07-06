@@ -1,5 +1,5 @@
-import LeftPanelComponent from "./ui/LeftPanelComponent";
-import RightPanelComponent from "./ui/RightPanelComponent";
+import LeftPanelComponent from "@components/ui/LeftPanelComponent";
+import RightPanelComponent from "@components/ui/RightPanelComponent";
 
 function App() {
   return (
