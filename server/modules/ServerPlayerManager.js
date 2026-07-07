@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 
-import PlayerAccounts from "./PlayerAccountModel";
-import PlayerData from "./PlayerData";
+import PlayerAccounts from "./PlayerAccountModel.js";
+import PlayerData from "./PlayerData.js";
 
 export default class ServerPlayerManager {
   constructor(api) {
@@ -10,20 +10,35 @@ export default class ServerPlayerManager {
     this.charactersOnline = new Map(); // characterId -> characterData
   }
 
-  async findUser(email, password, cb) {
-    try {
-      const user = await PlayerAccounts.findOne({ email });
-      if (!user) {
-        return cb({ error: "Invalid email or password" });
-      }
-      const isMatch = await argon2.verify(user.password, password);
-      if (!isMatch) {
-        return cb({ error: "Invalid email or password" });
-      }
-      return user;
-    } catch (error) {
-      return cb({ error: "An error occurred during login" });
+  isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  isValidPassword = (password) => {
+    return password.length >= 8;
+  };
+
+  validateEmailAndPassword(email, password, cb) {
+    if (!this.isValidEmail(email)) {
+      throw new Error("Invalid email format");
     }
+
+    if (!this.isValidPassword(password)) {
+      throw new Error("Password must be at least 8 characters long");
+    }
+  }
+
+  async findUser(email, password, cb) {
+    const user = await PlayerAccounts.findOne({ email });
+    if (!user) {
+      throw new Error("Invalid email or password");
+    }
+    const isMatch = await argon2.verify(user.password, password);
+    if (!isMatch) {
+      throw new Error("Invalid email or password");
+    }
+    return user;
   }
 
   async assignJWT(user, cb) {
@@ -35,7 +50,24 @@ export default class ServerPlayerManager {
       user.JWT = JWT;
       await user.save();
     } catch (error) {
-      return cb({ error: "An error occurred during login" });
+      console.log(error);
+      throw new Error("An error occurred during login");
+    }
+  }
+
+  async createAccount(email, password, cb) {
+    try {
+      const hashedPassword = await argon2.hash(password);
+
+      const newUser = new PlayerAccounts({
+        email,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      return cb({ success: "Registration successful" });
+    } catch (error) {
+      console.log(error);
+      throw new Error("An error occurred during account creation");
     }
   }
 
@@ -56,34 +88,52 @@ export default class ServerPlayerManager {
       user.markModified("characterData");
       await user.save();
     } catch (error) {
-      return cb({
-        error: "An error occurred during character creation",
-      });
+      console.log(error);
+      throw new Error("An error occured during character creation");
     }
   }
 
   async login(user, socket, cb) {
-    this.charactersOnline.set(
-      user.characterData.characterId,
-      user.characterData,
-    );
-    this.api.serverMapManager.characterJoinMap(
-      socket,
-      user.characterData.characterId,
-      user.characterData.location.map,
-      cb,
-    );
+    try {
+      this.charactersOnline.set(
+        user.characterData.characterId,
+        user.characterData,
+      );
+      const JWT = user.JWT;
+      const characterData = user.characterData;
+      return cb({ success: true, JWT, characterData });
+    } catch (error) {
+      console.log(error);
+      throw new Error("An error occurred during login.");
+    }
   }
 
   startListeners() {
     this.api.serverManager.loginNamespace.on("connection", (socket) => {
       socket.on("clientLogin", async ({ email, password }, cb) => {
-        const user = await this.findUser(email, password, cb);
-        await this.assignJWT(user, cb);
-        if (user.newCharacter) {
-          await this.createCharacter(user, socket, cb);
+        try {
+          const user = await this.findUser(email, password, cb);
+          await this.assignJWT(user, cb);
+          if (user.newCharacter) {
+            await this.createCharacter(user, socket, cb);
+          }
+          this.login(user, socket, cb);
+        } catch (error) {
+          cb({ error: error.message });
         }
-        this.login(user, socket, cb);
+      });
+
+      socket.on("clientRegister", async ({ email, password }, cb) => {
+        try {
+          this.validateEmailAndPassword(email, password, cb);
+          const existingUser = await PlayerAccounts.findOne({ email });
+          if (existingUser) {
+            return cb({ error: "Email already in use" });
+          }
+          await this.createAccount(email, password, cb);
+        } catch (error) {
+          cb({ error: error.message });
+        }
       });
     });
   }

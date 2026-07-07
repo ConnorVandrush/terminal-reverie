@@ -12,9 +12,10 @@ serverServerManager.startExpressListeners();
 serverServerManager.startSocketIOServer();
 
 const serverPlayerManager = new ServerPlayerManager(api);
-serverPlayerManager.startListeners();
 
 const serverMapManager = new ServerMapManager(api);
 serverMapManager.loadMaps();
 
 api.manageManagers(serverServerManager, serverPlayerManager, serverMapManager);
+
+serverPlayerManager.startListeners();

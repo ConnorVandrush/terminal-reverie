@@ -55,7 +55,7 @@ export default class ServerMapManager {
     }
   };
 
-  characterJoinMap(socket, characterId, mapName, cb) {
+  characterJoinMap(characterId, mapName, socket, cb) {
     try {
       const characterData =
         this.api.playerManager.charactersOnline.get(characterId);
@@ -70,8 +70,8 @@ export default class ServerMapManager {
       });
       socket.to(mapName).emit("serverNewCharacterJoinedMap", { characterData });
     } catch (error) {
-      console.log(`Character ID ${characterId} failed to join map ${mapName}`);
-      return cb({ error: "Failed to join map." });
+      console.log(error);
+      throw new Error("Failed to join map");
     }
   }
 
@@ -82,7 +82,28 @@ export default class ServerMapManager {
       map.charactersOnMap.delete(characterId);
       socket.to(mapName).emit("serverCharacterLeftMap", characterId);
     } catch (error) {
-      console.log(`Character ID ${characterId} failed to leave map ${mapName}`);
+      console.log(error);
+      throw new Error("Failed to leave map");
     }
+  }
+
+  startListeners() {
+    this.api.serverManager.authNamespace.on("connection", (socket) => {
+      socket.on("clientLoginToMap", async (cb) => {
+        try {
+          const characterData = this.api.playerManager.charactersOnline.get(
+            socket.characterId,
+          );
+          this.characterJoinMap(
+            characterData.characterId,
+            characterData.location.map,
+            socket,
+            cb,
+          );
+        } catch (error) {
+          cb({ error: error.message });
+        }
+      });
+    });
   }
 }

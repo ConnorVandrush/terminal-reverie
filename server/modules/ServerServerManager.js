@@ -44,5 +44,21 @@ export default class ServerManager {
 
     this.loginNamespace = this.io.of("/login");
     this.authNamespace = this.io.of("/authenticated");
+
+    this.authNamespace.use((socket, next) => {
+      const token = socket.handshake.auth.token;
+
+      if (!token) {
+        return next(new Error("Authentication failed: No token provided"));
+      }
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        socket.characterId = decoded.playerId;
+        next();
+      } catch (err) {
+        next(new Error("Authentication failed: Invalid token"));
+      }
+    });
   };
 }
