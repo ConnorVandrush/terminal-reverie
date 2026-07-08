@@ -2,10 +2,10 @@
   flex: 1;
   box-sizing: border-box;
   background: black;
-  border: 0.4dvw solid #4a4a4a;
+  border: 0.4dvw solid #7a7a7a;
   box-shadow:
     inset 0 0 0 0.4dvw #c8c8c8,
-    inset 0 0 0 0.8dvw #4a4a4a;
+    inset 0 0 0 0.8dvw #7a7a7a;
   font-family: "Press Start 2P", monospace;
   font-size: clamp(10px, 1.25dvw, 16px);
   color: #ffffff;
@@ -15,4 +15,5 @@
   border-bottom-right-radius: 4dvw;
   padding: 1dvw;
   image-rendering: pixelated;
+  min-width: 0;
 }

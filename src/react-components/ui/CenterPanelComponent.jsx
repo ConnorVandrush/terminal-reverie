@@ -7,6 +7,7 @@ export default function CenterPanel() {
   const centerPanel = useSelector(
     (state) => state.CenterPanelSlice.centerPanel,
   );
+  const isVisible = !!centerPanel;
   const renderCenterPanel = () => {
     switch (centerPanel) {
       case "SpritesheetDisplayComponent":
@@ -14,5 +15,12 @@ export default function CenterPanel() {
     }
   };
 
-  return <div className={styles.centerPanel}>{renderCenterPanel()}</div>;
+  return (
+    <div
+      className={styles.centerPanel}
+      style={{ visibility: isVisible ? "visible" : "hidden" }}
+    >
+      {renderCenterPanel()}
+    </div>
+  );
 }

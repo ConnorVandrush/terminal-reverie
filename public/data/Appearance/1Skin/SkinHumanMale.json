@@ -1,0 +1,39 @@
+{
+  "palettes": {
+    "fair": {
+      "color1": { "r": 255, "g": 255, "b": 255 },
+      "color2": { "r": 255, "g": 203, "b": 186 },
+      "color3": null,
+      "color4": null,
+      "color5": null
+    },
+    "rich": {
+      "color1": { "r": 255, "g": 255, "b": 255 },
+      "color2": { "r": 121, "g": 65, "b": 0 },
+      "color3": null,
+      "color4": null,
+      "color5": null
+    },
+    "rosy": {
+      "color1": { "r": 255, "g": 255, "b": 255 },
+      "color2": { "r": 255, "g": 186, "b": 235 },
+      "color3": null,
+      "color4": null,
+      "color5": null
+    },
+    "tan": {
+      "color1": { "r": 255, "g": 255, "b": 255 },
+      "color2": { "r": 255, "g": 121, "b": 48 },
+      "color3": null,
+      "color4": null,
+      "color5": null
+    }
+  },
+  "pixelRanges": {
+    "color1": null,
+    "color2": null,
+    "color3": null,
+    "color4": null,
+    "color5": null
+  }
+}

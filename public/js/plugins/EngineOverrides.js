@@ -11,9 +11,6 @@ Graphics._createCanvas = function () {
   }
 };
 
-// Disable touch input
-TouchInput.update = function () {};
-
 // Hide title screen commands to prevent starting a new game or loading a save
 const _Scene_Title_createCommandWindow =
   Scene_Title.prototype.createCommandWindow;
@@ -25,10 +22,20 @@ Scene_Title.prototype.createCommandWindow = function () {
 
 // Disable the hamburger button in the map scene
 Scene_Map.prototype.createButtons = function () {
-  // Do nothing — prevents the hamburger button from being created
+  // Do nothing
 };
 
-// Let React handle text inputs
+// Disable all touch input
+TouchInput.update = function () {};
+TouchInput._onTouchStart = function () {};
+TouchInput._onTouchMove = function () {};
+TouchInput._onTouchEnd = function () {};
+TouchInput._onTouchCancel = function () {};
+TouchInput._onPointerDown = function () {};
+TouchInput._onPointerUp = function () {};
+
+// Always let DOM inputs handle keyboard events
+const _Input_onKeyDown = Input._onKeyDown;
 Input._onKeyDown = function (event) {
   const active = document.activeElement;
   const isEditable =
@@ -38,11 +45,11 @@ Input._onKeyDown = function (event) {
       active.isContentEditable);
 
   if (isEditable) {
-    return; // React handles it
+    // Let the browser/React handle typing, Backspace, etc.
+    return;
   }
 
-  // Otherwise let RPG Maker handle it
-  this._originalOnKeyDown.call(Input, event);
+  _Input_onKeyDown.call(this, event);
 };
 
 // Override DataManager.loadMapData to prevent loading maps from disk because we inject the MMO map directly into $dataMap.
