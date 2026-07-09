@@ -1,16 +1,24 @@
 {
   "palettes": {
-    "color1": null,
-    "color2": null,
-    "color3": null,
-    "color4": null,
-    "color5": null
+    "palette1": {
+      "color1": null,
+      "color2": null,
+      "color3": null,
+      "color4": null,
+      "color5": null,
+      "color6": null,
+      "color7": null,
+      "color8": null
+    }
   },
   "pixelRanges": {
     "color1": null,
     "color2": null,
     "color3": null,
     "color4": null,
-    "color5": null
+    "color5": null,
+    "color6": null,
+    "color7": null,
+    "color8": null
   }
 }

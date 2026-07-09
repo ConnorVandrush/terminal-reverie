@@ -10,7 +10,7 @@ export default class CharacterData {
     this.experience = 0;
     this.gold = 0;
     this.maxHp = 100;
-    this.currentHp = this.maxHp;
+    this.currentHp = 100;
     this.inventory = {}; //{ '1': { id: 1, name: 'Herb', description: 'Restores 25% of max HP', effects: { restoreHP: 25 }, quantity: 10 } }
     this.equipment = {
       weapon: null,
@@ -21,13 +21,37 @@ export default class CharacterData {
       item3: null,
     };
     this.appearance = {
-      template: null,
-      colors: {
-        hair: null,
-        eyes: null,
-        skin: null,
-        shirt: null,
-        pants: null,
+      skin: {
+        type: null,
+        palette: null,
+      },
+      eyes: {
+        type: null,
+        palette: null,
+      },
+      shirt: {
+        type: null,
+        palette: null,
+      },
+      pants: {
+        type: null,
+        palette: null,
+      },
+      hair: {
+        type: null,
+        palette: null,
+      },
+      armor: {
+        type: null,
+        palette: null,
+      },
+      accessory: {
+        type: null,
+        palette: null,
+      },
+      weapon: {
+        type: null,
+        palette: null,
       },
     };
     this.availableActions = ["attack", "defend", "item", "run"];
