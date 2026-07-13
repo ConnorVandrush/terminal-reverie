@@ -2,12 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const LoginSlice = createSlice({
   name: "LoginSlice",
-
   initialState: {
     errorMessage: null,
     successMessage: null,
   },
-
   reducers: {
     clientLogin: () => {
       // emit handled in LoginSliceEmitters.js

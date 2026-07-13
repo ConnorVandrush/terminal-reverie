@@ -29,11 +29,7 @@ export default class CharacterData {
         type: null,
         palette: null,
       },
-      shirt: {
-        type: null,
-        palette: null,
-      },
-      pants: {
+      clothing: {
         type: null,
         palette: null,
       },

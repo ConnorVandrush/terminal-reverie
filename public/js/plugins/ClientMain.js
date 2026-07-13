@@ -1,0 +1,1 @@
+window.clientAPI.spriteManager.loadAppearanceData();

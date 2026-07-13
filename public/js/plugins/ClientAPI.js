@@ -4,7 +4,7 @@ class ClientAPI {
     this.getReactState;
     this.loginNamespace = io("http://192.168.1.235:15987/login");
     this.authNamespace;
-    this.spriteColorer;
+    this.spriteManager;
     this.playerManager;
   }
 }

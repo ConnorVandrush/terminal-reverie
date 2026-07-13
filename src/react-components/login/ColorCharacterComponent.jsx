@@ -1,11 +1,49 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import styles from "./colorCharacterComponent.module.css";
+import {
+  setCharacterSpriteDesign,
+  setCharacterSpritePreview,
+} from "@store/party/PartySlice";
 
 export default function ColorCharacterComponent() {
+  const dispatch = useDispatch();
+
+  const characterSpriteDesign = useSelector(
+    (state) => state.PartySlice.characterSpriteDesign,
+  );
+
+  useEffect(() => {
+    async function updateSpritePreview() {
+      const { origin, sex, hairStyle, clothingStyle } = characterSpriteDesign;
+
+      const sprite = await window.clientAPI.spriteManager.designCharacterSprite(
+        "/img/characters/$characterSpritesheet.png",
+      );
+
+      dispatch(setCharacterSpritePreview(sprite));
+    }
+
+    updateSpritePreview();
+  }, [characterSpriteDesign, dispatch]);
+
   return (
     <div className={styles.colorCharacterComponentStyle}>
       <div className={styles.hair}>
         <label htmlFor="hairColor">Hair Color:</label>
-        <select id="hairColor" defaultValue="">
+        <select
+          id="hairColor"
+          defaultValue=""
+          onChange={(e) =>
+            dispatch(
+              setCharacterSpriteDesign({
+                ...characterSpriteDesign,
+                hairColor: e.target.value,
+              }),
+            )
+          }
+        >
           <option value="" disabled hidden>
             Select...
           </option>
@@ -19,7 +57,18 @@ export default function ColorCharacterComponent() {
 
       <div className={styles.eye}>
         <label htmlFor="eyeColor">Eye Color:</label>
-        <select id="eyeColor" defaultValue="">
+        <select
+          id="eyeColor"
+          defaultValue=""
+          onChange={(e) =>
+            dispatch(
+              setCharacterSpriteDesign({
+                ...characterSpriteDesign,
+                eyeColor: e.target.value,
+              }),
+            )
+          }
+        >
           <option value="" disabled hidden>
             Select...
           </option>
@@ -31,8 +80,19 @@ export default function ColorCharacterComponent() {
       </div>
 
       <div className={styles.skin}>
-        <label htmlFor="skinColor">Skin Tone:</label>
-        <select id="skinColor" defaultValue="">
+        <label htmlFor="skinTone">Skin Tone:</label>
+        <select
+          id="skinTone"
+          defaultValue=""
+          onChange={(e) =>
+            dispatch(
+              setCharacterSpriteDesign({
+                ...characterSpriteDesign,
+                skinTone: e.target.value,
+              }),
+            )
+          }
+        >
           <option value="" disabled hidden>
             Select...
           </option>
@@ -43,27 +103,26 @@ export default function ColorCharacterComponent() {
         </select>
       </div>
 
-      <div className={styles.shirt}>
-        <label htmlFor="shirtColor">Shirt Color:</label>
-        <select id="shirtColor" defaultValue="">
+      <div className={styles.clothing}>
+        <label htmlFor="clothingColor">Clothing Color:</label>
+        <select
+          id="clothingColor"
+          defaultValue=""
+          onChange={(e) =>
+            dispatch(
+              setCharacterSpriteDesign({
+                ...characterSpriteDesign,
+                clothingColor: e.target.value,
+              }),
+            )
+          }
+        >
           <option value="" disabled hidden>
             Select...
           </option>
-          <option value="blueShirt">Blue</option>
-          <option value="greenShirt">Green</option>
-          <option value="redShirt">Red</option>
-        </select>
-      </div>
-
-      <div className={styles.pants}>
-        <label htmlFor="pantsColor">Pants Color:</label>
-        <select id="pantsColor" defaultValue="">
-          <option value="" disabled hidden>
-            Select...
-          </option>
-          <option value="bluePants">Blue</option>
-          <option value="greenPants">Green</option>
-          <option value="redPants">Red</option>
+          <option value="blueClothing">Blue</option>
+          <option value="greenClothing">Green</option>
+          <option value="redClothing">Red</option>
         </select>
       </div>
     </div>
