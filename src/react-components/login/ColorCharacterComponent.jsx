@@ -30,11 +30,12 @@ export default function ColorCharacterComponent() {
 
   return (
     <div className={styles.colorCharacterComponentStyle}>
+      {/* Hair */}
       <div className={styles.hair}>
         <label htmlFor="hairColor">Hair Color:</label>
         <select
           id="hairColor"
-          defaultValue=""
+          value={characterSpriteDesign.hairColor || ""}
           onChange={(e) =>
             dispatch(
               setCharacterSpriteDesign({
@@ -55,11 +56,12 @@ export default function ColorCharacterComponent() {
         </select>
       </div>
 
+      {/* Eyes */}
       <div className={styles.eye}>
         <label htmlFor="eyeColor">Eye Color:</label>
         <select
           id="eyeColor"
-          defaultValue=""
+          value={characterSpriteDesign.eyeColor || ""}
           onChange={(e) =>
             dispatch(
               setCharacterSpriteDesign({
@@ -79,11 +81,12 @@ export default function ColorCharacterComponent() {
         </select>
       </div>
 
+      {/* Skin */}
       <div className={styles.skin}>
         <label htmlFor="skinTone">Skin Tone:</label>
         <select
           id="skinTone"
-          defaultValue=""
+          value={characterSpriteDesign.skinTone || ""}
           onChange={(e) =>
             dispatch(
               setCharacterSpriteDesign({
@@ -103,11 +106,12 @@ export default function ColorCharacterComponent() {
         </select>
       </div>
 
+      {/* Clothing */}
       <div className={styles.clothing}>
         <label htmlFor="clothingColor">Clothing Color:</label>
         <select
           id="clothingColor"
-          defaultValue=""
+          value={characterSpriteDesign.clothingColor || ""}
           onChange={(e) =>
             dispatch(
               setCharacterSpriteDesign({

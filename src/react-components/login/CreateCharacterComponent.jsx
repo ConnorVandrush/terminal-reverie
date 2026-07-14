@@ -4,6 +4,7 @@ import styles from "./CreateCharacterComponent.module.css";
 import {
   setCharacterSpriteDesign,
   setCharacterSpritePreview,
+  setCreateCharacterName,
 } from "@store/party/PartySlice";
 
 export default function CreateCharacterComponent() {
@@ -37,7 +38,11 @@ export default function CreateCharacterComponent() {
         <div className={styles.name}>
           <label htmlFor="characterName">Character Name:</label>
           <br />
-          <input type="text" id="characterName" />
+          <input
+            type="text"
+            id="characterName"
+            onChange={(e) => dispatch(setCreateCharacterName(e.target.value))}
+          />
         </div>
 
         <div className={styles.origin}>
@@ -45,7 +50,7 @@ export default function CreateCharacterComponent() {
           <br />
           <select
             id="origin"
-            defaultValue=""
+            value={characterSpriteDesign.origin || ""}
             onChange={(e) =>
               dispatch(
                 setCharacterSpriteDesign({
@@ -67,7 +72,7 @@ export default function CreateCharacterComponent() {
           <br />
           <select
             id="sex"
-            defaultValue=""
+            value={characterSpriteDesign.sex || ""}
             onChange={(e) =>
               dispatch(
                 setCharacterSpriteDesign({
@@ -90,7 +95,7 @@ export default function CreateCharacterComponent() {
           <br />
           <select
             id="hairStyle"
-            defaultValue=""
+            value={characterSpriteDesign.hairStyle || ""}
             onChange={(e) =>
               dispatch(
                 setCharacterSpriteDesign({
@@ -104,6 +109,7 @@ export default function CreateCharacterComponent() {
               Select...
             </option>
             <option value="Hair1">Style 1</option>
+            <option value="Hair2">Style 2</option>
           </select>
         </div>
 
@@ -112,7 +118,7 @@ export default function CreateCharacterComponent() {
           <br />
           <select
             id="clothingStyle"
-            defaultValue=""
+            value={characterSpriteDesign.clothingStyle || ""}
             onChange={(e) =>
               dispatch(
                 setCharacterSpriteDesign({

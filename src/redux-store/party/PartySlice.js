@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const PartySlice = createSlice({
-  name: "Party",
+  name: "PartySlice",
   initialState: {
+    createCharacterName: "",
+    createCharacterAppearance: {},
     characterSpriteDesign: {},
     characterSpritePreview: null,
     member1CharacterData: {},
@@ -11,8 +13,44 @@ const PartySlice = createSlice({
     member4CharacterData: {},
   },
   reducers: {
+    setCreateCharacterName(state, action) {
+      state.createCharacterName = action.payload;
+    },
+    setCreateCharacterAppearance(state, action) {
+      state.createCharacterAppearance = action.payload;
+    },
     setCharacterSpriteDesign(state, action) {
       state.characterSpriteDesign = action.payload;
+    },
+    randomizeCharacterSpriteDesign(state, action) {
+      const ORIGINS = ["Plains"];
+      const SEX = ["Female", "Male"];
+      const HAIRSTYLE = ["Hair1", "Hair2"];
+      const CLOTHINGSTYLE = ["Clothing1"];
+      const HAIRCOLOR = [
+        "blackHair",
+        "blondeHair",
+        "brownHair",
+        "greyHair",
+        "redHair",
+      ];
+      const EYECOLOR = ["blueEyes", "brownEyes", "darkBrownEyes", "greenEyes"];
+      const SKINTONE = ["fairSkin", "richSkin", "rosySkin", "tanSkin"];
+      const CLOTHINGCOLOR = ["blueClothing", "greenClothing", "redClothing"];
+
+      const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+      state.characterSpriteDesign = {
+        ...state.characterSpriteDesign,
+        origin: rand(ORIGINS),
+        sex: rand(SEX),
+        hairStyle: rand(HAIRSTYLE),
+        clothingStyle: rand(CLOTHINGSTYLE),
+        hairColor: rand(HAIRCOLOR),
+        eyeColor: rand(EYECOLOR),
+        skinTone: rand(SKINTONE),
+        clothingColor: rand(CLOTHINGCOLOR),
+      };
     },
     setCharacterSpritePreview(state, action) {
       state.characterSpritePreview = action.payload;
@@ -34,7 +72,10 @@ const PartySlice = createSlice({
 });
 
 export const {
+  setCreateCharacterName,
+  setCreateCharacterAppearance,
   setCharacterSpriteDesign,
+  randomizeCharacterSpriteDesign,
   setCharacterSpritePreview,
   setMember1CharacterData,
   setMember2CharacterData,

@@ -6,6 +6,24 @@ class ClientAPI {
     this.authNamespace;
     this.spriteManager;
     this.playerManager;
+    this.createCharacterCB = {
+      cb: null,
+
+      set(cb) {
+        this.cb = cb;
+      },
+
+      call(payload) {
+        if (this.cb) {
+          this.cb(payload);
+          this.cb = null;
+        }
+      },
+
+      clear() {
+        this.cb = null;
+      },
+    };
   }
 }
 

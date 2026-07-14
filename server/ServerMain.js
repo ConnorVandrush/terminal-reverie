@@ -19,3 +19,4 @@ serverMapManager.loadMaps();
 api.manageManagers(serverServerManager, serverPlayerManager, serverMapManager);
 
 serverPlayerManager.startListeners();
+serverMapManager.startListeners();

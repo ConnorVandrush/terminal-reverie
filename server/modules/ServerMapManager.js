@@ -60,12 +60,15 @@ export default class ServerMapManager {
       const characterData =
         this.api.playerManager.charactersOnline.get(characterId);
       const map = this.maps.get(mapName);
+      console.log(map);
+      console.log("helo");
       map.charactersOnMap.set(characterId, characterData);
       socket.join(mapName);
+      console.log(map.mapData);
+      console.log(map.tileset);
       cb({
         mapData: map.mapData,
         tileset: map.tileset,
-        eventData: Array.from(map.eventData),
         charactersOnMap: Array.from(map.charactersOnMap),
       });
       socket.to(mapName).emit("serverNewCharacterJoinedMap", { characterData });
@@ -101,6 +104,7 @@ export default class ServerMapManager {
             cb,
           );
         } catch (error) {
+          console.log(error);
           cb({ error: error.message });
         }
       });

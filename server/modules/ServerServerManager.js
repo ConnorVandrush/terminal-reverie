@@ -4,6 +4,7 @@ import path from "path";
 import express from "express";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 export default class ServerManager {
   constructor(api) {
@@ -54,7 +55,7 @@ export default class ServerManager {
 
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        socket.characterId = decoded.playerId;
+        socket.characterId = decoded.characterId;
         next();
       } catch (err) {
         next(new Error("Authentication failed: Invalid token"));

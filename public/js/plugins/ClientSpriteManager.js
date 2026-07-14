@@ -214,6 +214,10 @@ class ClientSpriteManager {
       },
     };
 
+    window.clientAPI.dispatchToReact({
+      type: "PartySlice/setCreateCharacterAppearance",
+      payload: characterData.appearance,
+    });
     return this.generateBase64pngSpritesheet(characterData);
   }
 }

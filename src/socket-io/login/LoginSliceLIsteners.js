@@ -8,6 +8,7 @@ export default async function LoginSliceListeners(store) {
     "serverCreateCharacter",
     async (data, cb) => {
       {
+        window.clientAPI.createCharacterCB.set(cb);
         store.dispatch(setLeftPanel("CreateCharacterComponent"));
         store.dispatch(setCenterPanel("SpritesheetDisplayComponent"));
         store.dispatch(setRightPanel("ColorCharacterComponent"));

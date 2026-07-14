@@ -44,7 +44,7 @@ export default class ServerPlayerManager {
   async assignJWT(user, cb) {
     try {
       const playerId = user.playerId;
-      const JWT = jwt.sign({ playerId }, process.env.JWT_SECRET, {
+      const JWT = jwt.sign({ characterId: playerId }, process.env.JWT_SECRET, {
         expiresIn: "30d",
       });
       user.JWT = JWT;
@@ -71,13 +71,16 @@ export default class ServerPlayerManager {
     }
   }
 
-  async createCharacter(user, socket, cb) {
+  async createCharacter(user, socket) {
     try {
-      const response = await socket.emitWithAck("serverCreateCharacter", {});
+      const { name, appearance } = await socket.emitWithAck(
+        "serverCreateCharacter",
+        {},
+      );
 
       user.characterData.characterId = user.playerId;
-      user.characterData.name = response.name;
-      user.characterData.appearance = response.appearance;
+      user.characterData.name = name;
+      user.characterData.appearance = appearance;
       user.characterData.location.x = 128;
       user.characterData.location.y = 128;
       user.characterData.location.d = 2;
@@ -115,7 +118,7 @@ export default class ServerPlayerManager {
           const user = await this.findUser(email, password, cb);
           await this.assignJWT(user, cb);
           if (user.newCharacter) {
-            await this.createCharacter(user, socket, cb);
+            await this.createCharacter(user, socket);
           }
           this.login(user, socket, cb);
         } catch (error) {

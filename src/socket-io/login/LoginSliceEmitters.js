@@ -5,9 +5,11 @@ import {
   setSuccessMessage,
 } from "@store/login/LoginSlice.js";
 
+import { setMember1CharacterData } from "@store/party/PartySlice.js";
+
 export default async function LoginSliceEmitters(store, action) {
   if (action.type === clientLogin.type) {
-    const { success, error, JWT } =
+    const { success, error, JWT, characterData } =
       await window.clientAPI.loginNamespace.emitWithAck(
         "clientLogin",
         action.payload,
@@ -16,9 +18,10 @@ export default async function LoginSliceEmitters(store, action) {
       store.dispatch(setErrorMessage(error));
     }
     if (success) {
+      store.dispatch(setMember1CharacterData(characterData));
       localStorage.setItem("JWT", JWT);
       window.clientAPI.loginNamespace.disconnect();
-      window.clientAPI.playerManager.login();
+      window.clientAPI.playerManager.login(characterData);
     }
   }
   if (action.type === clientRegister.type) {

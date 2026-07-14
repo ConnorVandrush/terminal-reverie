@@ -61,3 +61,100 @@ DataManager.loadMapData = function (mapId) {
 
   _DataManager_loadMapData.call(this, mapId);
 };
+
+// Override Sprite_Character to use the custom bitmap if it exists
+// ============================================================================
+// 1. Override setCharacterBitmap to use _customBitmap when present
+// ============================================================================
+const _Sprite_Character_setCharacterBitmap =
+  Sprite_Character.prototype.setCharacterBitmap;
+Sprite_Character.prototype.setCharacterBitmap = function () {
+  const custom = this._character && this._character._customBitmap;
+
+  if (!custom) {
+    _Sprite_Character_setCharacterBitmap.call(this);
+    return;
+  }
+
+  const tryApply = () => {
+    if (custom.isReady() && custom.baseTexture && custom.baseTexture.valid) {
+      this.applyCustomCharacterBitmap(custom);
+    } else {
+      requestAnimationFrame(tryApply);
+    }
+  };
+
+  tryApply();
+};
+
+// ============================================================================
+// 2. Apply the custom bitmap safely (async‑safe, race‑proof)
+// ============================================================================
+Sprite_Character.prototype.applyCustomCharacterBitmap = function (bitmap) {
+  this.bitmap = bitmap;
+  this._isBigCharacter = true;
+
+  // Force engine to rebuild frame from bitmap (SAFE WAY)
+  this._refresh();
+  this.updateFrame();
+};
+
+// ============================================================================
+// 3. Guard updateFrame so the engine never crashes on undefined bitmap
+// ============================================================================
+const _Sprite_Character_updateFrame = Sprite_Character.prototype.updateFrame;
+Sprite_Character.prototype.updateFrame = function () {
+  if (!this.bitmap || !this.bitmap.isReady()) {
+    return; // Skip until bitmap is valid
+  }
+  _Sprite_Character_updateFrame.call(this);
+};
+
+// Override ImageManager.loadCharacter to prevent loading character sprites from disk
+const _loadCharacter = ImageManager.loadCharacter;
+ImageManager.loadCharacter = function (filename) {
+  // Disable loading when filename is empty OR starts with "$"
+  if (!filename || filename.startsWith("$")) {
+    const placeholder = new Bitmap(48, 48);
+    placeholder.fillAll("rgba(0,0,0,0)");
+    return placeholder;
+  }
+  return _loadCharacter.call(this, filename);
+};
+//SceneManager._scene._spriteset._characterSprites
+
+const _ImageManager_loadBitmapFromUrl = ImageManager.loadBitmapFromUrl;
+ImageManager.loadBitmapFromUrl = function (url) {
+  // Detect real URLs or data URLs
+  const isRealUrl =
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("data:image");
+
+  if (!isRealUrl) {
+    // Fall back to the original behavior
+    return _ImageManager_loadBitmapFromUrl.call(this, url);
+  }
+
+  // --- Your custom URL loader ---
+  const bitmap = new Bitmap();
+  const image = new Image();
+
+  image.crossOrigin = "anonymous";
+
+  bitmap._image = image;
+  bitmap._loadingState = "loading";
+
+  image.addEventListener("load", bitmap._onLoad.bind(bitmap));
+  image.addEventListener("error", bitmap._onError.bind(bitmap));
+
+  image.src = url;
+
+  return bitmap;
+};
+
+// Disable all dashing in RMMZ
+const _Game_Player_isDashing = Game_Player.prototype.isDashing;
+Game_Player.prototype.isDashing = function () {
+  return false;
+};
