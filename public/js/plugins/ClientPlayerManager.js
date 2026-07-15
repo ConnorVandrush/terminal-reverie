@@ -13,9 +13,6 @@ class ClientPlayerManager {
     const { mapData, tileset, charactersOnMap } =
       await this.authNamespace.emitWithAck("clientLoginToMap");
 
-    console.log(mapData);
-    console.log(tileset);
-
     DataManager.setupNewGame();
 
     const spritesheet =
@@ -25,10 +22,6 @@ class ClientPlayerManager {
 
     const bitmap = ImageManager.loadBitmapFromUrl(spritesheet);
     $gamePlayer._customBitmap = bitmap;
-
-    $gameActors
-      .actor(1)
-      .setCharacterImage(String("$" + characterData.characterId), 0);
 
     $dataTilesets[mapData.tilesetId] = structuredClone(tileset);
     const map = structuredClone(mapData);
@@ -43,6 +36,22 @@ class ClientPlayerManager {
       0,
     );
     SceneManager.goto(Scene_Map);
+    window.clientAPI.dispatchToReact({
+      type: "RightPanelSlice/setRightPanel",
+      payload: null,
+    });
+    window.clientAPI.dispatchToReact({
+      type: "LeftPanelSlice/setLeftPanel",
+      payload: "Controls",
+    });
+    window.clientAPI.dispatchToReact({
+      type: "CenterPanelSlice/setCenterPanel",
+      payload: null,
+    });
+    window.clientAPI.dispatchToReact({
+      type: "BottomPanelSlice/setBottomPanel",
+      payload: null,
+    });
   }
 }
 

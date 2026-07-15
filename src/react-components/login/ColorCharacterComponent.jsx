@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import styles from "./colorCharacterComponent.module.css";
+import styles from "./ColorCharacterComponent.module.css";
 import {
   setCharacterSpriteDesign,
   setCharacterSpritePreview,

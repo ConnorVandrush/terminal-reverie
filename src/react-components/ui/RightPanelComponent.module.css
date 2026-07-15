@@ -13,7 +13,7 @@
   height: 100dvh;
   border-top-right-radius: 4dvw;
   border-bottom-right-radius: 4dvw;
-  padding: 1dvw;
+  padding: 1.5dvw;
   image-rendering: pixelated;
   min-width: 0;
 }

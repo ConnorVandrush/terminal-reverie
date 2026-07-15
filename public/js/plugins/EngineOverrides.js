@@ -158,3 +158,33 @@ const _Game_Player_isDashing = Game_Player.prototype.isDashing;
 Game_Player.prototype.isDashing = function () {
   return false;
 };
+
+// Client-side movement with server reconciliation and client prediction
+Game_Player.prototype.moveByInput = async function (reactDirection) {
+  const mapManager = window.clientGlobalManager.clientMapManager;
+  const partyManager = window.clientGlobalManager.clientPartyManager;
+  const direction = reactDirection ?? Input.dir4;
+
+  if (
+    direction <= 0 ||
+    mapManager.isMoving ||
+    mapManager.isTransferring ||
+    partyManager.isPartyFollower
+  )
+    return;
+
+  // Party movement
+  if (partyManager.isPartyLeader && !mapManager.isMoving) {
+    mapManager.isMoving = true;
+    partyManager.requestPartyMove(direction);
+    setTimeout(() => mapManager.waitForMovementEnd($gamePlayer), 50); // FIXME isMoving is being set to false too early, this is a band-aid to prevent desync but the root cause should be fixed. Maybe add prediction for party movement as well?
+  }
+
+  // Solo movement with client prediction
+  if (!partyManager.isPartyLeader && !partyManager.isPartyFollower) {
+    mapManager.isMoving = true;
+    const oldLoc = { x: this.x, y: this.y, d: direction };
+    this.moveStraight(direction);
+    mapManager.requestMove(direction, oldLoc);
+  }
+};
