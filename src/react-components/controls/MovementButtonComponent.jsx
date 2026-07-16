@@ -10,7 +10,11 @@ export default function MovementButtonComponent({ direction }) {
     let frame;
 
     const loop = () => {
-      if (pressed && !$gamePlayer.isMoving()) {
+      if (
+        pressed &&
+        !$gamePlayer.isMoving() &&
+        window.clientAPI.playerManager.characterCanMove
+      ) {
         const dirMap = {
           Up: 8,
           Down: 2,

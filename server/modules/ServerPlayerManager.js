@@ -2,11 +2,10 @@ import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 
 import PlayerAccounts from "./PlayerAccountModel.js";
-import PlayerData from "./PlayerData.js";
 
 export default class ServerPlayerManager {
-  constructor(api) {
-    this.api = api;
+  constructor(serverAPI) {
+    this.serverAPI = serverAPI;
     this.charactersOnline = new Map(); // characterId -> characterData
   }
 
@@ -41,12 +40,15 @@ export default class ServerPlayerManager {
     return user;
   }
 
-  async assignJWT(user, cb) {
+  async assignJWT(user) {
     try {
-      const playerId = user.playerId;
-      const JWT = jwt.sign({ characterId: playerId }, process.env.JWT_SECRET, {
-        expiresIn: "30d",
-      });
+      const JWT = jwt.sign(
+        { characterId: user.playerId },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "30d",
+        },
+      );
       user.JWT = JWT;
       await user.save();
     } catch (error) {
@@ -78,7 +80,7 @@ export default class ServerPlayerManager {
         {},
       );
 
-      user.characterData.characterId = user.playerId;
+      user.characterData.characterId = user.characterId;
       user.characterData.name = name;
       user.characterData.appearance = appearance;
       user.characterData.location.x = 128;
@@ -98,12 +100,9 @@ export default class ServerPlayerManager {
 
   async login(user, socket, cb) {
     try {
-      this.charactersOnline.set(
-        user.characterData.characterId,
-        user.characterData,
-      );
-      const JWT = user.JWT;
       const characterData = user.characterData;
+      const JWT = user.JWT;
+      this.charactersOnline.set(user.playerId, characterData);
       return cb({ success: true, JWT, characterData });
     } catch (error) {
       console.log(error);
@@ -112,11 +111,11 @@ export default class ServerPlayerManager {
   }
 
   startListeners() {
-    this.api.serverManager.loginNamespace.on("connection", (socket) => {
+    this.serverAPI.serverManager.loginNamespace.on("connection", (socket) => {
       socket.on("clientLogin", async ({ email, password }, cb) => {
         try {
           const user = await this.findUser(email, password, cb);
-          await this.assignJWT(user, cb);
+          await this.assignJWT(user);
           if (user.newCharacter) {
             await this.createCharacter(user, socket);
           }

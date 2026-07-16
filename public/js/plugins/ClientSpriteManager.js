@@ -110,7 +110,7 @@ class ClientSpriteManager {
     return imageData;
   }
 
-  async generateBase64pngSpritesheet(characterData) {
+  async generateBase64pngSpritesheet(appearance) {
     const width = 144;
     const height = 192;
 
@@ -129,26 +129,26 @@ class ClientSpriteManager {
     const layers = [
       {
         name: "skin",
-        data: this.appearanceData.get(characterData.appearance.skin.type),
-        palette: characterData.appearance.skin.palette,
+        data: this.appearanceData.get(appearance.skin.type),
+        palette: appearance.skin.palette,
       },
 
       {
         name: "eyes",
-        data: this.appearanceData.get(characterData.appearance.eyes.type),
-        palette: characterData.appearance.eyes.palette,
+        data: this.appearanceData.get(appearance.eyes.type),
+        palette: appearance.eyes.palette,
       },
 
       {
         name: "clothing",
-        data: this.appearanceData.get(characterData.appearance.clothing.type),
-        palette: characterData.appearance.clothing.palette,
+        data: this.appearanceData.get(appearance.clothing.type),
+        palette: appearance.clothing.palette,
       },
 
       {
         name: "hair",
-        data: this.appearanceData.get(characterData.appearance.hair.style),
-        palette: characterData.appearance.hair.palette,
+        data: this.appearanceData.get(appearance.hair.style),
+        palette: appearance.hair.palette,
       },
     ];
 
@@ -193,32 +193,30 @@ class ClientSpriteManager {
       return null;
     }
 
-    const characterData = {
-      appearance: {
-        skin: {
-          type: `Skin${origin}${sex}`,
-          palette: skinTone,
-        },
-        eyes: {
-          type: `Eyes${origin}${sex}`,
-          palette: eyeColor,
-        },
-        clothing: {
-          type: `${clothingStyle}${origin}${sex}`,
-          palette: clothingColor,
-        },
-        hair: {
-          style: `${hairStyle}${origin}${sex}`,
-          palette: hairColor,
-        },
+    const appearance = {
+      skin: {
+        type: `Skin${origin}${sex}`,
+        palette: skinTone,
+      },
+      eyes: {
+        type: `Eyes${origin}${sex}`,
+        palette: eyeColor,
+      },
+      clothing: {
+        type: `${clothingStyle}${origin}${sex}`,
+        palette: clothingColor,
+      },
+      hair: {
+        style: `${hairStyle}${origin}${sex}`,
+        palette: hairColor,
       },
     };
 
     window.clientAPI.dispatchToReact({
       type: "PartySlice/setCreateCharacterAppearance",
-      payload: characterData.appearance,
+      payload: appearance,
     });
-    return this.generateBase64pngSpritesheet(characterData);
+    return this.generateBase64pngSpritesheet(appearance);
   }
 }
 

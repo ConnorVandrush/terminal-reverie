@@ -3,20 +3,24 @@ import ServerPlayerManager from "./modules/ServerPlayerManager.js";
 import ServerMapManager from "./modules/ServerMapManager.js";
 import ServerManagerManager from "./modules/ServerManagerManager.js";
 
-const api = new ServerManagerManager();
+const serverAPI = new ServerManagerManager();
 
-const serverServerManager = new ServerServerManager(api);
+const serverServerManager = new ServerServerManager(serverAPI);
 serverServerManager.connectToDatabase();
 serverServerManager.serveStaticFiles();
 serverServerManager.startExpressListeners();
 serverServerManager.startSocketIOServer();
 
-const serverPlayerManager = new ServerPlayerManager(api);
+const serverPlayerManager = new ServerPlayerManager(serverAPI);
 
-const serverMapManager = new ServerMapManager(api);
+const serverMapManager = new ServerMapManager(serverAPI);
 serverMapManager.loadMaps();
 
-api.manageManagers(serverServerManager, serverPlayerManager, serverMapManager);
+serverAPI.manageManagers(
+  serverServerManager,
+  serverPlayerManager,
+  serverMapManager,
+);
 
 serverPlayerManager.startListeners();
 serverMapManager.startListeners();

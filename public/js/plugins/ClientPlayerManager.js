@@ -1,23 +1,28 @@
 class ClientPlayerManager {
-  constructor() {}
+  constructor() {
+    this.characterCanMove = true;
+  }
 
   async login(characterData) {
     const JWT = localStorage.getItem("JWT");
-    this.authNamespace = io("http://192.168.1.235:15987/authenticated", {
-      auth: { token: JWT },
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-    });
+    window.clientAPI.authNamespace = io(
+      "http://192.168.1.235:15987/authenticated",
+      {
+        auth: { token: JWT },
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+      },
+    );
 
     const { mapData, tileset, charactersOnMap } =
-      await this.authNamespace.emitWithAck("clientLoginToMap");
+      await window.clientAPI.authNamespace.emitWithAck("clientLoginToMap");
 
     DataManager.setupNewGame();
 
     const spritesheet =
       await window.clientAPI.spriteManager.generateBase64pngSpritesheet(
-        characterData,
+        characterData.appearance,
       );
 
     const bitmap = ImageManager.loadBitmapFromUrl(spritesheet);
@@ -52,6 +57,30 @@ class ClientPlayerManager {
       type: "BottomPanelSlice/setBottomPanel",
       payload: null,
     });
+  }
+
+  // see engine overrides
+  async clientRequestMove(direction, oldLoc) {
+    try {
+      const { success, newLocation } =
+        await window.clientAPI.authNamespace.emitWithAck(
+          "clientRequestMove",
+          direction,
+        );
+      console.log(success);
+      if (!success) {
+        $gamePlayer.locate(oldLoc.x, oldLoc.y);
+        $gamePlayer.setDirection(oldLoc.d);
+      } else {
+        window.clientAPI.dispatchToReact({
+          type: "partySlice/setMember1CharacterLocation",
+          payload: newLocation,
+        });
+      }
+    } catch (error) {
+      $gamePlayer.locate(oldLoc.x, oldLoc.y);
+      $gamePlayer.setDirection(oldLoc.d);
+    }
   }
 }
 
