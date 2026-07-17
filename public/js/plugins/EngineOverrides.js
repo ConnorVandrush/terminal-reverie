@@ -1,3 +1,15 @@
+// Prevent loosing focus when not active tab
+Object.defineProperty(document, "hidden", {
+  get: () => false,
+});
+Object.defineProperty(document, "visibilityState", {
+  get: () => "visible",
+});
+document.hasFocus = () => true;
+Graphics._isFullScreen = function () {
+  return document.fullscreenElement != null;
+};
+
 // Move the RPG Maker canvas into a stable wrapper element
 const _Graphics_createCanvas = Graphics._createCanvas;
 Graphics._createCanvas = function () {
@@ -184,4 +196,46 @@ Game_Player.prototype.moveByInput = async function (reactDirection) {
   const oldLoc = { x: this.x, y: this.y, d: direction };
   this.moveStraight(direction);
   playerManager.clientRequestMove(direction, oldLoc);
+};
+
+// Override Game_Interpreter command 201 (Transfer Player) to use MMO transfer
+const _command201 = Game_Interpreter.prototype.command201;
+Game_Interpreter.prototype.command201 = function () {
+  window.clientAPI.playerManager.clientRequestMapTransfer();
+  return true;
+};
+
+// Save original SceneManager.pop function, it's disabled during battles
+window._pop = SceneManager.pop;
+
+// Look for pending player changes (new players, disconnects) on each update and process them
+const _Scene_Map_update = Scene_Map.prototype.update;
+Scene_Map.prototype.update = function () {
+  _Scene_Map_update.call(this);
+
+  if (!window.clientAPI.playerManager.processRemoteCharacters) return;
+  window.clientAPI.playerManager.processJoiningAndLeavingCharacters();
+};
+
+// Extend Game_Event and Game_Player to handle networked movement
+const _Game_Event_update = Game_Event.prototype.update;
+Game_Event.prototype.update = function () {
+  _Game_Event_update.call(this);
+  this.updateNetMovement();
+};
+const _Game_Player_update = Game_Player.prototype.update;
+Game_Player.prototype.update = function (sceneActive) {
+  _Game_Player_update.call(this, sceneActive);
+  this.updateNetMovement();
+};
+Game_CharacterBase.prototype.updateNetMovement = function () {
+  if (
+    !this._netMovementQueue ||
+    this._netMovementQueue.length === 0 ||
+    this.isMoving()
+  )
+    return;
+  const next = this._netMovementQueue.shift();
+  const dir = this.findDirectionTo(next.x, next.y);
+  this.moveStraight(dir);
 };

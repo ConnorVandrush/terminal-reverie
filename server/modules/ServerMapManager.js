@@ -55,19 +55,19 @@ export default class ServerMapManager {
     }
   };
 
-  characterJoinMap(characterId, mapName, socket, cb) {
+  serverCharacterJoinedMap(characterId, mapName, socket, cb) {
     try {
       const characterData =
         this.serverAPI.playerManager.charactersOnline.get(characterId);
       const map = this.maps.get(mapName);
-      map.charactersOnMap.set(characterId, characterData);
       socket.join(mapName);
       cb({
         mapData: map.mapData,
         tileset: map.tileset,
         charactersOnMap: Array.from(map.charactersOnMap),
       });
-      socket.to(mapName).emit("serverNewCharacterJoinedMap", { characterData });
+      map.charactersOnMap.set(characterId, characterData);
+      socket.to(mapName).emit("serverCharacterJoinedMap", characterData);
     } catch (error) {
       console.log(error);
       throw new Error("Failed to join map");
@@ -223,7 +223,7 @@ export default class ServerMapManager {
             this.serverAPI.playerManager.charactersOnline.get(
               socket.characterId,
             );
-          this.characterJoinMap(
+          this.serverCharacterJoinedMap(
             characterData.characterId,
             characterData.location.map,
             socket,
@@ -252,6 +252,13 @@ export default class ServerMapManager {
             cb({ success: false });
           } else {
             characterData.location = result.newLocation;
+            this.serverAPI.serverManager.authNamespace
+              .to(characterData.location.map)
+              .except(socket.id)
+              .emit("serverRemoteCharacterMoved", {
+                characterId: characterData.characterId,
+                newLocation: result.newLocation,
+              });
             cb({ success: true, newLocation: result.newLocation });
           }
           setTimeout(() => (characterData.canMove = true), 50); // simple movement rate limit

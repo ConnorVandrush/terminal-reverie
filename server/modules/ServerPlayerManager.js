@@ -80,7 +80,7 @@ export default class ServerPlayerManager {
         {},
       );
 
-      user.characterData.characterId = user.characterId;
+      user.characterData.characterId = user.playerId;
       user.characterData.name = name;
       user.characterData.appearance = appearance;
       user.characterData.location.x = 128;
@@ -136,6 +136,19 @@ export default class ServerPlayerManager {
         } catch (error) {
           cb({ error: error.message });
         }
+      });
+    });
+
+    this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
+      socket.on("disconnect", async () => {
+        const characterId = socket.characterId;
+        const characterData = this.charactersOnline.get(characterId);
+        this.serverAPI.mapManager.characterLeaveMap(
+          socket,
+          characterId,
+          characterData?.location.map,
+        );
+        this.charactersOnline.delete(characterId);
       });
     });
   }
