@@ -143,7 +143,7 @@ export default class ServerPlayerManager {
       socket.on("disconnect", async () => {
         const characterId = socket.characterId;
         const characterData = this.charactersOnline.get(characterId);
-        this.serverAPI.mapManager.characterLeaveMap(
+        this.serverAPI.mapManager.serverCharacterLeftMap(
           socket,
           characterId,
           characterData?.location.map,

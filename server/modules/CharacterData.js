@@ -53,5 +53,6 @@ export default class CharacterData {
     this.availableActions = ["attack", "defend", "item", "run"];
     this.tradeOffer = null;
     this.canMove = true;
+    this.canTransfer = true;
   }
 }

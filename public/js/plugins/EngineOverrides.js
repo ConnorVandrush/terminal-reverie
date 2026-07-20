@@ -74,6 +74,18 @@ DataManager.loadMapData = function (mapId) {
   _DataManager_loadMapData.call(this, mapId);
 };
 
+// Save original SceneManager.pop function, it's disabled during battles
+window._pop = SceneManager.pop;
+// Hook into Scene_Map to notify server map has finished loading
+const _Scene_Map_onMapLoaded = Scene_Map.prototype.onMapLoaded;
+Scene_Map.prototype.onMapLoaded = function () {
+  _Scene_Map_onMapLoaded.call(this);
+  SceneManager.pop = window._pop;
+
+  window.clientAPI.authNamespace.emit("clientMapTransferComplete");
+  window.clientAPI.playerManager.characterCanMove = true;
+};
+
 // Override Sprite_Character to use the custom bitmap if it exists
 // ============================================================================
 // 1. Override setCharacterBitmap to use _customBitmap when present
@@ -201,12 +213,10 @@ Game_Player.prototype.moveByInput = async function (reactDirection) {
 // Override Game_Interpreter command 201 (Transfer Player) to use MMO transfer
 const _command201 = Game_Interpreter.prototype.command201;
 Game_Interpreter.prototype.command201 = function () {
+  window.clientAPI.playerManager.characterCanMove = false;
   window.clientAPI.playerManager.clientRequestMapTransfer();
   return true;
 };
-
-// Save original SceneManager.pop function, it's disabled during battles
-window._pop = SceneManager.pop;
 
 // Look for pending player changes (new players, disconnects) on each update and process them
 const _Scene_Map_update = Scene_Map.prototype.update;

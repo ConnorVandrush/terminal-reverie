@@ -65,6 +65,7 @@ export default class ServerMapManager {
         mapData: map.mapData,
         tileset: map.tileset,
         charactersOnMap: Array.from(map.charactersOnMap),
+        location: characterData.location,
       });
       map.charactersOnMap.set(characterId, characterData);
       socket.to(mapName).emit("serverCharacterJoinedMap", characterData);
@@ -74,7 +75,7 @@ export default class ServerMapManager {
     }
   }
 
-  characterLeaveMap(socket, characterId, mapName) {
+  serverCharacterLeftMap(socket, characterId, mapName) {
     try {
       socket.leave(mapName);
       const map = this.maps.get(mapName);
@@ -112,6 +113,34 @@ export default class ServerMapManager {
       tiles.push(data[index]);
     }
     return tiles;
+  };
+
+  getEventData = (mapName, x, y) => {
+    const map = this.maps.get(mapName);
+    if (!map) return null;
+
+    return map.eventData.get(`${x},${y}`) || null;
+  };
+
+  getTransferDestination = (eventData) => {
+    const start = eventData.name.indexOf("(") + 1;
+    const end = eventData.name.indexOf(")");
+    const destinationMap = eventData.name.slice(start, end);
+
+    let transferCommand = null;
+    for (const p of eventData.pages) {
+      transferCommand = p.list.find((c) => c.code === 201);
+      if (transferCommand) break;
+    }
+
+    const x = transferCommand?.parameters[2] ?? 0;
+    const y = transferCommand?.parameters[3] ?? 0;
+    const d = transferCommand?.parameters[4] ?? 2;
+
+    const mapData = this.maps.get(destinationMap)?.mapData;
+    const tileset = this.maps.get(destinationMap)?.tileset;
+
+    return { mapData, tileset, x, y, d };
   };
 
   isEventBlocking(mapName, x, y) {
@@ -241,7 +270,7 @@ export default class ServerMapManager {
             this.serverAPI.playerManager.charactersOnline.get(
               socket.characterId,
             );
-          if (!characterData.canMove) {
+          if (!characterData.canMove || !characterData.canTransfer) {
             return cb({
               success: false,
             });
@@ -266,6 +295,40 @@ export default class ServerMapManager {
           console.log(error);
           cb({ error: error.message });
         }
+      });
+
+      socket.on("clientRequestMapTransfer", async (cb) => {
+        const characterData = this.serverAPI.playerManager.charactersOnline.get(
+          socket.characterId,
+        );
+        if (!characterData.canTransfer) cb({ success: false });
+        characterData.canTransfer = false;
+        const location = characterData.location;
+        const eventData = this.getEventData(
+          location.map,
+          location.x,
+          location.y,
+        );
+        if (!eventData) return cb({ success: false });
+        if (eventData.name.startsWith("Transfer")) {
+          const { mapData, tileset, x, y, d } =
+            this.getTransferDestination(eventData);
+          this.serverCharacterLeftMap(socket, socket.characterId, location.map);
+          characterData.location = { x, y, d, map: mapData.displayName };
+          this.serverCharacterJoinedMap(
+            socket.characterId,
+            mapData.displayName,
+            socket,
+            cb,
+          );
+        }
+      });
+
+      socket.on("clientMapTransferComplete", async (cb) => {
+        const characterData = this.serverAPI.playerManager.charactersOnline.get(
+          socket.characterId,
+        );
+        characterData.canTransfer = true;
       });
     });
   }

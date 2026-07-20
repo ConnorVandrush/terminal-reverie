@@ -100,23 +100,15 @@ class ClientPlayerManager {
 
   // Called in engine overrides
   async clientRequestMapTransfer() {
-    this.isTransferring = true;
-
-    const response =
-      await window.clientGlobalManager.clientPlayerManager.socket.emitWithAck(
+    const { mapData, tileset, charactersOnMap, location } =
+      await window.clientAPI.authNamespace.emitWithAck(
         "clientRequestMapTransfer",
       );
-
-    if (response?.success) {
-      this.transferToMap(
-        response.mapData,
-        response.tileset,
-        response.x,
-        response.y,
-        response.d,
-        response.playersOnMap,
-      );
-    }
+    window.clientAPI.dispatchToReact({
+      type: "partySlice/setMember1CharacterLocation",
+      payload: location,
+    });
+    this.transferToMap(mapData, tileset, charactersOnMap, location);
   }
 
   getNextFreeEventId() {
@@ -183,43 +175,41 @@ class ClientPlayerManager {
     }
     spriteset._tilemap.addChild(sprite);
     spriteset._characterSprites.push(sprite);
-    return true;
   }
 
-  async processJoiningAndLeavingCharacters() {
+  deleteRemoteCharacter(characterId) {
     const spriteset = SceneManager._scene?._spriteset;
     if (!spriteset) return;
 
-    // --- Handle disconnects ---
+    const eventId = this.charactersOnCurrentMap.get(characterId).eventId;
+
+    // Remove event from map
+    $dataMap.events[eventId] = null;
+    $gameMap._events[eventId] = null;
+
+    // Remove sprite individually
+    const spriteIndex = spriteset._characterSprites.findIndex(
+      (s) => s._character._eventId === eventId,
+    );
+    if (spriteIndex >= 0) {
+      const sprite = spriteset._characterSprites[spriteIndex];
+      spriteset._tilemap.removeChild(sprite);
+      spriteset._characterSprites.splice(spriteIndex, 1);
+    }
+  }
+
+  async processJoiningAndLeavingCharacters() {
     for (const characterId of this.pendingLeavingCharacters) {
       if (!this.charactersOnCurrentMap.get(characterId)) continue;
-      const eventId = this.charactersOnCurrentMap.get(characterId).eventId;
-
-      // Remove event from map
-      $dataMap.events[eventId] = null;
-      $gameMap._events[eventId] = null;
-
-      // Remove sprite individually
-      const spriteIndex = spriteset._characterSprites.findIndex(
-        (s) => s._character._eventId === eventId,
-      );
-      if (spriteIndex >= 0) {
-        const sprite = spriteset._characterSprites[spriteIndex];
-        spriteset._tilemap.removeChild(sprite);
-        spriteset._characterSprites.splice(spriteIndex, 1);
-      }
-
+      this.deleteRemoteCharacter(characterId);
       this.pendingLeavingCharacters.delete(characterId);
       this.charactersOnCurrentMap.delete(characterId);
     }
 
-    // --- Handle new players ---
     for (const [characterId, characterData] of this.pendingJoiningCharacters) {
-      const success = await this.createRemotePlayer(characterId, characterData);
-      if (success) {
-        this.pendingJoiningCharacters.delete(characterId);
-        this.charactersOnCurrentMap.set(characterId, characterData);
-      }
+      await this.createRemotePlayer(characterId, characterData);
+      this.pendingJoiningCharacters.delete(characterId);
+      this.charactersOnCurrentMap.set(characterId, characterData);
     }
   }
 
