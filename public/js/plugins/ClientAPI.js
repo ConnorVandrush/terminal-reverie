@@ -3,7 +3,7 @@ class ClientAPI {
     this.dispatchToReact;
     this.getReactState;
     this.loginNamespace = io("http://192.168.1.235:15987/login");
-    this.authNamespace;
+    this.authNamespace = null;
     this.spriteManager;
     this.playerManager;
     this.createCharacterCB = {

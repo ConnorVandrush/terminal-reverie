@@ -12,4 +12,5 @@
   padding: 1dvw;
   z-index: 10;
   flex: 3;
+  min-height: 0;
 }

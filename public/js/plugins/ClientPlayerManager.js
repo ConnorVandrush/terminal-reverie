@@ -12,16 +12,14 @@ class ClientPlayerManager {
       type: "partySlice/setMember1CharacterLocation",
       payload: location,
     });
-
-    this.charactersOnCurrentMap.clear();
-    this.pendingJoiningCharacters = new Map(charactersOnMap);
-
     $dataTilesets[mapData.tilesetId] = structuredClone(tileset);
     const map = structuredClone(mapData);
     map.id = Date.now();
     $dataMap = map;
     $gamePlayer.reserveTransfer(map.id, location.x, location.y, location.d, 0);
     SceneManager.goto(Scene_Map);
+    this.charactersOnCurrentMap.clear();
+    this.pendingJoiningCharacters = new Map(charactersOnMap);
   }
 
   async login(characterData) {
@@ -93,6 +91,7 @@ class ClientPlayerManager {
         });
       }
     } catch (error) {
+      console.log(error);
       $gamePlayer.locate(oldLoc.x, oldLoc.y);
       $gamePlayer.setDirection(oldLoc.d);
     }
@@ -100,15 +99,20 @@ class ClientPlayerManager {
 
   // Called in engine overrides
   async clientRequestMapTransfer() {
-    const { mapData, tileset, charactersOnMap, location } =
-      await window.clientAPI.authNamespace.emitWithAck(
-        "clientRequestMapTransfer",
-      );
-    window.clientAPI.dispatchToReact({
-      type: "partySlice/setMember1CharacterLocation",
-      payload: location,
-    });
-    this.transferToMap(mapData, tileset, charactersOnMap, location);
+    try {
+      this.processRemoteCharacters = false;
+      const { mapData, tileset, charactersOnMap, location } =
+        await window.clientAPI.authNamespace.emitWithAck(
+          "clientRequestMapTransfer",
+        );
+      window.clientAPI.dispatchToReact({
+        type: "partySlice/setMember1CharacterLocation",
+        payload: location,
+      });
+      this.transferToMap(mapData, tileset, charactersOnMap, location);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getNextFreeEventId() {
@@ -175,6 +179,7 @@ class ClientPlayerManager {
     }
     spriteset._tilemap.addChild(sprite);
     spriteset._characterSprites.push(sprite);
+    console.log(spriteset._characterSprites);
   }
 
   deleteRemoteCharacter(characterId) {

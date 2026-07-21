@@ -330,6 +330,26 @@ export default class ServerMapManager {
         );
         characterData.canTransfer = true;
       });
+
+      socket.on("clientSendChatMessage", (message) => {
+        try {
+          const characterData =
+            this.serverAPI.playerManager.charactersOnline.get(
+              socket.characterId,
+            );
+          const map = characterData?.location?.map;
+          if (characterData && map) {
+            this.serverAPI.serverManager.authNamespace
+              .to(map)
+              .emit("serverBroadcastChatMessage", {
+                message,
+                sender: characterData.name,
+              });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
     });
   }
 }

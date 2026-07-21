@@ -46,7 +46,7 @@ export default function Login() {
           <input type="password" id="password" ref={passwordRef} />
         </div>
         <div className={styles.loginButton}>
-          <button type="button" onClick={handleLogin}>
+          <button type="button" aria-label="login" onClick={handleLogin}>
             Login
           </button>
         </div>

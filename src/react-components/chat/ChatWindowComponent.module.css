@@ -1,0 +1,38 @@
+.chatWindow {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.messagesContainer {
+  flex: 4;
+  box-sizing: border-box;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: scroll;
+  display: flex;
+  gap: 3px;
+}
+
+.inputRow {
+  flex: 1;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.inputRow input {
+  flex: 1; /* take all remaining space */
+}
+
+.inputRow button {
+  flex: 0 0 auto; /* size to content */
+}
+
+.chatName {
+  font-weight: bold;
+  margin-right: 1%;
+  color: #7fc8ff; /* retro blue */
+}

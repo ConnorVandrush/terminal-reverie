@@ -23,6 +23,12 @@ Graphics._createCanvas = function () {
   }
 };
 
+// Prevent gameVideo element from being created and covering buttons
+Video.initialize = function () {
+  // Completely disable video creation
+  this._element = null;
+};
+
 // Hide title screen commands to prevent starting a new game or loading a save
 const _Scene_Title_createCommandWindow =
   Scene_Title.prototype.createCommandWindow;
@@ -84,6 +90,7 @@ Scene_Map.prototype.onMapLoaded = function () {
 
   window.clientAPI.authNamespace.emit("clientMapTransferComplete");
   window.clientAPI.playerManager.characterCanMove = true;
+  window.clientAPI.playerManager.processRemoteCharacters = true;
 };
 
 // Override Sprite_Character to use the custom bitmap if it exists

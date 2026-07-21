@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./BottomPanelComponent.module.css";
 import CreateCharacterButtonsComponent from "@components/login/CreateCharacterButtonsComponent";
+import ChatWindowComponent from "@components/chat/ChatWindowComponent";
 
 export default function BottomPanel() {
   const bottomPanel = useSelector(
@@ -12,6 +13,8 @@ export default function BottomPanel() {
     switch (bottomPanel) {
       case "CreateCharacterButtonsComponent":
         return <CreateCharacterButtonsComponent />;
+      case "ChatWindowComponent":
+        return <ChatWindowComponent />;
     }
   };
 
