@@ -179,7 +179,6 @@ class ClientPlayerManager {
     }
     spriteset._tilemap.addChild(sprite);
     spriteset._characterSprites.push(sprite);
-    console.log(spriteset._characterSprites);
   }
 
   deleteRemoteCharacter(characterId) {

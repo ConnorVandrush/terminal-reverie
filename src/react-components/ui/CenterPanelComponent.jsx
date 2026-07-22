@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./CenterPanelComponent.module.css";
 import SpritesheetDisplayComponent from "@components/login/SpritesheetDisplayComponent";
+import PartyWindowComponent from "@components/party/PartyWindowComponent";
 
 export default function CenterPanel() {
   const centerPanel = useSelector(
@@ -12,6 +13,8 @@ export default function CenterPanel() {
     switch (centerPanel) {
       case "SpritesheetDisplayComponent":
         return <SpritesheetDisplayComponent />;
+      case "PartyWindowComponent":
+        return <PartyWindowComponent />;
     }
   };
 

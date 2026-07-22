@@ -7,10 +7,10 @@ const PartySlice = createSlice({
     createCharacterAppearance: {},
     characterSpriteDesign: {},
     characterSpritePreview: null,
-    member1CharacterData: {},
-    member2CharacterData: {},
-    member3CharacterData: {},
-    member4CharacterData: {},
+    partyMember1: {},
+    partyMember2: {},
+    partyMember3: {},
+    partyMember4: {},
   },
   reducers: {
     setCreateCharacterName(state, action) {
@@ -56,19 +56,19 @@ const PartySlice = createSlice({
       state.characterSpritePreview = action.payload;
     },
     setMember1CharacterData(state, action) {
-      state.member1CharacterData = action.payload;
+      state.partyMember1 = action.payload;
     },
     setMember1CharacterLocation(state, action) {
-      state.member1CharacterData.location = action.payload;
+      state.partyMember1.location = action.payload;
     },
     setMember2CharacterData(state, action) {
-      state.member2CharacterData = action.payload;
+      state.partyMember2 = action.payload;
     },
     setMember3CharacterData(state, action) {
-      state.member3CharacterData = action.payload;
+      state.partyMember3 = action.payload;
     },
     setMember4CharacterData(state, action) {
-      state.member4CharacterData = action.payload;
+      state.partyMember4 = action.payload;
     },
     updateCharacterCreatorAppearance(state, action) {},
   },
