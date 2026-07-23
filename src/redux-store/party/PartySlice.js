@@ -7,10 +7,11 @@ const PartySlice = createSlice({
     createCharacterAppearance: {},
     characterSpriteDesign: {},
     characterSpritePreview: null,
-    partyMember1: {},
-    partyMember2: {},
-    partyMember3: {},
-    partyMember4: {},
+    partyMember1: false,
+    partyMember2: false,
+    partyMember3: false,
+    partyMember4: false,
+    partyInvites: {},
   },
   reducers: {
     setCreateCharacterName(state, action) {
@@ -70,7 +71,15 @@ const PartySlice = createSlice({
     setMember4CharacterData(state, action) {
       state.partyMember4 = action.payload;
     },
-    updateCharacterCreatorAppearance(state, action) {},
+    addPartyInvite(state, action) {
+      state.partyInvites[action.payload.characterId] = action.payload.name;
+    },
+    removePartyInvite(state, action) {
+      delete state.partyInvites[action.payload];
+    },
+    clientSendPartyInvite(state, action) {
+      //emit handled in PartySliceEmitters
+    },
   },
 });
 
@@ -85,5 +94,8 @@ export const {
   setMember2CharacterData,
   setMember3CharacterData,
   setMember4CharacterData,
+  addPartyInvite,
+  removePartyInvite,
+  clientSendPartyInvite,
 } = PartySlice.actions;
 export default PartySlice.reducer;

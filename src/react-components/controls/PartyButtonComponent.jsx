@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setCenterPanel } from "@store/ui/CenterPanelSlice.js";
 
 import styles from "./PartyButtonComponent.module.css";
+import { setCenterPanel } from "@store/ui/CenterPanelSlice.js";
 
 export default function PartyButtonComponent() {
   const dispatch = useDispatch();
