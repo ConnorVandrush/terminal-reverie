@@ -7,6 +7,8 @@ export default class ServerPlayerManager {
   constructor(serverAPI) {
     this.serverAPI = serverAPI;
     this.charactersOnline = new Map(); // characterId -> characterData
+    this.characterNamesOnline = new Map(); // characterName -> characterData
+    this.partiesOnline = new Map(); // partyLeaderCharacterId -> { characterDatas... }
   }
 
   isValidEmail = (email) => {
@@ -101,8 +103,10 @@ export default class ServerPlayerManager {
   async login(user, socket, cb) {
     try {
       const characterData = user.characterData;
+      characterData.socketId = socket.id;
       const JWT = user.JWT;
       this.charactersOnline.set(user.playerId, characterData);
+      this.characterNamesOnline.set(characterData.name, characterData);
       return cb({ success: true, JWT, characterData });
     } catch (error) {
       console.log(error);
@@ -140,7 +144,20 @@ export default class ServerPlayerManager {
     });
 
     this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
-      socket.on("disconnect", async () => {
+      socket.on("clientSendPartyInvite", (nameOfPartyInviteRecepient, cb) => {
+        console.log(nameOfPartyInviteRecepient);
+        const characterData = this.charactersOnline.get(socket.characterId);
+        const recepient = this.characterNamesOnline.get(
+          nameOfPartyInviteRecepient,
+        );
+        if (!recepient)
+          return cb({ success: false, message: "Name not online" });
+        this.serverAPI.serverManager.authNamespace
+          .to(recepient.socketId)
+          .emit("serverDeliverPartyInvite", { sender: characterData.name });
+        return cb({ success: true, message: "Invite sent" });
+      });
+      socket.on("disconnect", () => {
         const characterId = socket.characterId;
         const characterData = this.charactersOnline.get(characterId);
         this.serverAPI.mapManager.serverCharacterLeftMap(
@@ -149,6 +166,7 @@ export default class ServerPlayerManager {
           characterData?.location.map,
         );
         this.charactersOnline.delete(characterId);
+        this.characterNamesOnline.delete(characterData.name);
       });
     });
   }

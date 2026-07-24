@@ -1,16 +1,25 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./PartyInvitesWindowComponent.module.css";
 import { setCenterPanel } from "@store/ui/CenterPanelSlice.js";
 import { clientSendPartyInvite } from "@store/party/PartySlice.js";
+import { setErrorMessage } from "../../redux-store/party/PartySlice";
 
 export default function PartyInvitesWindowComponent() {
   const dispatch = useDispatch();
+  const successMessage = useSelector(
+    (state) => state.PartySlice.successMessage,
+  );
+  const errorMessage = useSelector((state) => state.PartySlice.errorMessage);
   const characterToInviteToParty = useRef();
   function handleClientSendPartyInvite() {
     dispatch(clientSendPartyInvite(characterToInviteToParty.current.value));
+    characterToInviteToParty.current.value = "";
   }
+  useEffect(() => {
+    dispatch(setErrorMessage(""));
+  }, []);
   return (
     <div className={styles.PartyInvitesWindowComponent}>
       <div className={styles.inputRow}>
@@ -26,7 +35,14 @@ export default function PartyInvitesWindowComponent() {
           Party
         </button>
       </div>
-      <div className={styles.statusMessage}></div>
+      <div className={styles.statusMessage}>
+        {errorMessage && (
+          <div className={styles.errorMessage}>{errorMessage}</div>
+        )}
+        {successMessage && (
+          <div className={styles.successMessage}>{successMessage}</div>
+        )}
+      </div>
       <div className={styles.invites}>Invites:</div>
     </div>
   );

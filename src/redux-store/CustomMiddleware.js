@@ -1,6 +1,7 @@
 import LoginSliceEmitters from "@io/login/LoginSliceEmitters";
 import LoginSliceListeners from "@io/login/LoginSliceListeners";
 import ChatSliceEmitters from "@io/chat/ChatSliceEmitters";
+import PartySliceEmitters from "@io/party/PartySliceEmitters";
 import { ChatSliceListeners } from "@io/chat/ChatSliceListeners";
 
 export const CustomMiddleware = (store) => {
@@ -21,6 +22,7 @@ export const CustomMiddleware = (store) => {
 
     LoginSliceEmitters(store, action);
     ChatSliceEmitters(store, action);
+    PartySliceEmitters(store, action);
 
     return next(action);
   };

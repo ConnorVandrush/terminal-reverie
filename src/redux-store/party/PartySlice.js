@@ -7,13 +7,27 @@ const PartySlice = createSlice({
     createCharacterAppearance: {},
     characterSpriteDesign: {},
     characterSpritePreview: null,
+    partyLeaderCharacterId: null,
     partyMember1: false,
     partyMember2: false,
     partyMember3: false,
     partyMember4: false,
     partyInvites: {},
+    errorMessage: "",
+    successMessage: "",
   },
   reducers: {
+    setPartyLeaderCharacterId(state, action) {
+      state.partyLeaderCharacterId = action.payload;
+    },
+    setErrorMessage(state, action) {
+      state.successMessage = "";
+      state.errorMessage = action.payload;
+    },
+    setSuccessMessage(state, action) {
+      state.errorMessage = "";
+      state.successMessage = action.payload;
+    },
     setCreateCharacterName(state, action) {
       state.createCharacterName = action.payload;
     },
@@ -97,5 +111,8 @@ export const {
   addPartyInvite,
   removePartyInvite,
   clientSendPartyInvite,
+  setErrorMessage,
+  setSuccessMessage,
+  setPartyLeaderCharacterId,
 } = PartySlice.actions;
 export default PartySlice.reducer;

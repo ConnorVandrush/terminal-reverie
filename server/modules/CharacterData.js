@@ -1,6 +1,7 @@
 export default class CharacterData {
   constructor() {
     this.characterId = null;
+    this.socketId = null;
     this.isDead = false;
     this.isDefending = false;
     this.location = { x: 0, y: 0, d: 0, map: "" };
