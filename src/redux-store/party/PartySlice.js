@@ -94,6 +94,9 @@ const PartySlice = createSlice({
     clientSendPartyInvite(state, action) {
       //emit handled in PartySliceEmitters
     },
+    serverDeliverPartyInvite(state, action) {
+      state.partyInvites[action.payload.senderId] = action.payload.senderName;
+    },
   },
 });
 
@@ -114,5 +117,6 @@ export const {
   setErrorMessage,
   setSuccessMessage,
   setPartyLeaderCharacterId,
+  serverDeliverPartyInvite,
 } = PartySlice.actions;
 export default PartySlice.reducer;

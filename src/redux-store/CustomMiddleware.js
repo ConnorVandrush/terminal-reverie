@@ -3,6 +3,7 @@ import LoginSliceListeners from "@io/login/LoginSliceListeners";
 import ChatSliceEmitters from "@io/chat/ChatSliceEmitters";
 import PartySliceEmitters from "@io/party/PartySliceEmitters";
 import { ChatSliceListeners } from "@io/chat/ChatSliceListeners";
+import { PartySliceListeners } from "@io/party/PartySliceListeners";
 
 export const CustomMiddleware = (store) => {
   let initialized = false;
@@ -18,6 +19,7 @@ export const CustomMiddleware = (store) => {
     if (!authenticated && window.clientAPI.authNamespace !== null) {
       authenticated = true;
       ChatSliceListeners(store, action);
+      PartySliceListeners(store, action);
     }
 
     LoginSliceEmitters(store, action);

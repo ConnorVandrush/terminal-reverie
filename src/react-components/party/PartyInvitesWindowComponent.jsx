@@ -12,6 +12,7 @@ export default function PartyInvitesWindowComponent() {
     (state) => state.PartySlice.successMessage,
   );
   const errorMessage = useSelector((state) => state.PartySlice.errorMessage);
+  const partyInvites = useSelector((state) => state.PartySlice.partyInvites);
   const characterToInviteToParty = useRef();
   function handleClientSendPartyInvite() {
     dispatch(clientSendPartyInvite(characterToInviteToParty.current.value));
@@ -43,7 +44,20 @@ export default function PartyInvitesWindowComponent() {
           <div className={styles.successMessage}>{successMessage}</div>
         )}
       </div>
-      <div className={styles.invites}>Invites:</div>
+      <div className={styles.invites}>
+        Invites:
+        {partyInvites && Object.entries(partyInvites).length > 0 ? (
+          Object.entries(partyInvites).map(([senderId, senderName]) => (
+            <div key={senderId} className={styles.inviteRow}>
+              {senderName} has invited you.
+              <button>Accept</button>
+              <button>Decline</button>
+            </div>
+          ))
+        ) : (
+          <div>No invites</div>
+        )}
+      </div>
     </div>
   );
 }

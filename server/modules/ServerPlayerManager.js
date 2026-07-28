@@ -20,7 +20,7 @@ export default class ServerPlayerManager {
     return password.length >= 8;
   };
 
-  validateEmailAndPassword(email, password, cb) {
+  validateEmailAndPassword(email, password) {
     if (!this.isValidEmail(email)) {
       throw new Error("Invalid email format");
     }
@@ -30,7 +30,7 @@ export default class ServerPlayerManager {
     }
   }
 
-  async findUser(email, password, cb) {
+  async findUser(email, password) {
     const user = await PlayerAccounts.findOne({ email });
     if (!user) {
       throw new Error("Invalid email or password");
@@ -103,7 +103,6 @@ export default class ServerPlayerManager {
   async login(user, socket, cb) {
     try {
       const characterData = user.characterData;
-      characterData.socketId = socket.id;
       const JWT = user.JWT;
       this.charactersOnline.set(user.playerId, characterData);
       this.characterNamesOnline.set(characterData.name, characterData);
@@ -118,12 +117,12 @@ export default class ServerPlayerManager {
     this.serverAPI.serverManager.loginNamespace.on("connection", (socket) => {
       socket.on("clientLogin", async ({ email, password }, cb) => {
         try {
-          const user = await this.findUser(email, password, cb);
+          const user = await this.findUser(email, password);
           await this.assignJWT(user);
           if (user.newCharacter) {
             await this.createCharacter(user, socket);
           }
-          this.login(user, socket, cb);
+          await this.login(user, socket, cb);
         } catch (error) {
           cb({ error: error.message });
         }
@@ -131,7 +130,7 @@ export default class ServerPlayerManager {
 
       socket.on("clientRegister", async ({ email, password }, cb) => {
         try {
-          this.validateEmailAndPassword(email, password, cb);
+          this.validateEmailAndPassword(email, password);
           const existingUser = await PlayerAccounts.findOne({ email });
           if (existingUser) {
             return cb({ error: "Email already in use" });
@@ -144,17 +143,22 @@ export default class ServerPlayerManager {
     });
 
     this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
-      socket.on("clientSendPartyInvite", (nameOfPartyInviteRecepient, cb) => {
-        console.log(nameOfPartyInviteRecepient);
+      const characterData = this.charactersOnline.get(socket.characterId);
+      characterData.socketId = socket.id;
+
+      socket.on("clientSendPartyInvite", (nameOfPartyInviteRecipient, cb) => {
         const characterData = this.charactersOnline.get(socket.characterId);
         const recepient = this.characterNamesOnline.get(
-          nameOfPartyInviteRecepient,
+          nameOfPartyInviteRecipient,
         );
         if (!recepient)
           return cb({ success: false, message: "Name not online" });
         this.serverAPI.serverManager.authNamespace
           .to(recepient.socketId)
-          .emit("serverDeliverPartyInvite", { sender: characterData.name });
+          .emit("serverDeliverPartyInvite", {
+            senderId: characterData.characterId,
+            senderName: characterData.name,
+          });
         return cb({ success: true, message: "Invite sent" });
       });
       socket.on("disconnect", () => {
