@@ -55,5 +55,8 @@ export default class CharacterData {
     this.tradeOffer = null;
     this.canMove = true;
     this.canTransfer = true;
+    this.partyRoom = null;
+    this.partyMemberIds = [];
+    this.sentPartyInvitations = [];
   }
 }

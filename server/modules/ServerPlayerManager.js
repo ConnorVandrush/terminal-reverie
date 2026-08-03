@@ -8,7 +8,6 @@ export default class ServerPlayerManager {
     this.serverAPI = serverAPI;
     this.charactersOnline = new Map(); // characterId -> characterData
     this.characterNamesOnline = new Map(); // characterName -> characterData
-    this.partiesOnline = new Map(); // partyLeaderCharacterId -> { characterDatas... }
   }
 
   isValidEmail = (email) => {
@@ -106,11 +105,58 @@ export default class ServerPlayerManager {
       const JWT = user.JWT;
       this.charactersOnline.set(user.playerId, characterData);
       this.characterNamesOnline.set(characterData.name, characterData);
+      characterData.partyRoom = "partyRoom" + user.playerId;
+      characterData.partyMemberIds.push(user.playerId);
       return cb({ success: true, JWT, characterData });
     } catch (error) {
       console.log(error);
       throw new Error("An error occurred during login.");
     }
+  }
+
+  getPartyMemberData(partyMemberIds) {
+    let member1 = null;
+    let member2 = null;
+    let member3 = null;
+    let member4 = null;
+
+    member1 = this.charactersOnline.get(partyMemberIds[0] ?? null) ?? null;
+    member2 = this.charactersOnline.get(partyMemberIds[1] ?? null) ?? null;
+    member3 = this.charactersOnline.get(partyMemberIds[2] ?? null) ?? null;
+    member4 = this.charactersOnline.get(partyMemberIds[3] ?? null) ?? null;
+
+    return { member1, member2, member3, member4 };
+  }
+
+  joinParty(partyLeaderId, joiningCharacterId) {
+    const partyLeaderData = this.charactersOnline.get(partyLeaderId);
+    const joiningCharacterData = this.charactersOnline.get(joiningCharacterId);
+    if (!partyLeaderData.sentPartyInvitations.includes(joiningCharacterId)) {
+      throw new Error();
+    } else {
+      partyLeaderData.sentPartyInvitations =
+        partyLeaderData.sentPartyInvitations.filter(
+          (x) => x !== joiningCharacterId,
+        );
+    }
+    partyLeaderData.partyMemberIds.push(joiningCharacterId);
+    for (const memberId of partyLeaderData.partyMemberIds) {
+      const member = this.charactersOnline.get(memberId);
+      member.partyMemberIds = [...partyLeaderData.partyMemberIds];
+      member.partyRoom = partyLeaderData.partyRoom;
+      const socket = this.serverAPI.serverManager.authNamespace.sockets.get(
+        member.socketId,
+      );
+      if (socket) {
+        socket.join(partyLeaderData.partyRoom);
+      }
+    }
+    this.serverAPI.serverManager.authNamespace
+      .to(partyLeaderData.partyRoom)
+      .emit(
+        "characterJoinedParty",
+        this.getPartyMemberData(partyLeaderData.partyMemberIds),
+      );
   }
 
   startListeners() {
@@ -147,21 +193,38 @@ export default class ServerPlayerManager {
       characterData.socketId = socket.id;
 
       socket.on("clientSendPartyInvite", (nameOfPartyInviteRecipient, cb) => {
-        const characterData = this.charactersOnline.get(socket.characterId);
-        const recepient = this.characterNamesOnline.get(
-          nameOfPartyInviteRecipient,
-        );
-        if (!recepient)
-          return cb({ success: false, message: "Name not online" });
-        this.serverAPI.serverManager.authNamespace
-          .to(recepient.socketId)
-          .emit("serverDeliverPartyInvite", {
-            senderId: characterData.characterId,
-            senderName: characterData.name,
-          });
-        return cb({ success: true, message: "Invite sent" });
+        try {
+          const characterData = this.charactersOnline.get(socket.characterId);
+          const recipient = this.characterNamesOnline.get(
+            nameOfPartyInviteRecipient,
+          );
+          if (!recipient)
+            return cb({ success: false, message: "Name not online" });
+          this.serverAPI.serverManager.authNamespace
+            .to(recipient.socketId)
+            .emit("serverDeliverPartyInvite", {
+              senderId: characterData.characterId,
+              senderName: characterData.name,
+            });
+          characterData.sentPartyInvitations.push(recipient.characterId);
+          return cb({ success: true, message: "Invite sent" });
+        } catch (error) {
+          console.error(error);
+          cb({ success: false, message: "Invite failed" });
+        }
       });
-      socket.on("disconnect", () => {
+
+      socket.on("clientAcceptPartyInvite", (partyLeaderId, cb) => {
+        try {
+          this.joinParty(partyLeaderId, socket.characterId);
+          cb({ success: true, message: "Joined party" });
+        } catch (error) {
+          console.error(error);
+          cb({ success: false, message: "Failed to join party" });
+        }
+      });
+
+      socket.on("disconnect", async () => {
         const characterId = socket.characterId;
         const characterData = this.charactersOnline.get(characterId);
         this.serverAPI.mapManager.serverCharacterLeftMap(
@@ -171,6 +234,19 @@ export default class ServerPlayerManager {
         );
         this.charactersOnline.delete(characterId);
         this.characterNamesOnline.delete(characterData.name);
+
+        characterData.partyRoom = null;
+        characterData.partyMemberIds = [];
+        characterData.sentPartyInvitations = [];
+        characterData.tradeOffer = null;
+        characterData.canMove = true;
+        characterData.canTransfer = true;
+
+        const existingUser = await PlayerAccounts.findOne({ characterId });
+        if (existingUser) {
+          existingUser.JWT = null;
+          await existingUser.save();
+        }
       });
     });
   }

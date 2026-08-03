@@ -85,8 +85,8 @@ const PartySlice = createSlice({
     setMember4CharacterData(state, action) {
       state.partyMember4 = action.payload;
     },
-    addPartyInvite(state, action) {
-      state.partyInvites[action.payload.characterId] = action.payload.name;
+    serverDeliverPartyInvite(state, action) {
+      state.partyInvites[action.payload.senderId] = action.payload.senderName;
     },
     removePartyInvite(state, action) {
       delete state.partyInvites[action.payload];
@@ -94,8 +94,8 @@ const PartySlice = createSlice({
     clientSendPartyInvite(state, action) {
       //emit handled in PartySliceEmitters
     },
-    serverDeliverPartyInvite(state, action) {
-      state.partyInvites[action.payload.senderId] = action.payload.senderName;
+    clientAcceptPartyInvite(state, action) {
+      //emit handled in PartySliceEmitters
     },
   },
 });
@@ -118,5 +118,6 @@ export const {
   setSuccessMessage,
   setPartyLeaderCharacterId,
   serverDeliverPartyInvite,
+  clientAcceptPartyInvite,
 } = PartySlice.actions;
 export default PartySlice.reducer;

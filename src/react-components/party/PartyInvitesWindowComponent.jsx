@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "./PartyInvitesWindowComponent.module.css";
 import { setCenterPanel } from "@store/ui/CenterPanelSlice.js";
 import { clientSendPartyInvite } from "@store/party/PartySlice.js";
-import { setErrorMessage } from "../../redux-store/party/PartySlice";
+import {
+  removePartyInvite,
+  setErrorMessage,
+  clientAcceptPartyInvite,
+} from "@store/party/PartySlice";
 
 export default function PartyInvitesWindowComponent() {
   const dispatch = useDispatch();
@@ -14,13 +18,21 @@ export default function PartyInvitesWindowComponent() {
   const errorMessage = useSelector((state) => state.PartySlice.errorMessage);
   const partyInvites = useSelector((state) => state.PartySlice.partyInvites);
   const characterToInviteToParty = useRef();
+
   function handleClientSendPartyInvite() {
     dispatch(clientSendPartyInvite(characterToInviteToParty.current.value));
     characterToInviteToParty.current.value = "";
   }
+
+  function handleClientAcceptPartyInvite(senderId) {
+    dispatch(clientAcceptPartyInvite(senderId));
+    dispatch(removePartyInvite(senderId));
+  }
+
   useEffect(() => {
     dispatch(setErrorMessage(""));
   }, []);
+
   return (
     <div className={styles.PartyInvitesWindowComponent}>
       <div className={styles.inputRow}>
@@ -50,8 +62,14 @@ export default function PartyInvitesWindowComponent() {
           Object.entries(partyInvites).map(([senderId, senderName]) => (
             <div key={senderId} className={styles.inviteRow}>
               {senderName} has invited you.
-              <button>Accept</button>
-              <button>Decline</button>
+              <button
+                onClick={() => handleClientAcceptPartyInvite(Number(senderId))}
+              >
+                Accept
+              </button>
+              <button onClick={() => dispatch(removePartyInvite(senderId))}>
+                Decline
+              </button>
             </div>
           ))
         ) : (
