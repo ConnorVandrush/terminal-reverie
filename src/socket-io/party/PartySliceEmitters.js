@@ -3,6 +3,8 @@ import {
   setSuccessMessage,
   setErrorMessage,
   clientAcceptPartyInvite,
+  removePartyInvite,
+  clientLeaveParty,
 } from "@store/party/PartySlice";
 
 export default async function PartySliceEmitters(store, action) {
@@ -24,7 +26,18 @@ export default async function PartySliceEmitters(store, action) {
           action.payload,
         );
       if (!success) store.dispatch(setErrorMessage(message));
-      if (success) store.dispatch(setSuccessMessage(message));
+      if (success) {
+        store.dispatch(setSuccessMessage(message));
+        store.dispatch(removePartyInvite(action.payload));
+      }
+    }
+
+    if (action.type === clientLeaveParty.type) {
+      console.log("emitting");
+      await window.clientAPI.authNamespace.emit(
+        "clientLeaveParty",
+        action.payload,
+      );
     }
   } catch (error) {
     console.error("PartySliceEmitters:", error);

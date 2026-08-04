@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./PartyWindowComponent.module.css";
 import { setCenterPanel } from "@store/ui/CenterPanelSlice.js";
+import { clientLeaveParty } from "@store/party/PartySlice";
 
 export default function PartyWindowComponent() {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ export default function PartyWindowComponent() {
     state.PartySlice.partyMember3,
     state.PartySlice.partyMember4,
   ]);
+  const partySize = members.filter(Boolean).length;
 
   return (
     <div className={styles.partyWindow}>
@@ -43,13 +45,21 @@ export default function PartyWindowComponent() {
       ))}
 
       <div className={styles.buttonRow}>
-        <button
-          onClick={() =>
-            dispatch(setCenterPanel("PartyInvitesWindowComponent"))
-          }
-        >
-          Join/Invite
-        </button>
+        {partySize === 1 && (
+          <button
+            onClick={() =>
+              dispatch(setCenterPanel("PartyInvitesWindowComponent"))
+            }
+          >
+            Join/Invite
+          </button>
+        )}
+
+        {partySize >= 2 && (
+          <button onClick={() => dispatch(clientLeaveParty())}>
+            Leave Party
+          </button>
+        )}
       </div>
     </div>
   );

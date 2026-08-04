@@ -280,14 +280,47 @@ export default class ServerMapManager {
           if (!result.success) {
             cb({ success: false });
           } else {
-            characterData.location = result.newLocation;
-            this.serverAPI.serverManager.authNamespace
-              .to(characterData.location.map)
-              .except(socket.id)
-              .emit("serverRemoteCharacterMoved", {
-                characterId: characterData.characterId,
-                newLocation: result.newLocation,
-              });
+            if (characterData.partyMemberIds.length === 1) {
+              characterData.location = result.newLocation;
+              this.serverAPI.serverManager.authNamespace
+                .to(characterData.location.map)
+                .except(socket.id)
+                .emit("serverRemoteCharacterMoved", {
+                  characterId: characterData.characterId,
+                  newLocation: result.newLocation,
+                });
+            } else {
+              const partyMembers = characterData.partyMemberIds.map((id) =>
+                this.serverAPI.playerManager.charactersOnline.get(id),
+              );
+              const oldLocations = partyMembers.map((member) => ({
+                ...member.location,
+              }));
+              partyMembers[0].location = result.newLocation;
+              for (let i = 1; i < partyMembers.length; i++) {
+                partyMembers[i].location = oldLocations[i - 1];
+              }
+              const leaderId = partyMembers[0].characterId;
+              for (const member of partyMembers) {
+                const room = this.serverAPI.serverManager.authNamespace.to(
+                  member.location.map,
+                );
+
+                if (member.characterId === leaderId) {
+                  room
+                    .except(member.socketId)
+                    .emit("serverRemoteCharacterMoved", {
+                      characterId: member.characterId,
+                      newLocation: member.location,
+                    });
+                } else {
+                  room.emit("serverRemoteCharacterMoved", {
+                    characterId: member.characterId,
+                    newLocation: member.location,
+                  });
+                }
+              }
+            }
             cb({ success: true, newLocation: result.newLocation });
           }
           setTimeout(() => (characterData.canMove = true), 50); // simple movement rate limit

@@ -128,11 +128,62 @@ export default class ServerPlayerManager {
     return { member1, member2, member3, member4 };
   }
 
-  joinParty(partyLeaderId, joiningCharacterId) {
+  checkOrthogonalAdjacency(characterId1, characterId2) {
+    const p1 = this.charactersOnline.get(characterId1);
+    const p2 = this.charactersOnline.get(characterId2);
+    if (!p1 || !p2) return false;
+
+    const x1 = p1.location.x;
+    const y1 = p1.location.y;
+    const x2 = p2.location.x;
+    const y2 = p2.location.y;
+
+    const dx = Math.abs(x1 - x2);
+    const dy = Math.abs(y1 - y2);
+
+    // Same tile OR orthogonally adjacent
+    return (
+      (dx === 0 && dy === 0) || (dx === 1 && dy === 0) || (dx === 0 && dy === 1)
+    );
+  }
+
+  assembleParty(partyLeaderId) {
+    const partyLeaderData = this.charactersOnline.get(partyLeaderId);
+    for (const memberId of partyLeaderData.partyMemberIds) {
+      const member = this.charactersOnline.get(memberId);
+      member.canMove = false;
+      member.partyMemberIds = [...partyLeaderData.partyMemberIds];
+      member.partyRoom = partyLeaderData.partyRoom;
+      member.location = { ...partyLeaderData.location };
+      this.serverAPI.serverManager.authNamespace
+        .to(member.location.map)
+        .emit("serverRemoteCharacterMoved", {
+          characterId: member.characterId,
+          newLocation: member.location,
+        });
+      const socket = this.serverAPI.serverManager.authNamespace.sockets.get(
+        member.socketId,
+      );
+      if (socket) {
+        socket.join(partyLeaderData.partyRoom);
+      }
+      setTimeout(() => {
+        partyLeaderData.canMove = true;
+      }, 3000);
+    }
+  }
+
+  joinParty(partyLeaderId, joiningCharacterId, cb) {
     const partyLeaderData = this.charactersOnline.get(partyLeaderId);
     const joiningCharacterData = this.charactersOnline.get(joiningCharacterId);
+    if (!this.checkOrthogonalAdjacency(partyLeaderId, joiningCharacterId)) {
+      return cb({
+        success: false,
+        message: "You must be adjacent to the party leader to join their party",
+      });
+    }
     if (!partyLeaderData.sentPartyInvitations.includes(joiningCharacterId)) {
-      throw new Error();
+      throw new Error("Sent invitation not found");
     } else {
       partyLeaderData.sentPartyInvitations =
         partyLeaderData.sentPartyInvitations.filter(
@@ -140,21 +191,36 @@ export default class ServerPlayerManager {
         );
     }
     partyLeaderData.partyMemberIds.push(joiningCharacterId);
-    for (const memberId of partyLeaderData.partyMemberIds) {
-      const member = this.charactersOnline.get(memberId);
-      member.partyMemberIds = [...partyLeaderData.partyMemberIds];
-      member.partyRoom = partyLeaderData.partyRoom;
-      const socket = this.serverAPI.serverManager.authNamespace.sockets.get(
-        member.socketId,
-      );
-      if (socket) {
-        socket.join(partyLeaderData.partyRoom);
-      }
-    }
+    this.assembleParty(partyLeaderId);
     this.serverAPI.serverManager.authNamespace
       .to(partyLeaderData.partyRoom)
       .emit(
-        "characterJoinedParty",
+        "characterJoinedOrLeftParty",
+        this.getPartyMemberData(partyLeaderData.partyMemberIds),
+      );
+  }
+
+  leaveParty(characterId) {
+    const characterData = this.charactersOnline.get(characterId);
+    const newParty = characterData.partyMemberIds.filter(
+      (x) => x !== characterId,
+    );
+    const partyLeaderData = this.charactersOnline.get(newParty[0]);
+    partyLeaderData.partyMemberIds = newParty;
+    partyLeaderData.partyRoom = "partyRoom" + partyLeaderData.characterId;
+    this.assembleParty(newParty[0]);
+    this.serverAPI.serverManager.authNamespace
+      .to(partyLeaderData.partyRoom)
+      .emit(
+        "characterJoinedOrLeftParty",
+        this.getPartyMemberData(partyLeaderData.partyMemberIds),
+      );
+    characterData.partyMemberIds = [characterId];
+    characterData.partyRoom = "partyRoom" + characterId;
+    this.serverAPI.serverManager.authNamespace
+      .to(characterData.partyRoom)
+      .emit(
+        "characterJoinedOrLeftParty",
         this.getPartyMemberData(partyLeaderData.partyMemberIds),
       );
   }
@@ -170,7 +236,8 @@ export default class ServerPlayerManager {
           }
           await this.login(user, socket, cb);
         } catch (error) {
-          cb({ error: error.message });
+          console.error(error);
+          cb({ error: "error.message" });
         }
       });
 
@@ -183,6 +250,7 @@ export default class ServerPlayerManager {
           }
           await this.createAccount(email, password, cb);
         } catch (error) {
+          console.error(error);
           cb({ error: error.message });
         }
       });
@@ -216,7 +284,7 @@ export default class ServerPlayerManager {
 
       socket.on("clientAcceptPartyInvite", (partyLeaderId, cb) => {
         try {
-          this.joinParty(partyLeaderId, socket.characterId);
+          this.joinParty(partyLeaderId, socket.characterId, cb);
           cb({ success: true, message: "Joined party" });
         } catch (error) {
           console.error(error);
@@ -224,9 +292,19 @@ export default class ServerPlayerManager {
         }
       });
 
+      socket.on("clientLeaveParty", () => {
+        try {
+          this.leaveParty(socket.characterId);
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
       socket.on("disconnect", async () => {
         const characterId = socket.characterId;
         const characterData = this.charactersOnline.get(characterId);
+        if (characterData.partyMemberIds.length >= 2)
+          this.leaveParty(characterId);
         this.serverAPI.mapManager.serverCharacterLeftMap(
           socket,
           characterId,

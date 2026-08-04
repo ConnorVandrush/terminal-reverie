@@ -14,9 +14,8 @@ export function PartySliceListeners(store, action) {
   });
 
   window.clientAPI.authNamespace.on(
-    "characterJoinedParty",
+    "characterJoinedOrLeftParty",
     ({ member1, member2, member3, member4 }) => {
-      console.log("received");
       store.dispatch(setMember1CharacterData(member1));
       store.dispatch(setMember2CharacterData(member2));
       store.dispatch(setMember3CharacterData(member3));

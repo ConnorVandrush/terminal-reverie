@@ -97,6 +97,9 @@ const PartySlice = createSlice({
     clientAcceptPartyInvite(state, action) {
       //emit handled in PartySliceEmitters
     },
+    clientLeaveParty(state, action) {
+      //emit handled in PartySliceEitters
+    },
   },
 });
 
@@ -119,5 +122,6 @@ export const {
   setPartyLeaderCharacterId,
   serverDeliverPartyInvite,
   clientAcceptPartyInvite,
+  clientLeaveParty,
 } = PartySlice.actions;
 export default PartySlice.reducer;

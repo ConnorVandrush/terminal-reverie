@@ -26,7 +26,6 @@ export default function PartyInvitesWindowComponent() {
 
   function handleClientAcceptPartyInvite(senderId) {
     dispatch(clientAcceptPartyInvite(senderId));
-    dispatch(removePartyInvite(senderId));
   }
 
   useEffect(() => {

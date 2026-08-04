@@ -5,6 +5,7 @@ class ClientPlayerManager {
     this.charactersOnCurrentMap = new Map(); // characterId -> characterData
     this.characterCanMove = true;
     this.processRemoteCharacters = true;
+    this.playerCharacterId;
   }
 
   transferToMap(mapData, tileset, charactersOnMap, location) {
@@ -238,32 +239,50 @@ class ClientPlayerManager {
     window.clientAPI.authNamespace.on(
       "serverRemoteCharacterMoved",
       ({ characterId, newLocation }) => {
+        if (characterId === this.playerCharacterId) {
+          const player = $gamePlayer;
+
+          let x = player.x;
+          let y = player.y;
+
+          player._netMovementQueue = [];
+
+          while (x !== newLocation.x || y !== newLocation.y) {
+            if (x < newLocation.x) {
+              x++;
+            } else if (x > newLocation.x) {
+              x--;
+            } else if (y < newLocation.y) {
+              y++;
+            } else if (y > newLocation.y) {
+              y--;
+            }
+
+            player._netMovementQueue.push({ x, y });
+          }
+
+          return;
+        }
+
         if (!this.processRemoteCharacters) return;
 
         const eventId = this.charactersOnCurrentMap.get(characterId)?.eventId;
-
         const gameEvent = $gameMap._events[eventId];
         if (!gameEvent) return;
 
-        const startX = gameEvent.x;
-        const startY = gameEvent.y;
-        const targetX = newLocation.x;
-        const targetY = newLocation.y;
+        let x = gameEvent.x;
+        let y = gameEvent.y;
 
-        let x = startX;
-        let y = startY;
-
-        // Replace outdated movement path
         gameEvent._netMovementQueue = [];
 
-        while (x !== targetX || y !== targetY) {
-          if (x < targetX) {
+        while (x !== newLocation.x || y !== newLocation.y) {
+          if (x < newLocation.x) {
             x++;
-          } else if (x > targetX) {
+          } else if (x > newLocation.x) {
             x--;
-          } else if (y < targetY) {
+          } else if (y < newLocation.y) {
             y++;
-          } else if (y > targetY) {
+          } else if (y > newLocation.y) {
             y--;
           }
 

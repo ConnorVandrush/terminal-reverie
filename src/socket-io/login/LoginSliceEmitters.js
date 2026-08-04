@@ -27,6 +27,8 @@ export default async function LoginSliceEmitters(store, action) {
         localStorage.setItem("JWT", JWT);
         window.clientAPI.loginNamespace.disconnect();
         window.clientAPI.playerManager.login(characterData);
+        window.clientAPI.playerManager.playerCharacterId =
+          characterData.characterId;
       }
     }
     if (action.type === clientRegister.type) {
