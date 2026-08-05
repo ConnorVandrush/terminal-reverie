@@ -9,10 +9,6 @@ class ClientPlayerManager {
   }
 
   transferToMap(mapData, tileset, charactersOnMap, location) {
-    window.clientAPI.dispatchToReact({
-      type: "partySlice/setMember1CharacterLocation",
-      payload: location,
-    });
     $dataTilesets[mapData.tilesetId] = structuredClone(tileset);
     const map = structuredClone(mapData);
     map.id = Date.now();
@@ -85,11 +81,6 @@ class ClientPlayerManager {
       if (!success) {
         $gamePlayer.locate(oldLoc.x, oldLoc.y);
         $gamePlayer.setDirection(oldLoc.d);
-      } else {
-        window.clientAPI.dispatchToReact({
-          type: "partySlice/setMember1CharacterLocation",
-          payload: newLocation,
-        });
       }
     } catch (error) {
       console.log(error);
@@ -106,10 +97,6 @@ class ClientPlayerManager {
         await window.clientAPI.authNamespace.emitWithAck(
           "clientRequestMapTransfer",
         );
-      window.clientAPI.dispatchToReact({
-        type: "partySlice/setMember1CharacterLocation",
-        payload: location,
-      });
       this.transferToMap(mapData, tileset, charactersOnMap, location);
     } catch (error) {
       console.log(error);

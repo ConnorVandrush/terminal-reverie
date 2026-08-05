@@ -73,9 +73,6 @@ const PartySlice = createSlice({
     setMember1CharacterData(state, action) {
       state.partyMember1 = action.payload;
     },
-    setMember1CharacterLocation(state, action) {
-      state.partyMember1.location = action.payload;
-    },
     setMember2CharacterData(state, action) {
       state.partyMember2 = action.payload;
     },
@@ -110,7 +107,6 @@ export const {
   randomizeCharacterSpriteDesign,
   setCharacterSpritePreview,
   setMember1CharacterData,
-  setMember1CharacterLocation,
   setMember2CharacterData,
   setMember3CharacterData,
   setMember4CharacterData,

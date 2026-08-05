@@ -306,19 +306,10 @@ export default class ServerMapManager {
                   member.location.map,
                 );
 
-                if (member.characterId === leaderId) {
-                  room
-                    .except(member.socketId)
-                    .emit("serverRemoteCharacterMoved", {
-                      characterId: member.characterId,
-                      newLocation: member.location,
-                    });
-                } else {
-                  room.emit("serverRemoteCharacterMoved", {
-                    characterId: member.characterId,
-                    newLocation: member.location,
-                  });
-                }
+                room.emit("serverRemoteCharacterMoved", {
+                  characterId: member.characterId,
+                  newLocation: member.location,
+                });
               }
             }
             cb({ success: true, newLocation: result.newLocation });
@@ -335,6 +326,11 @@ export default class ServerMapManager {
           socket.characterId,
         );
         if (!characterData.canTransfer) cb({ success: false });
+        if (
+          characterData.partyMemberIds.length > 1 &&
+          characterData.partyMemberIds[0] === socket.characterId
+        )
+          this.serverAPI.playerManager.assembleParty(socket.characterId);
         characterData.canTransfer = false;
         const location = characterData.location;
         const eventData = this.getEventData(
