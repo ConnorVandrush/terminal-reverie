@@ -3,6 +3,7 @@
 var $plugins =
 [
 {"name":"ClientAPI","status":true,"description":"","parameters":{}},
+{"name":"ClientEncounterManager","status":true,"description":"","parameters":{}},
 {"name":"ClientPlayerManager","status":true,"description":"","parameters":{}},
 {"name":"ClientSpriteManager","status":true,"description":"","parameters":{}},
 {"name":"EngineOverrides","status":true,"description":"","parameters":{}},

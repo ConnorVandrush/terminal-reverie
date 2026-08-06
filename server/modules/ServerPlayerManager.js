@@ -259,6 +259,7 @@ export default class ServerPlayerManager {
     this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
       const characterData = this.charactersOnline.get(socket.characterId);
       characterData.socketId = socket.id;
+      socket.join(characterData.partyRoom);
 
       socket.on("clientSendPartyInvite", (nameOfPartyInviteRecipient, cb) => {
         try {

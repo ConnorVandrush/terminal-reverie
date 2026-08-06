@@ -1,10 +1,38 @@
 import fs from "fs";
+import path from "path";
+const __dirname = import.meta.dirname;
 
 export default class ServerMapManager {
   constructor(serverAPI) {
     this.serverAPI = serverAPI;
-    this.maps = new Map(); // mapName -> { mapData, tileset, eventData, charactersOnMap }
+    this.maps = new Map(); // mapName -> { mapData, tileset, eventData, charactersOnMap, encounters }
+    this.troops = new Map();
+    this.enemies = new Map();
   }
+
+  loadTroops = () => {
+    const mapFile = `../data/Troops.json`;
+    const fullPath = path.resolve(__dirname, mapFile);
+    const rawData = fs.readFileSync(fullPath);
+    const parsedData = JSON.parse(rawData);
+    for (const troop of parsedData) {
+      if (!troop) continue;
+      const id = troop.id;
+      this.troops.set(id, troop);
+    }
+  };
+
+  loadEnemies = () => {
+    const mapFile = `../data/Enemies.json`;
+    const fullPath = path.resolve(__dirname, mapFile);
+    const rawData = fs.readFileSync(fullPath);
+    const parsedData = JSON.parse(rawData);
+    for (const enemy of parsedData) {
+      if (!enemy) continue;
+      const id = enemy.id;
+      this.enemies.set(id, enemy);
+    }
+  };
 
   loadMaps = () => {
     // Load tilesets
@@ -45,11 +73,22 @@ export default class ServerMapManager {
           eventData.set(`${event.x},${event.y}`, event);
         }
 
+        // Build encounter lookup
+        const encounters = new Map();
+        if (mapData.encounters) {
+          for (const [regionId, regionData] of Object.entries(
+            mapData.encounters,
+          )) {
+            encounters.set(Number(regionId), regionData);
+          }
+        }
+
         this.maps.set(mapName, {
           mapData,
           tileset: tilesets.get(mapData.tilesetId),
           eventData,
           charactersOnMap: new Map(), // characterId -> characterData
+          encounters,
         });
       }
     }
@@ -244,6 +283,67 @@ export default class ServerMapManager {
     return { success: true, newLocation };
   }
 
+  getRegion = (mapName, x, y) => {
+    const mapJson = this.maps.get(mapName).mapData;
+    const base = 5 * mapJson.width * mapJson.height;
+    const index = base + (y * mapJson.width + x);
+    return mapJson.data[index];
+  };
+
+  rollEncounter(troops) {
+    let roll = Math.floor(Math.random() * 100000) + 1;
+    for (const troop of troops) {
+      roll -= troop.percentMilleChance;
+
+      if (roll <= 0) {
+        return troop.troopId;
+      }
+    }
+    return null;
+  }
+
+  rollForEncounter(characterData) {
+    const map = this.maps.get(characterData.location.map);
+    const regionId = this.getRegion(
+      characterData.location.map,
+      characterData.location.x,
+      characterData.location.y,
+    );
+    const region = map.encounters.get(regionId);
+    if (!region) return null;
+    const roll = Math.floor(Math.random() * 100) + 1;
+    if (roll >= region.encounterPercentChance) {
+      return null;
+    }
+    return this.rollEncounter(region.troops);
+  }
+
+  serverStartEncounter(troopId, characterData) {
+    const troopData = this.troops.get(troopId);
+
+    if (!troopData) return;
+
+    const enemyData = troopData.members.map((member) => ({
+      instanceId: crypto.randomUUID(),
+      member,
+      enemy: this.enemies.get(member.enemyId),
+    }));
+
+    console.log("Sending encounter to room:", characterData.partyRoom);
+    console.log(
+      "Sockets in room:",
+      this.serverAPI.serverManager.authNamespace.adapter.rooms.get(
+        characterData.partyRoom,
+      ),
+    );
+    this.serverAPI.serverManager.authNamespace
+      .to(characterData.partyRoom)
+      .emit("serverStartEncounter", {
+        troopData,
+        enemyData,
+      });
+  }
+
   startListeners() {
     this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
       socket.on("clientLoginToMap", async (cb) => {
@@ -314,7 +414,14 @@ export default class ServerMapManager {
             }
             cb({ success: true, newLocation: result.newLocation });
           }
-          setTimeout(() => (characterData.canMove = true), 50); // simple movement rate limit
+          const troopId = this.rollForEncounter(characterData);
+          if (troopId) {
+            console.log(troopId);
+            this.serverStartEncounter(troopId, characterData);
+            return;
+          } else {
+            setTimeout(() => (characterData.canMove = true), 50);
+          } // simple movement rate limit
         } catch (error) {
           console.log(error);
           cb({ error: error.message });

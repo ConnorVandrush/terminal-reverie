@@ -12,7 +12,7 @@ export default class CharacterData {
     this.gold = 0;
     this.maxHp = 100;
     this.currentHp = 100;
-    this.inventory = {}; //{ '1': { id: 1, name: 'Herb', description: 'Restores 25% of max HP', effects: { restoreHP: 25 }, quantity: 10 } }
+    this.inventory = {}; //{ "itemId": { "qty":, "itemInfo": } }
     this.equipment = {
       weapon: "None",
       armor: "None",

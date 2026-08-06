@@ -6,6 +6,7 @@ class ClientAPI {
     this.authNamespace = null;
     this.spriteManager;
     this.playerManager;
+    this.encounterManager;
     this.createCharacterCB = {
       cb: null,
 

@@ -8,7 +8,7 @@ import {
 
 import { setCenterPanel } from "@store/ui/CenterPanelSlice";
 
-export function PartySliceListeners(store, action) {
+export default function PartySliceListeners(store, action) {
   window.clientAPI.authNamespace.on("serverDeliverPartyInvite", (data) => {
     store.dispatch(serverDeliverPartyInvite(data));
   });

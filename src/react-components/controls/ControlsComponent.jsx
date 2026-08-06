@@ -6,10 +6,12 @@ import ConirmButtonComponent from "./ConfirmButtonComponent";
 import CancelButtonComponent from "./CancelButtonComponent";
 import PartyButtonComponent from "./PartyButtonComponent";
 import TradeButtonComponent from "./TradeButtonComponent";
+import InventoryButtonComponent from "./InventoryButtonComponent";
 
 export default function ControlsComponent() {
   return (
     <div className={styles.controlsComponentStyle}>
+      <InventoryButtonComponent />
       <MovementButtonComponent direction="Up" />
       <MovementButtonComponent direction="Left" />
       <MovementButtonComponent direction="Right" />

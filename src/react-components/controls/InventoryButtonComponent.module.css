@@ -1,0 +1,33 @@
+.inventoryButton {
+  width: 75%;
+  height: 75%;
+  background-color: #1a1a1a; /* active green */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 3px 0 #0d0d0d; /* subtle depth */
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+
+  grid-area: 1;
+}
+
+/* Pressed: “retro pop‑in” */
+.inventoryButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #000000;
+}
+
+/* Optional: icon inside the button */
+.inventoryButton::before {
+  content: "🎒"; /* or swap for an SVG */
+  font-size: 200%;
+  line-height: 1;
+}
