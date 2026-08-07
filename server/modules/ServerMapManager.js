@@ -329,13 +329,6 @@ export default class ServerMapManager {
       enemy: this.enemies.get(member.enemyId),
     }));
 
-    console.log("Sending encounter to room:", characterData.partyRoom);
-    console.log(
-      "Sockets in room:",
-      this.serverAPI.serverManager.authNamespace.adapter.rooms.get(
-        characterData.partyRoom,
-      ),
-    );
     this.serverAPI.serverManager.authNamespace
       .to(characterData.partyRoom)
       .emit("serverStartEncounter", {

@@ -250,3 +250,73 @@ Game_CharacterBase.prototype.updateNetMovement = function () {
   const dir = this.findDirectionTo(next.x, next.y);
   this.moveStraight(dir);
 };
+
+// Disable default battle windows
+const rect = new Rectangle(0, 0, 0, 0);
+Scene_Battle.prototype.createStatusWindow = function () {
+  this._statusWindow = new Window_BattleStatus(rect);
+  this._statusWindow.visible = false;
+  this._statusWindow.openness = 0;
+  this.addWindow(this._statusWindow);
+};
+Game_Troop.prototype.enemyNames = function () {
+  return []; // return no names → no message
+};
+Scene_Battle.prototype.createBattleLogWindow = function () {
+  this._battleLogWindow = new Window_BattleLog(rect);
+  this._battleLogWindow.visible = false;
+  this._battleLogWindow.openness = 0;
+  this.addWindow(this._battleLogWindow);
+};
+Scene_Battle.prototype.createActorCommandWindow = function () {
+  this._actorCommandWindow = new Window_ActorCommand(rect);
+  this._actorCommandWindow.visible = false;
+  this._actorCommandWindow.openness = 0;
+  this.addWindow(this._actorCommandWindow);
+};
+Scene_Battle.prototype.createPartyCommandWindow = function () {
+  this._partyCommandWindow = new Window_PartyCommand(rect);
+  this._partyCommandWindow.visible = false;
+  this._partyCommandWindow.openness = 0;
+  this.addWindow(this._partyCommandWindow);
+};
+ImageManager.loadFace = function () {
+  // Return an empty bitmap so nothing loads
+  return new Bitmap(144, 144);
+};
+
+// Disable victory messages and rewards
+BattleManager.displayVictoryMessage = function () {};
+BattleManager.displayRewards = function () {};
+BattleManager.gainRewards = function () {};
+
+const _BattleManager_endBattle = BattleManager.endBattle;
+BattleManager.endBattle = function (result) {
+  // Temporarily disable SceneManager.pop()
+  SceneManager.pop = function () {
+    // do nothing — prevent default map return
+  };
+  _BattleManager_endBattle.call(this, result);
+};
+
+// Set battler positions
+const _Sprite_Actor_setActorHome = Sprite_Actor.prototype.setActorHome;
+
+Sprite_Actor.prototype.setActorHome = function (index) {
+  _Sprite_Actor_setActorHome.call(this, index);
+
+  const actor = this._actor;
+  if (!actor) return;
+
+  const positions = {
+    1: { x: 750, y: 200 },
+    2: { x: 750, y: 270 },
+    3: { x: 750, y: 340 },
+    4: { x: 750, y: 410 },
+  };
+
+  const pos = positions[actor.actorId()];
+  if (pos) {
+    this.setHome(pos.x, pos.y);
+  }
+};

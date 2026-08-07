@@ -18836,17 +18836,22 @@
       "encounterPercentChance": 0
     },
     "1": {
-      "encounterPercentChance": 10,
+      "encounterPercentChance": 20,
       "troops": [
         {
           "troopId": 1,
-          "percentMilleChance": 100000,
+          "percentMilleChance": 0,
           "description": "Goblin*1"
         },
         {
           "troopId": 2,
           "percentMilleChance": 0,
           "description": "Goblin*2"
+        },
+        {
+          "troopId": 3,
+          "percentMilleChance": 100000,
+          "description": "Goblin*8"
         }
       ]
     }

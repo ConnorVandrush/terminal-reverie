@@ -1,8 +1,139 @@
 [
-null,
-{"id":1,"members":[{"enemyId":1,"x":215,"y":390,"hidden":false}],"name":"Goblin*1","pages":[{"conditions":{"actorHp":50,"actorId":1,"actorValid":false,"enemyHp":50,"enemyIndex":0,"enemyValid":false,"switchId":1,"switchValid":false,"turnA":0,"turnB":0,"turnEnding":false,"turnValid":false},"list":[{"code":0,"indent":0,"parameters":[]}],"span":0}]},
-{"id":2,"members":[],"name":"","pages":[{"conditions":{"actorHp":50,"actorId":1,"actorValid":false,"enemyHp":50,"enemyIndex":0,"enemyValid":false,"switchId":1,"switchValid":false,"turnA":0,"turnB":0,"turnEnding":false,"turnValid":false},"list":[{"code":0,"indent":0,"parameters":[]}],"span":0}]},
-{"id":3,"members":[],"name":"","pages":[{"conditions":{"actorHp":50,"actorId":1,"actorValid":false,"enemyHp":50,"enemyIndex":0,"enemyValid":false,"switchId":1,"switchValid":false,"turnA":0,"turnB":0,"turnEnding":false,"turnValid":false},"list":[{"code":0,"indent":0,"parameters":[]}],"span":0}]},
-{"id":4,"members":[],"name":"","pages":[{"conditions":{"actorHp":50,"actorId":1,"actorValid":false,"enemyHp":50,"enemyIndex":0,"enemyValid":false,"switchId":1,"switchValid":false,"turnA":0,"turnB":0,"turnEnding":false,"turnValid":false},"list":[{"code":0,"indent":0,"parameters":[]}],"span":0}]},
-{"id":5,"members":[],"name":"","pages":[{"conditions":{"actorHp":50,"actorId":1,"actorValid":false,"enemyHp":50,"enemyIndex":0,"enemyValid":false,"switchId":1,"switchValid":false,"turnA":0,"turnB":0,"turnEnding":false,"turnValid":false},"list":[{"code":0,"indent":0,"parameters":[]}],"span":0}]}
+  null,
+  {
+    "id": 1,
+    "members": [{ "enemyId": 1, "x": 215, "y": 390, "hidden": false }],
+    "name": "Goblin*1",
+    "pages": [
+      {
+        "conditions": {
+          "actorHp": 50,
+          "actorId": 1,
+          "actorValid": false,
+          "enemyHp": 50,
+          "enemyIndex": 0,
+          "enemyValid": false,
+          "switchId": 1,
+          "switchValid": false,
+          "turnA": 0,
+          "turnB": 0,
+          "turnEnding": false,
+          "turnValid": false
+        },
+        "list": [{ "code": 0, "indent": 0, "parameters": [] }],
+        "span": 0
+      }
+    ],
+    "battleback1": "Plains"
+  },
+  {
+    "id": 2,
+    "members": [],
+    "name": "",
+    "pages": [
+      {
+        "conditions": {
+          "actorHp": 50,
+          "actorId": 1,
+          "actorValid": false,
+          "enemyHp": 50,
+          "enemyIndex": 0,
+          "enemyValid": false,
+          "switchId": 1,
+          "switchValid": false,
+          "turnA": 0,
+          "turnB": 0,
+          "turnEnding": false,
+          "turnValid": false
+        },
+        "list": [{ "code": 0, "indent": 0, "parameters": [] }],
+        "span": 0
+      }
+    ]
+  },
+  {
+    "battleback1": "Plains",
+    "id": 3,
+    "members": [
+      { "enemyId": 1, "x": 86, "y": 382, "hidden": false },
+      { "enemyId": 1, "x": 83, "y": 310, "hidden": false },
+      { "enemyId": 1, "x": 86, "y": 239, "hidden": false },
+      { "enemyId": 1, "x": 175, "y": 388, "hidden": false },
+      { "enemyId": 1, "x": 172, "y": 316, "hidden": false },
+      { "enemyId": 1, "x": 178, "y": 242, "hidden": false },
+      { "enemyId": 1, "x": 262, "y": 358, "hidden": false },
+      { "enemyId": 1, "x": 262, "y": 274, "hidden": false }
+    ],
+    "name": "Goblin*8",
+    "pages": [
+      {
+        "conditions": {
+          "actorHp": 50,
+          "actorId": 1,
+          "actorValid": false,
+          "enemyHp": 50,
+          "enemyIndex": 0,
+          "enemyValid": false,
+          "switchId": 1,
+          "switchValid": false,
+          "turnA": 0,
+          "turnB": 0,
+          "turnEnding": false,
+          "turnValid": false
+        },
+        "list": [{ "code": 0, "indent": 0, "parameters": [] }],
+        "span": 0
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "members": [],
+    "name": "",
+    "pages": [
+      {
+        "conditions": {
+          "actorHp": 50,
+          "actorId": 1,
+          "actorValid": false,
+          "enemyHp": 50,
+          "enemyIndex": 0,
+          "enemyValid": false,
+          "switchId": 1,
+          "switchValid": false,
+          "turnA": 0,
+          "turnB": 0,
+          "turnEnding": false,
+          "turnValid": false
+        },
+        "list": [{ "code": 0, "indent": 0, "parameters": [] }],
+        "span": 0
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "members": [],
+    "name": "",
+    "pages": [
+      {
+        "conditions": {
+          "actorHp": 50,
+          "actorId": 1,
+          "actorValid": false,
+          "enemyHp": 50,
+          "enemyIndex": 0,
+          "enemyValid": false,
+          "switchId": 1,
+          "switchValid": false,
+          "turnA": 0,
+          "turnB": 0,
+          "turnEnding": false,
+          "turnValid": false
+        },
+        "list": [{ "code": 0, "indent": 0, "parameters": [] }],
+        "span": 0
+      }
+    ]
+  }
 ]
