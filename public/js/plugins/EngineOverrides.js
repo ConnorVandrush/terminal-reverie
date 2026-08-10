@@ -309,14 +309,21 @@ Sprite_Actor.prototype.setActorHome = function (index) {
   if (!actor) return;
 
   const positions = {
-    1: { x: 750, y: 200 },
-    2: { x: 750, y: 270 },
-    3: { x: 750, y: 340 },
-    4: { x: 750, y: 410 },
+    1: { x: 610, y: 205 },
+    2: { x: 610, y: 275 },
+    3: { x: 610, y: 345 },
+    4: { x: 610, y: 415 },
   };
 
   const pos = positions[actor.actorId()];
   if (pos) {
     this.setHome(pos.x, pos.y);
+  }
+};
+
+// Remove actor battler shadows
+Sprite_Actor.prototype.updateShadow = function () {
+  if (this._shadowSprite) {
+    this._shadowSprite.visible = false;
   }
 };

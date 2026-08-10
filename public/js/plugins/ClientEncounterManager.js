@@ -24,6 +24,10 @@ class ClientEncounterManager {
       type: "BottomPanelSlice/setBottomPanel",
       payload: "EncounterActionComponent",
     });
+    window.clientAPI.dispatchToReact({
+      type: "CenterPanelSlice/setCenterPanel",
+      payload: "EncounterWindowComponent",
+    });
   }
 }
 

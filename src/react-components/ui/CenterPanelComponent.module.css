@@ -12,5 +12,12 @@
   padding: 1dvw;
   z-index: 10;
   flex: 7;
-  opacity: 90%;
+}
+
+.transparent {
+  background-color: rgba(0, 0, 0, 0); /* fully transparent */
+}
+
+.translucent {
+  background-color: rgba(0, 0, 0, 0.9); /* semi-transparent */
 }

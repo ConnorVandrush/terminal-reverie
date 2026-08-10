@@ -6,6 +6,7 @@ var $plugins =
 {"name":"ClientEncounterManager","status":true,"description":"","parameters":{}},
 {"name":"ClientPlayerManager","status":true,"description":"","parameters":{}},
 {"name":"ClientSpriteManager","status":true,"description":"","parameters":{}},
+{"name":"EnemyPositioner","status":true,"description":"Adds unlimited extra enemies to troops using troop note tags.","parameters":{}},
 {"name":"EngineOverrides","status":true,"description":"","parameters":{}},
 {"name":"ClientMain","status":true,"description":"","parameters":{}}
 ];
