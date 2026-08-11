@@ -21,6 +21,8 @@
 }
 button {
   font-family: "Press Start 2P", monospace;
+  background-color: black;
+  color: white;
 }
 input {
   max-width: 100%;

@@ -58,5 +58,6 @@ export default class CharacterData {
     this.partyRoom = null;
     this.partyMemberIds = [];
     this.sentPartyInvitations = [];
+    this.canAct = true;
   }
 }

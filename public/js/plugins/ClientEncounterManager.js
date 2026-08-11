@@ -1,12 +1,12 @@
 class ClientEncounterManager {
-  serverStartEncounter(troopData, enemyData) {
-    for (const enemy of enemyData) {
+  serverStartEncounter(troopData, rmmzEnemyData, reactEnemyData) {
+    for (const enemy of rmmzEnemyData) {
       $dataEnemies[enemy.enemy.id] = enemy.enemy;
     }
     const serverTroop = {
       id: 0,
       name: troopData.name,
-      members: enemyData.map((data) => ({
+      members: rmmzEnemyData.map((data) => ({
         enemyId: data.enemy.id,
         x: data.member.x,
         y: data.member.y,
@@ -19,7 +19,16 @@ class ClientEncounterManager {
     $gameMap._battleback2Name = troopData.battleback2 || "";
     BattleManager.setup(0, false, false);
     SceneManager.push(Scene_Battle);
-
+    reactEnemyData.forEach((enemyData, enemyIndex) => {
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/setEnemyData",
+        payload: { enemyIndex, enemyData },
+      });
+    });
+    window.clientAPI.dispatchToReact({
+      type: "LeftPanelSlice/setLeftPanel",
+      payload: "EncounterEnemiesComponent",
+    });
     window.clientAPI.dispatchToReact({
       type: "BottomPanelSlice/setBottomPanel",
       payload: "EncounterActionComponent",
@@ -27,6 +36,10 @@ class ClientEncounterManager {
     window.clientAPI.dispatchToReact({
       type: "CenterPanelSlice/setCenterPanel",
       payload: "EncounterWindowComponent",
+    });
+    window.clientAPI.dispatchToReact({
+      type: "RightPanelSlice/setRightPanel",
+      payload: "EncounterCharactersComponent",
     });
   }
 }

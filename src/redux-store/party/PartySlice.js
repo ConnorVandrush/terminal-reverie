@@ -8,10 +8,7 @@ const PartySlice = createSlice({
     characterSpriteDesign: {},
     characterSpritePreview: null,
     partyLeaderCharacterId: null,
-    partyMember1: false,
-    partyMember2: false,
-    partyMember3: false,
-    partyMember4: false,
+    partyMembers: [null, null, null, null],
     partyInvites: {},
     errorMessage: "",
     successMessage: "",
@@ -70,17 +67,10 @@ const PartySlice = createSlice({
     setCharacterSpritePreview(state, action) {
       state.characterSpritePreview = action.payload;
     },
-    setMember1CharacterData(state, action) {
-      state.partyMember1 = action.payload;
-    },
-    setMember2CharacterData(state, action) {
-      state.partyMember2 = action.payload;
-    },
-    setMember3CharacterData(state, action) {
-      state.partyMember3 = action.payload;
-    },
-    setMember4CharacterData(state, action) {
-      state.partyMember4 = action.payload;
+    setPartyMemberCharacterData(state, action) {
+      const { memberIndex, characterData } = action.payload;
+
+      state.partyMembers[memberIndex] = characterData;
     },
     serverDeliverPartyInvite(state, action) {
       state.partyInvites[action.payload.senderId] = action.payload.senderName;
@@ -106,10 +96,7 @@ export const {
   setCharacterSpriteDesign,
   randomizeCharacterSpriteDesign,
   setCharacterSpritePreview,
-  setMember1CharacterData,
-  setMember2CharacterData,
-  setMember3CharacterData,
-  setMember4CharacterData,
+  setPartyMemberCharacterData,
   addPartyInvite,
   removePartyInvite,
   clientSendPartyInvite,

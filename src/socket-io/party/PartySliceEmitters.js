@@ -33,7 +33,6 @@ export default async function PartySliceEmitters(store, action) {
     }
 
     if (action.type === clientLeaveParty.type) {
-      console.log("emitting");
       await window.clientAPI.authNamespace.emit(
         "clientLeaveParty",
         action.payload,

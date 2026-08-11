@@ -2,12 +2,16 @@ import fs from "fs";
 import path from "path";
 const __dirname = import.meta.dirname;
 
+import Encounter from "./Encounter.js";
+import Goblin from "./enemies/Goblin.js";
+
 export default class ServerMapManager {
   constructor(serverAPI) {
     this.serverAPI = serverAPI;
     this.maps = new Map(); // mapName -> { mapData, tileset, eventData, charactersOnMap, encounters }
     this.troops = new Map();
     this.enemies = new Map();
+    this.activeEncounters = new Map(); // partyLeaderId -> encounter
   }
 
   loadTroops = () => {
@@ -320,20 +324,38 @@ export default class ServerMapManager {
 
   serverStartEncounter(troopId, characterData) {
     const troopData = this.troops.get(troopId);
-
     if (!troopData) return;
+    const serverEnemyData = [];
+    const rmmzEnemyData = troopData.members.map((member) => {
+      const enemyName = this.enemies.get(member.enemyId).name;
+      serverEnemyData.push(eval(`new ${enemyName}()`));
 
-    const enemyData = troopData.members.map((member) => ({
-      instanceId: crypto.randomUUID(),
-      member,
-      enemy: this.enemies.get(member.enemyId),
-    }));
-
+      return {
+        instanceId: crypto.randomUUID(),
+        member,
+        enemy: this.enemies.get(member.enemyId),
+      };
+    });
+    const reactEnemyData = Array.from({ length: 8 }, (_, index) => {
+      const enemy = serverEnemyData[index];
+      return enemy
+        ? {
+            name: enemy.name,
+            maxHp: enemy.maxHp,
+          }
+        : null;
+    });
+    const partyMembers = this.serverAPI.playerManager.getPartyMemberData(
+      characterData.partyMemberIds,
+    );
+    const newEncounter = new Encounter(partyMembers, serverEnemyData);
+    this.activeEncounters.set(characterData.characterId, newEncounter);
     this.serverAPI.serverManager.authNamespace
       .to(characterData.partyRoom)
       .emit("serverStartEncounter", {
         troopData,
-        enemyData,
+        rmmzEnemyData,
+        reactEnemyData,
       });
   }
 
@@ -409,7 +431,6 @@ export default class ServerMapManager {
           }
           const troopId = this.rollForEncounter(characterData);
           if (troopId) {
-            console.log(troopId);
             this.serverStartEncounter(troopId, characterData);
             return;
           } else {

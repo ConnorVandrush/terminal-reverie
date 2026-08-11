@@ -7,12 +7,8 @@ import { clientLeaveParty } from "@store/party/PartySlice";
 export default function PartyWindowComponent() {
   const dispatch = useDispatch();
 
-  const members = useSelector((state) => [
-    state.PartySlice.partyMember1,
-    state.PartySlice.partyMember2,
-    state.PartySlice.partyMember3,
-    state.PartySlice.partyMember4,
-  ]);
+  const members = useSelector((state) => state.PartySlice.partyMembers);
+
   const partySize = members.filter(Boolean).length;
 
   return (
@@ -29,13 +25,17 @@ export default function PartyWindowComponent() {
               <div className={styles.equipment}>
                 <div className={styles.leftColumn}>
                   <div>Weapon: {member.equipment.weapon}</div>
+
                   <div>Armor: {member.equipment.armor}</div>
+
                   <div>Accessory: {member.equipment.accessory}</div>
                 </div>
 
                 <div className={styles.rightColumn}>
                   <div>Item 1: {member.equipment.item1}</div>
+
                   <div>Item 2: {member.equipment.item2}</div>
+
                   <div>Item 3: {member.equipment.item3}</div>
                 </div>
               </div>

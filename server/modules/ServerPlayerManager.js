@@ -115,17 +115,11 @@ export default class ServerPlayerManager {
   }
 
   getPartyMemberData(partyMemberIds) {
-    let member1 = null;
-    let member2 = null;
-    let member3 = null;
-    let member4 = null;
+    return Array.from({ length: 4 }, (_, index) => {
+      const memberId = partyMemberIds[index];
 
-    member1 = this.charactersOnline.get(partyMemberIds[0] ?? null) ?? null;
-    member2 = this.charactersOnline.get(partyMemberIds[1] ?? null) ?? null;
-    member3 = this.charactersOnline.get(partyMemberIds[2] ?? null) ?? null;
-    member4 = this.charactersOnline.get(partyMemberIds[3] ?? null) ?? null;
-
-    return { member1, member2, member3, member4 };
+      return this.charactersOnline.get(memberId) ?? null;
+    });
   }
 
   checkOrthogonalAdjacency(characterId1, characterId2) {

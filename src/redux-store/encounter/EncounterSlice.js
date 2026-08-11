@@ -2,9 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const EncounterSlice = createSlice({
   name: "EncounterSlice",
-  initialState: {},
-  reducers: {},
+  initialState: {
+    enemies: [null, null, null, null, null, null, null, null],
+  },
+  reducers: {
+    setEnemyData(state, action) {
+      const { enemyIndex, enemyData } = action.payload;
+
+      state.enemies[enemyIndex] = enemyData;
+    },
+  },
 });
 
-export const {} = EncounterSlice.actions;
+export const { setEnemyData } = EncounterSlice.actions;
 export default EncounterSlice.reducer;

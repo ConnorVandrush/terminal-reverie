@@ -6,7 +6,7 @@ import {
 } from "@store/login/LoginSlice.js";
 
 import {
-  setMember1CharacterData,
+  setPartyMemberCharacterData,
   setPartyLeaderCharacterId,
 } from "@store/party/PartySlice.js";
 
@@ -22,7 +22,12 @@ export default async function LoginSliceEmitters(store, action) {
         store.dispatch(setErrorMessage(error));
       }
       if (success) {
-        store.dispatch(setMember1CharacterData(characterData));
+        store.dispatch(
+          setPartyMemberCharacterData({
+            memberIndex: 0,
+            characterData: characterData,
+          }),
+        );
         store.dispatch(setPartyLeaderCharacterId(characterData.characterId));
         localStorage.setItem("JWT", JWT);
         window.clientAPI.loginNamespace.disconnect();

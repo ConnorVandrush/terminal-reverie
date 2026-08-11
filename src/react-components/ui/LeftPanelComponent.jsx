@@ -4,6 +4,7 @@ import styles from "./LeftPanelComponent.module.css";
 import LoginComponent from "@components/login/LoginComponent";
 import CreateCharacterComponent from "@components/login/CreateCharacterComponent";
 import ControlsComponent from "@components/controls/ControlsComponent";
+import EncounterEnemiesComponent from "@components/encounter/EncounterEnemiesComponent";
 
 export default function LeftPanel() {
   const leftPanel = useSelector((state) => state.LeftPanelSlice.leftPanel);
@@ -15,6 +16,8 @@ export default function LeftPanel() {
         return <CreateCharacterComponent />;
       case "Controls":
         return <ControlsComponent />;
+      case "EncounterEnemiesComponent":
+        return <EncounterEnemiesComponent />;
     }
   };
 

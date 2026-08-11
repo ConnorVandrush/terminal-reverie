@@ -1,0 +1,20 @@
+.encounterActionComponentStyle {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.actionRow {
+  flex: 1; /* each row gets equal height */
+  display: flex;
+  flex-direction: row;
+}
+
+.actionRow button {
+  flex: 1; /* each button gets equal width */
+  display: flex; /* center text */
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* fill the row vertically */
+}
