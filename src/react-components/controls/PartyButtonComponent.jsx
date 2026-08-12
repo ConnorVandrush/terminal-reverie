@@ -10,7 +10,12 @@ export default function PartyButtonComponent() {
   );
 
   function togglePartyWindow() {
-    if (centerPanelState === "PartyWindowComponent") {
+    if (
+      window.clientAPI.uiState === "encounter" &&
+      centerPanelState === "PartyWindowComponent"
+    ) {
+      dispatch(setCenterPanel("EncounterWindowComponent"));
+    } else if (centerPanelState === "PartyWindowComponent") {
       dispatch(setCenterPanel(null));
     } else {
       dispatch(setCenterPanel("PartyWindowComponent"));

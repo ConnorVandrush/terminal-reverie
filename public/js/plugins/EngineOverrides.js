@@ -194,7 +194,7 @@ Game_Player.prototype.isDashing = function () {
 Game_Player.prototype.moveByInput = async function (reactDirection) {
   const playerManager = window.clientAPI.playerManager;
   const direction = reactDirection ?? Input.dir4;
-  const inParty = window.clientAPI.getReactState().PartySlice.partyMember2;
+  const inParty = window.clientAPI.getReactState().PartySlice.partyMembers[1];
 
   if (
     direction <= 0 ||
@@ -325,5 +325,61 @@ Sprite_Actor.prototype.setActorHome = function (index) {
 Sprite_Actor.prototype.updateShadow = function () {
   if (this._shadowSprite) {
     this._shadowSprite.visible = false;
+  }
+};
+
+// Selection arrow
+Sprite_Enemy.prototype.showSelectionArrow = function () {
+  if (!this._arrowSprite) {
+    this._arrowSprite = new Sprite(ImageManager.loadSystem("Arrow"));
+    this._arrowSprite.anchor.set(0.5, 1);
+    this.addChild(this._arrowSprite);
+  }
+
+  this._arrowSprite.x = 0;
+  this._arrowSprite.y = -75 + Math.sin(Graphics.frameCount / 10) * 4;
+  this._arrowSprite.visible = true;
+};
+Sprite_Enemy.prototype.hideSelectionArrow = function () {
+  if (this._arrowSprite) {
+    this._arrowSprite.visible = false;
+  }
+};
+Sprite_Actor.prototype.showSelectionArrow =
+  Sprite_Enemy.prototype.showSelectionArrow;
+Sprite_Actor.prototype.hideSelectionArrow =
+  Sprite_Enemy.prototype.hideSelectionArrow;
+const _Sprite_Enemy_update = Sprite_Enemy.prototype.update;
+Sprite_Enemy.prototype.update = function () {
+  _Sprite_Enemy_update.call(this);
+
+  const target = window.clientAPI.getReactState().EncounterSlice.target;
+
+  if (
+    target &&
+    target.side === "enemy" &&
+    this._enemy &&
+    this._enemy.index() === target.index
+  ) {
+    this.showSelectionArrow();
+  } else {
+    this.hideSelectionArrow();
+  }
+};
+const _Sprite_Actor_update = Sprite_Actor.prototype.update;
+Sprite_Actor.prototype.update = function () {
+  _Sprite_Actor_update.call(this);
+
+  const target = window.clientAPI.getReactState().EncounterSlice.target;
+
+  if (
+    target &&
+    target.side === "ally" &&
+    this._actor &&
+    this._actor.index() === target.index
+  ) {
+    this.showSelectionArrow();
+  } else {
+    this.hideSelectionArrow();
   }
 };

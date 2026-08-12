@@ -1,5 +1,6 @@
 class ClientEncounterManager {
   serverStartEncounter(troopData, rmmzEnemyData, reactEnemyData) {
+    window.clientAPI.uiState = "encounter";
     for (const enemy of rmmzEnemyData) {
       $dataEnemies[enemy.enemy.id] = enemy.enemy;
     }
@@ -26,20 +27,12 @@ class ClientEncounterManager {
       });
     });
     window.clientAPI.dispatchToReact({
-      type: "LeftPanelSlice/setLeftPanel",
-      payload: "EncounterEnemiesComponent",
-    });
-    window.clientAPI.dispatchToReact({
       type: "BottomPanelSlice/setBottomPanel",
       payload: "EncounterActionComponent",
     });
     window.clientAPI.dispatchToReact({
       type: "CenterPanelSlice/setCenterPanel",
       payload: "EncounterWindowComponent",
-    });
-    window.clientAPI.dispatchToReact({
-      type: "RightPanelSlice/setRightPanel",
-      payload: "EncounterCharactersComponent",
     });
   }
 }

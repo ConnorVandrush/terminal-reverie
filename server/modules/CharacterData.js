@@ -51,7 +51,10 @@ export default class CharacterData {
         palette: null,
       },
     };
-    this.availableActions = ["attack", "defend", "item", "run"];
+    this.attacks = ["Strike"];
+    this.defends = ["Flee"];
+    this.magics = ["Focus"];
+    this.items = ["Equip"];
     this.tradeOffer = null;
     this.canMove = true;
     this.canTransfer = true;

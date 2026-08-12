@@ -6,15 +6,20 @@
 }
 
 .actionRow {
-  flex: 1; /* each row gets equal height */
+  flex: 1;
   display: flex;
   flex-direction: row;
 }
 
-.actionRow button {
-  flex: 1; /* each button gets equal width */
-  display: flex; /* center text */
+.actionRow button,
+.emptyAction {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%; /* fill the row vertically */
+  height: 100%;
+}
+
+.selected {
+  border-color: red;
 }

@@ -10,7 +10,12 @@ export default function TradeButtonComponent() {
   const dispatch = useDispatch();
 
   function toggleTradeWindow() {
-    if (centerPanelState === "TradeWindowComponent") {
+    if (
+      window.clientAPI.uiState === "encounter" &&
+      centerPanelState === "PartyWindowComponent"
+    ) {
+      dispatch(setCenterPanel("EncounterWindowComponent"));
+    } else if (centerPanelState === "TradeWindowComponent") {
       dispatch(setCenterPanel(null));
     } else {
       dispatch(setCenterPanel("TradeWindowComponent"));
