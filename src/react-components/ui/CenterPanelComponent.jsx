@@ -13,32 +13,20 @@ export default function CenterPanel() {
 
   const isVisible = !!centerPanel;
 
-  const transparencyClass = (() => {
-    switch (centerPanel) {
-      case "EncounterWindowComponent":
-        return styles.transparent;
+  const transparencyClass =
+    {
+      EncounterWindowComponent: styles.transparent,
+      PartyWindowComponent: styles.translucent,
+      PartyInvitesWindowComponent: styles.translucent,
+    }[centerPanel] || "";
 
-      case "PartyWindowComponent":
-      case "PartyInvitesWindowComponent":
-        return styles.translucent;
-
-      default:
-        return ""; // default opaque background
-    }
-  })();
-
-  const renderCenterPanel = () => {
-    switch (centerPanel) {
-      case "SpritesheetDisplayComponent":
-        return <SpritesheetDisplayComponent />;
-      case "PartyWindowComponent":
-        return <PartyWindowComponent />;
-      case "PartyInvitesWindowComponent":
-        return <PartyInvitesWindowComponent />;
-      case "EncounterWindowComponent":
-        return <EncounterWindowComponent />;
-    }
-  };
+  const renderCenterPanel = () =>
+    ({
+      SpritesheetDisplayComponent: <SpritesheetDisplayComponent />,
+      PartyWindowComponent: <PartyWindowComponent />,
+      PartyInvitesWindowComponent: <PartyInvitesWindowComponent />,
+      EncounterWindowComponent: <EncounterWindowComponent />,
+    })[centerPanel] || null;
 
   return (
     <div

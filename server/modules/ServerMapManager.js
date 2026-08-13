@@ -11,7 +11,6 @@ export default class ServerMapManager {
     this.maps = new Map(); // mapName -> { mapData, tileset, eventData, charactersOnMap, encounters }
     this.troops = new Map();
     this.enemies = new Map();
-    this.activeEncounters = new Map(); // partyLeaderId -> encounter
   }
 
   loadTroops = () => {
@@ -328,10 +327,12 @@ export default class ServerMapManager {
     const serverEnemyData = [];
     const rmmzEnemyData = troopData.members.map((member) => {
       const enemyName = this.enemies.get(member.enemyId).name;
-      serverEnemyData.push(eval(`new ${enemyName}()`));
-
+      const instanceId = crypto.randomUUID();
+      const enemyInstance = eval(`new ${enemyName}()`);
+      enemyInstance.enemyId = instanceId;
+      serverEnemyData.push(enemyInstance);
       return {
-        instanceId: crypto.randomUUID(),
+        instanceId,
         member,
         enemy: this.enemies.get(member.enemyId),
       };
@@ -340,22 +341,29 @@ export default class ServerMapManager {
       const enemy = serverEnemyData[index];
       return enemy
         ? {
+            enemyId: enemy.enemyId,
             name: enemy.name,
             maxHp: enemy.maxHp,
           }
         : null;
     });
-    const partyMembers = this.serverAPI.playerManager.getPartyMemberData(
-      characterData.partyMemberIds,
-    );
+    const partyMembers = this.serverAPI.playerManager
+      .getPartyMemberData(characterData.partyMemberIds)
+      .filter((m) => m != null);
     const newEncounter = new Encounter(partyMembers, serverEnemyData);
-    this.activeEncounters.set(characterData.characterId, newEncounter);
+    this.serverAPI.encounterManager.activeEncounters.set(
+      characterData.characterId,
+      newEncounter,
+    );
+    newEncounter.determineTurnOrder();
+    const firstTurnOrder = newEncounter.turnOrder;
     this.serverAPI.serverManager.authNamespace
       .to(characterData.partyRoom)
       .emit("serverStartEncounter", {
         troopData,
         rmmzEnemyData,
         reactEnemyData,
+        firstTurnOrder,
       });
   }
 

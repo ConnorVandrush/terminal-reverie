@@ -1,0 +1,23 @@
+.encounterTurnOrderComponentStyle {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.encounterTurnOrderComponentStyle > div {
+  flex: 1;
+  display: flex;
+}
+
+.encounterTurnOrderComponentStyle button {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected {
+  border-color: red;
+}

@@ -14,10 +14,27 @@ export default function ConirmButtonComponent() {
   );
 
   function confirm() {
-    Input.virtualClick("ok");
+    const encounterActionMap = {
+      Strike: "Strike",
+      Flee: "Flee",
+      Focus: "Focus",
+      Equip: "Equip",
+    };
 
-    if (selectedEncounterAction === "attack") {
+    const payload = {
+      target: selectedEncounterTarget,
+      action: encounterActionMap[selectedEncounterAction],
+    };
+
+    if (payload) {
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/clientSubmitEncounterAction",
+        payload,
+      });
     }
+
+    Input.virtualClick("ok");
   }
+
   return <button className={styles.confirmationButton} onClick={confirm} />;
 }

@@ -7,13 +7,14 @@ const EncounterSlice = createSlice({
     target: null,
     selectedAction: null,
     selectedActionType: null,
+    turnOrder: [],
   },
   reducers: {
     setEnemyData(state, action) {
       const { enemyIndex, enemyData } = action.payload;
       state.enemies[enemyIndex] = enemyData;
     },
-    setTarget(state, action) {
+    setEncounterTarget(state, action) {
       state.target = action.payload;
     },
     setSelectedAction(state, action) {
@@ -22,13 +23,21 @@ const EncounterSlice = createSlice({
     setSelectedActionType(state, action) {
       state.selectedActionType = action.payload;
     },
+    clientSubmitEncounterAction(state, action) {
+      // emit handled in EncounterSliceEmitters.js
+    },
+    setTurnOrder(state, action) {
+      state.turnOrder = action.payload;
+    },
   },
 });
 
 export const {
   setEnemyData,
-  setTarget,
+  setEncounterTarget,
   setSelectedAction,
   setSelectedActionType,
+  clientSubmitEncounterAction,
+  setTurnOrder,
 } = EncounterSlice.actions;
 export default EncounterSlice.reducer;

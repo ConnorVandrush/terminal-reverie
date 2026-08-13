@@ -30,3 +30,4 @@ serverAPI.manageManagers(
 
 serverPlayerManager.startListeners();
 serverMapManager.startListeners();
+serverEncounterManager.startListeners();

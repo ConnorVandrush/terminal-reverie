@@ -10,16 +10,12 @@ export default function BottomPanel() {
     (state) => state.BottomPanelSlice.bottomPanel,
   );
   const isVisible = !!bottomPanel;
-  const renderBottomPanel = () => {
-    switch (bottomPanel) {
-      case "CreateCharacterButtonsComponent":
-        return <CreateCharacterButtonsComponent />;
-      case "ChatWindowComponent":
-        return <ChatWindowComponent />;
-      case "EncounterActionComponent":
-        return <EncounterActionComponent />;
-    }
-  };
+  const renderBottomPanel = () =>
+    ({
+      CreateCharacterButtonsComponent: <CreateCharacterButtonsComponent />,
+      ChatWindowComponent: <ChatWindowComponent />,
+      EncounterActionComponent: <EncounterActionComponent />,
+    })[bottomPanel] || null;
 
   return (
     <div

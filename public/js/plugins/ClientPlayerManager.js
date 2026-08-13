@@ -63,7 +63,7 @@ class ClientPlayerManager {
     });
     window.clientAPI.dispatchToReact({
       type: "LeftPanelSlice/setLeftPanel",
-      payload: "Controls",
+      payload: "ControlsComponent",
     });
     window.clientAPI.dispatchToReact({
       type: "CenterPanelSlice/setCenterPanel",

@@ -8,4 +8,6 @@ export default class Goblin extends Enemy {
     this.currentHp = 30;
     this.experienceReward = 20;
   }
+
+  pickEncounterAction() {}
 }

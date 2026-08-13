@@ -33,39 +33,35 @@ export default function EncounterActionComponent() {
     dispatch(setSelectedAction(action));
   }
 
-  // No action type selected:
-  // show Attack / Defend / Magic / Item
   if (selectedActionType === null) {
     return (
       <div className={styles.encounterActionComponentStyle}>
         <div className={styles.actionRow}>
-          <button onClick={() => handleSelectActionType("attack")}>
+          <button onClick={() => handleSelectActionType("Attack")}>
             Attack
           </button>
 
-          <button onClick={() => handleSelectActionType("defend")}>
+          <button onClick={() => handleSelectActionType("Defend")}>
             Defend
           </button>
         </div>
 
         <div className={styles.actionRow}>
-          <button onClick={() => handleSelectActionType("magic")}>Magic</button>
+          <button onClick={() => handleSelectActionType("Magic")}>Magic</button>
 
-          <button onClick={() => handleSelectActionType("item")}>Item</button>
+          <button onClick={() => handleSelectActionType("Item")}>Item</button>
         </div>
       </div>
     );
   }
 
-  // Get the appropriate commands for the selected action type
   const actions = {
-    attack: characterData.attacks,
-    defend: characterData.defends,
-    magic: characterData.magics,
-    item: characterData.items,
+    Attack: characterData.attacks,
+    Defend: characterData.defends,
+    Magic: characterData.magics,
+    Item: characterData.items,
   }[selectedActionType];
 
-  // Safety check for an invalid action type
   if (!actions) {
     return null;
   }
