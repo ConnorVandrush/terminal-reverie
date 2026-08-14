@@ -329,7 +329,7 @@ export default class ServerMapManager {
       const enemyName = this.enemies.get(member.enemyId).name;
       const instanceId = crypto.randomUUID();
       const enemyInstance = eval(`new ${enemyName}()`);
-      enemyInstance.enemyId = instanceId;
+      enemyInstance.enemyInstanceId = instanceId;
       serverEnemyData.push(enemyInstance);
       return {
         instanceId,
@@ -341,7 +341,7 @@ export default class ServerMapManager {
       const enemy = serverEnemyData[index];
       return enemy
         ? {
-            enemyId: enemy.enemyId,
+            enemyInstanceId: enemy.enemyInstanceId,
             name: enemy.name,
             maxHp: enemy.maxHp,
           }

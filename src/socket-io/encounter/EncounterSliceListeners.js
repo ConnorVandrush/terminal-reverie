@@ -10,4 +10,8 @@ export default function EncounterSliceListeners(store, action) {
       );
     }
   });
+  window.clientAPI.authNamespace.on("serverEncounterRoundResults", (data) => {
+    const { roundResults, turnOrder } = data;
+    window.clientAPI.encounterManager.serverEncounterRoundResults(roundResults);
+  });
 }

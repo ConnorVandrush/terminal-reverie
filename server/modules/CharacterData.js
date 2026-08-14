@@ -14,12 +14,12 @@ export default class CharacterData {
     this.currentHp = 100;
     this.inventory = {}; //{ "itemId": { "qty":, "itemInfo": } }
     this.equipment = {
-      weapon: "None",
-      armor: "None",
-      accessory: "None",
-      item1: "None",
-      item2: "None",
-      item3: "None",
+      weapon: "37",
+      armor: "38",
+      accessory: "39",
+      item1: "40",
+      item2: "40",
+      item3: "40",
     };
     this.appearance = {
       skin: {
@@ -62,5 +62,21 @@ export default class CharacterData {
     this.partyMemberIds = [];
     this.sentPartyInvitations = [];
     this.canAct = true;
+  }
+
+  Strike(target) {
+    if (target.isDead) {
+      return {
+        action: "Strike",
+        message: `${this.name} missed ${target.name}.`,
+      };
+    }
+    const damage = this.equipment.weapon.baseDamage;
+    target.currentHp -= damage;
+    return {
+      action: "Strike",
+      damage: damage,
+      message: `${target.name} took ${damage} damage.`,
+    };
   }
 }

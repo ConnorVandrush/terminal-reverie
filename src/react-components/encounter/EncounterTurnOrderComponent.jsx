@@ -43,7 +43,7 @@ export default function EncounterTurnOrderComponent() {
     combatants.push({
       side: "enemy",
       index,
-      id: enemy.enemyId,
+      id: enemy.enemyInstanceId,
       name: enemy.name,
     });
   });

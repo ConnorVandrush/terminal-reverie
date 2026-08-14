@@ -2,7 +2,7 @@ export default class Encounter {
   constructor(characters, enemies) {
     this.characters = characters;
     this.enemies = enemies;
-    this.combatantActions = new Map();
+    this.combatantActions = new Map(); // combatantId -> { targetId, action }
     this.turnOrder = [];
     this.roundResults = [];
   }
@@ -18,10 +18,10 @@ export default class Encounter {
   determineTurnOrder() {
     const ids = [
       ...this.characters.map((c) => c.characterId),
-      ...this.enemies.map((e) => e.enemyId),
+      ...this.enemies.map((e) => e.enemyInstanceId),
     ];
 
-    this.turnOrder = this.shuffle(ids);
+    this.turnOrder = this.shuffle([...ids]);
   }
 
   getCombatant(id) {
@@ -31,7 +31,7 @@ export default class Encounter {
     if (character) {
       return character;
     }
-    const enemy = this.enemies.find((enemy) => enemy.enemyId === id);
+    const enemy = this.enemies.find((enemy) => enemy.enemyInstanceId === id);
     if (enemy) {
       return enemy;
     }
@@ -39,17 +39,44 @@ export default class Encounter {
   }
 
   getEnemyActions() {
-    this.enemies.forEach((enemy) =>
-      this.combatantActions.set(enemy.enemyId, enemy.pickEncounterAction()),
-    );
+    this.enemies.forEach((enemy) => {
+      if (enemy.canAct) {
+        this.combatantActions.set(
+          enemy.enemyInstanceId,
+          enemy.pickEncounterAction(this.enemies, this.characters),
+        );
+      }
+    });
   }
 
-  processAction() {}
+  processAction(combatantId) {
+    const combatant = this.getCombatant(combatantId);
+    if (combatant.canAct) {
+      const action = this.combatantActions.get(combatantId);
+      const target = this.getCombatant(action.targetId);
+      this.roundResults.push(combatant[action.action](target));
+    }
+  }
+
+  updateCombatantsStatus() {
+    const combatants = [...this.characters, ...this.enemies];
+    combatants.forEach((combatant) => {
+      if (combatant.currentHp <= 0) {
+        combatant.isDead = true;
+        combatant.canAct = false;
+        combatant.currentHp = 0;
+      }
+    });
+  }
 
   processRound() {
+    this.roundResults = [];
     this.getEnemyActions();
-    this.turnOrder.forEach((combatant) => {
-      this.processAction();
+    this.turnOrder.forEach((combatantId) => {
+      this.processAction(combatantId);
+      this.updateCombatantsStatus();
     });
+    this.determineTurnOrder();
+    return this.roundResults;
   }
 }

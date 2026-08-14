@@ -24,19 +24,19 @@ export default function PartyWindowComponent() {
 
               <div className={styles.equipment}>
                 <div className={styles.leftColumn}>
-                  <div>Weapon: {member.equipment.weapon}</div>
+                  <div>Weapon: {member.equipment.weapon.name}</div>
 
-                  <div>Armor: {member.equipment.armor}</div>
+                  <div>Armor: {member.equipment.armor.name}</div>
 
-                  <div>Accessory: {member.equipment.accessory}</div>
+                  <div>Accessory: {member.equipment.accessory.name}</div>
                 </div>
 
                 <div className={styles.rightColumn}>
-                  <div>Item 1: {member.equipment.item1}</div>
+                  <div>Item 1: {member.equipment.item1.name}</div>
 
-                  <div>Item 2: {member.equipment.item2}</div>
+                  <div>Item 2: {member.equipment.item2.name}</div>
 
-                  <div>Item 3: {member.equipment.item3}</div>
+                  <div>Item 3: {member.equipment.item3.name}</div>
                 </div>
               </div>
             </>

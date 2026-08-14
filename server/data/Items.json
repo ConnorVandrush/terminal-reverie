@@ -1,186 +1,221 @@
 {
+  "tags": [
+    "itemTag",
+    "weaponTag",
+    "daggerTag",
+    "longswordTag",
+    "katanaTag",
+    "greatswordTag",
+    "handaxeTag",
+    "battleaxeTag",
+    "greataxeTag",
+    "scytheTag",
+    "armorTag",
+    "accessoryTag"
+  ],
   "1": {
     "name": "Herb",
     "effects": { "restoreHP": 25 },
     "description": "Restores 25% of max HP",
-    "tags": "itemTag"
+    "tags": ["itemTag"]
   },
   "2": {
     "name": "Ointment",
     "effects": { "restoreHP": 50 },
     "description": "Restores 50% of max HP",
-    "tags": "itemTag"
+    "tags": ["itemTag"]
   },
   "3": {
     "name": "Potion",
     "effects": { "restoreHP": 75 },
     "description": "Restores 75% of max HP",
-    "tags": "itemTag"
+    "tags": ["itemTag"]
   },
   "4": {
     "name": "Shot",
     "effects": { "restoreHP": 100 },
     "description": "Restores 100% of max HP",
-    "tags": "itemTag"
+    "tags": ["itemTag"]
   },
   "5": {
     "name": "Iron Dagger",
     "rank": 1,
-    "tags": "weaponTag daggerTag"
+    "tags": ["weaponTag", "daggerTag"]
   },
   "6": {
     "name": "Steel Dagger",
     "rank": 2,
-    "tags": "weaponTag daggerTag"
+    "tags": ["weaponTag", "daggerTag"]
   },
   "7": {
     "name": "Mithril Dagger",
     "rank": 3,
-    "tags": "weaponTag daggerTag"
+    "tags": ["weaponTag", "daggerTag"]
   },
   "8": {
     "name": "Adamantium Dagger",
     "rank": 4,
-    "tags": "weaponTag daggerTag"
+    "tags": ["weaponTag", "daggerTag"]
   },
   "9": {
     "name": "Iron Longsword",
     "rank": 1,
-    "tags": "weaponTag longswordTag"
+    "tags": ["weaponTag", "longswordTag"]
   },
   "10": {
     "name": "Steel Longsword",
     "rank": 2,
-    "tags": "weaponTag longswordTag"
+    "tags": ["weaponTag", "longswordTag"]
   },
   "11": {
     "name": "Mithril Longsword",
     "rank": 3,
-    "tags": "weaponTag longswordTag"
+    "tags": ["weaponTag", "longswordTag"]
   },
   "12": {
     "name": "Adamantium Longsword",
     "rank": 4,
-    "tags": "weaponTag longwordTag"
+    "tags": ["weaponTag", "longswordTag"]
   },
   "13": {
     "name": "Iron Katana",
     "rank": 1,
-    "tags": "weaponTag katanaTag"
+    "tags": ["weaponTag", "katanaTag"]
   },
   "14": {
     "name": "Steel Katana",
     "rank": 2,
-    "tags": "weaponTag katanaTag"
+    "tags": ["weaponTag", "katanaTag"]
   },
   "15": {
     "name": "Mithril Katana",
     "rank": 3,
-    "tags": "weaponTag katanaTag"
+    "tags": ["weaponTag", "katanaTag"]
   },
   "16": {
     "name": "Adamantium Katana",
     "rank": 4,
-    "tags": "weaponTag katanaTag"
+    "tags": ["weaponTag", "katanaTag"]
   },
   "17": {
     "name": "Iron Great Sword",
     "rank": 1,
-    "tags": "weaponTag greatswordTag"
+    "tags": ["weaponTag", "greatswordTag"]
   },
   "18": {
     "name": "Steel Great Sword",
     "rank": 2,
-    "tags": "weaponTag greatswordTag"
+    "tags": ["weaponTag", "greatswordTag"]
   },
   "19": {
     "name": "Mithril Great Sword",
     "rank": 3,
-    "tags": "weaponTag greatswordTag"
+    "tags": ["weaponTag", "greatswordTag"]
   },
   "20": {
     "name": "Adamantium Great Sword",
     "rank": 4,
-    "tags": "weaponTag greatswordTag"
+    "tags": ["weaponTag", "greatswordTag"]
   },
   "21": {
     "name": "Iron Hand Axe",
     "rank": 1,
-    "tags": "weaponTag handaxeTag"
+    "tags": ["weaponTag", "handaxeTag"]
   },
   "22": {
     "name": "Steel Hand Axe",
     "rank": 2,
-    "tags": "weaponTag handaxeTag"
+    "tags": ["weaponTag", "handaxeTag"]
   },
   "23": {
     "name": "Mithril Hand Axe",
     "rank": 3,
-    "tags": "weaponTag handaxeTag"
+    "tags": ["weaponTag", "handaxeTag"]
   },
   "24": {
     "name": "Adamantium Hand Axe",
     "rank": 4,
-    "tags": "weaponTag handaxeTag"
+    "tags": ["weaponTag", "handaxeTag"]
   },
   "25": {
     "name": "Iron Battle Axe",
     "rank": 1,
-    "tags": "weaponTag battleaxeTag"
+    "tags": ["weaponTag", "battleaxeTag"]
   },
   "26": {
     "name": "Steel Battle Axe",
     "rank": 2,
-    "tags": "weaponTag battleaxeTag"
+    "tags": ["weaponTag", "battleaxeTag"]
   },
   "27": {
     "name": "Mithril Battle Axe",
     "rank": 3,
-    "tags": "weaponTag battleaxeTag"
+    "tags": ["weaponTag", "battleaxeTag"]
   },
   "28": {
     "name": "Adamantium Battle Axe",
     "rank": 4,
-    "tags": "weaponTag battleaxeTag"
+    "tags": ["weaponTag", "battleaxeTag"]
   },
   "29": {
     "name": "Iron Great Axe",
     "rank": 1,
-    "tags": "weaponTag greataxeTag"
+    "tags": ["weaponTag", "greataxeTag"]
   },
   "30": {
     "name": "Steel Great Axe",
     "rank": 2,
-    "tags": "weaponTag greataxeTag"
+    "tags": ["weaponTag", "greataxeTag"]
   },
   "31": {
     "name": "Mithril Great Axe",
     "rank": 3,
-    "tags": "weaponTag greataxeTag"
+    "tags": ["weaponTag", "greataxeTag"]
   },
   "32": {
     "name": "Adamantium Great Axe",
     "rank": 4,
-    "tags": "weaponTag greataxeTag"
+    "tags": ["weaponTag", "greataxeTag"]
   },
   "33": {
     "name": "Iron Scythe",
     "rank": 1,
-    "tags": "weaponTag scytheTag"
+    "tags": ["weaponTag", "scytheTag"]
   },
   "34": {
     "name": "Steel Scythe",
     "rank": 2,
-    "tags": "weaponTag scytheTag"
+    "tags": ["weaponTag", "scytheTag"]
   },
   "35": {
     "name": "Mithril Scythe",
     "rank": 3,
-    "tags": "weaponTag scytheTag"
+    "tags": ["weaponTag", "scytheTag"]
   },
   "36": {
     "name": "Adamantium Scythe",
     "rank": 4,
-    "tags": "weaponTag scytheTag"
+    "tags": ["weaponTag", "scytheTag"]
+  },
+  "37": {
+    "name": "None",
+    "rank": 0,
+    "tags": ["weaponTag"],
+    "baseDamage": 20
+  },
+  "38": {
+    "name": "None",
+    "rank": 0,
+    "tags": ["armorTag"]
+  },
+  "39": {
+    "name": "None",
+    "rank": 0,
+    "tags": ["accessoryTag"]
+  },
+  "40": {
+    "name": "None",
+    "rank": 0,
+    "tags": ["itemTag"]
   }
 }

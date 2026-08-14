@@ -14,8 +14,17 @@ export default class EncounterManager {
           characterData.partyMemberIds[0],
         );
         encounter.combatantActions.set(socket.characterId, payload);
-        if (encounter.characters.length === encounter.characterActions.length) {
-          encounter.processRound();
+        if (
+          encounter.characters.filter((c) => c.canAct).length ===
+          encounter.combatantActions.size
+        ) {
+          const roundResults = encounter.processRound();
+          this.serverAPI.serverManager.authNamespace
+            .to(characterData.partyRoom)
+            .emit("serverEncounterRoundResults", {
+              roundResults: roundResults,
+              turnOrder: encounter.turnOrder,
+            });
         }
       });
     });

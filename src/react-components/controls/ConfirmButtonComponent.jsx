@@ -12,6 +12,7 @@ export default function ConirmButtonComponent() {
   const selectedEncounterTarget = useSelector(
     (state) => state.EncounterSlice.target,
   );
+  const enemies = useSelector((state) => state.EncounterSlice.enemies);
 
   function confirm() {
     const encounterActionMap = {
@@ -22,7 +23,7 @@ export default function ConirmButtonComponent() {
     };
 
     const payload = {
-      target: selectedEncounterTarget,
+      targetId: enemies[selectedEncounterTarget.index].enemyInstanceId,
       action: encounterActionMap[selectedEncounterAction],
     };
 

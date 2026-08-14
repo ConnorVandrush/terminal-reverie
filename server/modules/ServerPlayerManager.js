@@ -91,6 +91,12 @@ export default class ServerPlayerManager {
       user.characterData.gold = 100;
       user.characterData.isDead = false;
       user.newCharacter = false;
+      for (const [slot, equipmentId] of Object.entries(
+        user.characterData.equipment,
+      )) {
+        user.characterData.equipment[slot] =
+          this.serverAPI.inventoryManager.getEquipmentData(Number(equipmentId));
+      }
       user.markModified("characterData");
       await user.save();
     } catch (error) {

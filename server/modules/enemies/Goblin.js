@@ -7,7 +7,12 @@ export default class Goblin extends Enemy {
     this.maxHp = 30;
     this.currentHp = 30;
     this.experienceReward = 20;
+    this.baseDamage = 20;
   }
 
-  pickEncounterAction() {}
+  pickEncounterAction(enemies, characters) {
+    const aliveCharacters = characters.filter((c) => !c.isDead);
+    const target = this.randomElement(aliveCharacters);
+    return { targetId: target.characterId, action: "Strike" };
+  }
 }

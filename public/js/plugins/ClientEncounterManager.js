@@ -48,6 +48,19 @@ class ClientEncounterManager {
       payload: "EncounterTurnOrderComponent",
     });
   }
+
+  processResult(result) {}
+
+  serverEncounterRoundResults(roundResults) {
+    console.log(roundResults);
+    window.clientAPI.dispatchToReact({
+      type: "BottomPanelSlice/setBottomPanel",
+      payload: "EncounterReadOutComponent",
+    });
+    roundResults.forEach((result) => {
+      this.processResult(result);
+    });
+  }
 }
 
 window.clientAPI.encounterManager = new ClientEncounterManager();
