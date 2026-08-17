@@ -1,6 +1,6 @@
 [
 null,
-{"id":1,"battlerName":"battler","characterIndex":0,"characterName":"$grasslandswarriormalehair1style1","classId":1,"equips":[2,0,0,3,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Reid","nickname":"","note":"","profile":""},
+{"id":1,"battlerName":"","characterIndex":0,"characterName":"$grasslandswarriormalehair1style1","classId":1,"equips":[2,0,0,3,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Reid","nickname":"","note":"","profile":""},
 {"id":2,"battlerName":"battler","characterIndex":1,"characterName":"","classId":1,"equips":[1,0,0,9,0],"faceIndex":1,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Priscilla","nickname":"","note":"","profile":""},
 {"id":3,"battlerName":"battler","characterIndex":2,"characterName":"","classId":5,"equips":[31,0,65,5,0],"faceIndex":2,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Gale","nickname":"","note":"","profile":""},
 {"id":4,"battlerName":"battler","characterIndex":3,"characterName":"","classId":5,"equips":[31,0,0,5,0],"faceIndex":3,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Michelle","nickname":"","note":"","profile":""},

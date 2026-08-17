@@ -1,11 +1,49 @@
 class ClientEncounterManager {
-  serverStartEncounter(
+  wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async serverStartEncounter(
     troopData,
     rmmzEnemyData,
     reactEnemyData,
     firstTurnOrder,
   ) {
     window.clientAPI.uiState = "encounter";
+
+    $gameParty._actors.slice().forEach((actorId) => {
+      $gameParty.removeActor(actorId);
+    });
+
+    const partyMembers = window.clientAPI
+      .getReactState()
+      .PartySlice.partyMembers.filter((c) => c != null);
+
+    await Promise.all(
+      partyMembers.map(async (member, index) => {
+        const actorId = index + 1;
+        const actor = $gameActors.actor(actorId);
+
+        // Generate the 576x384 9x6 battler spritesheet.
+        const sprite =
+          await window.clientAPI.spriteManager.generateBase64pngSpritesheet(
+            member.appearance,
+            "Battler",
+          );
+
+        if (sprite && actor) {
+          // Turn the data URL into an RPG Maker Bitmap.
+          const bitmap = ImageManager.loadBitmapFromUrl(sprite);
+
+          // Store it on the actor.
+          actor._customBattlerBitmap = bitmap;
+        }
+
+        actor.setHp(member.currentHp);
+
+        $gameParty.addActor(actorId);
+      }),
+    );
     for (const enemy of rmmzEnemyData) {
       $dataEnemies[enemy.enemy.id] = enemy.enemy;
     }
@@ -49,16 +87,21 @@ class ClientEncounterManager {
     });
   }
 
-  processResult(result) {}
-
-  serverEncounterRoundResults(roundResults) {
-    console.log(roundResults);
+  async serverEncounterRoundResults(roundResults) {
     window.clientAPI.dispatchToReact({
       type: "BottomPanelSlice/setBottomPanel",
       payload: "EncounterReadOutComponent",
     });
+    await this.wait(500);
     roundResults.forEach((result) => {
-      this.processResult(result);
+      this[result.action](result);
+    });
+  }
+
+  Strike(result) {
+    window.clientAPI.dispatchToReact({
+      type: "encounterSlice/addReadOutMessage",
+      payload: result.message,
     });
   }
 }

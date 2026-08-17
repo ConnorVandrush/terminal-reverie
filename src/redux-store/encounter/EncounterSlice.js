@@ -8,7 +8,7 @@ const EncounterSlice = createSlice({
     selectedAction: null,
     selectedActionType: null,
     turnOrder: [],
-    readOutMessages: null,
+    readOutMessages: [],
   },
   reducers: {
     setEnemyData(state, action) {
@@ -31,7 +31,7 @@ const EncounterSlice = createSlice({
       state.turnOrder = action.payload;
     },
     addReadOutMessage(state, action) {
-      state.readOutMessages = action.payload;
+      state.readOutMessages.push(action.payload);
     },
   },
 });

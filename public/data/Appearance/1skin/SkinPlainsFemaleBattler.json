@@ -1,0 +1,54 @@
+{
+  "palettes": {
+    "fairSkin": {
+      "color1": { "r": 0, "g": 0, "b": 0 },
+      "color2": { "r": 255, "g": 203, "b": 186 },
+      "color3": null,
+      "color4": null,
+      "color5": null,
+      "color6": null,
+      "color7": null,
+      "color8": null
+    },
+    "richSkin": {
+      "color1": { "r": 0, "g": 0, "b": 0 },
+      "color2": { "r": 121, "g": 65, "b": 0 },
+      "color3": null,
+      "color4": null,
+      "color5": null,
+      "color6": null,
+      "color7": null,
+      "color8": null
+    },
+    "rosySkin": {
+      "color1": { "r": 0, "g": 0, "b": 0 },
+      "color2": { "r": 255, "g": 186, "b": 235 },
+      "color3": null,
+      "color4": null,
+      "color5": null,
+      "color6": null,
+      "color7": null,
+      "color8": null
+    },
+    "tanSkin": {
+      "color1": { "r": 0, "g": 0, "b": 0 },
+      "color2": { "r": 255, "g": 121, "b": 48 },
+      "color3": null,
+      "color4": null,
+      "color5": null,
+      "color6": null,
+      "color7": null,
+      "color8": null
+    }
+  },
+  "pixelRanges": {
+    "color1": null,
+    "color2": null,
+    "color3": null,
+    "color4": null,
+    "color5": null,
+    "color6": null,
+    "color7": null,
+    "color8": null
+  }
+}

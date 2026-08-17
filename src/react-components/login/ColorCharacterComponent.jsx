@@ -20,6 +20,7 @@ export default function ColorCharacterComponent() {
 
       const sprite = await window.clientAPI.spriteManager.designCharacterSprite(
         "/img/characters/$characterSpritesheet.png",
+        "Overworld",
       );
 
       dispatch(setCharacterSpritePreview(sprite));

@@ -1,10 +1,20 @@
+import CharacterData from "./CharacterData.js";
+
 export default class Encounter {
   constructor(characters, enemies) {
-    this.characters = characters;
+    this.characters = this.characters = characters.map((c) =>
+      this.hydrateCharacter(c),
+    );
     this.enemies = enemies;
     this.combatantActions = new Map(); // combatantId -> { targetId, action }
     this.turnOrder = [];
     this.roundResults = [];
+  }
+
+  hydrateCharacter(raw) {
+    const c = new CharacterData();
+    Object.assign(c, raw);
+    return c;
   }
 
   shuffle(array) {

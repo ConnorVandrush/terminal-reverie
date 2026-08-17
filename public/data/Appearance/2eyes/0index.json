@@ -1,1 +1,6 @@
-["EyesPlainsMale", "EyesPlainsFemale"]
+[
+  "EyesPlainsMaleOverworld",
+  "EyesPlainsMaleBattler",
+  "EyesPlainsFemaleOverworld",
+  "EyesPlainsFemaleBattler"
+]

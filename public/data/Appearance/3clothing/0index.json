@@ -1,1 +1,6 @@
-["Clothing1PlainsMale", "Clothing1PlainsFemale"]
+[
+  "Clothing1PlainsMaleOverworld",
+  "Clothing1PlainsMaleBattler",
+  "Clothing1PlainsFemaleOverworld",
+  "Clothing1PlainsFemaleBattler"
+]

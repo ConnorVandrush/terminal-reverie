@@ -45,6 +45,7 @@ class ClientPlayerManager {
     const spritesheet =
       await window.clientAPI.spriteManager.generateBase64pngSpritesheet(
         characterData.appearance,
+        "Overworld",
       );
 
     const bitmap = ImageManager.loadBitmapFromUrl(spritesheet);
@@ -163,6 +164,7 @@ class ClientPlayerManager {
       const dataUrl =
         await window.clientAPI.spriteManager.generateBase64pngSpritesheet(
           characterData.appearance,
+          "Overworld",
         );
       const bitmap = ImageManager.loadBitmapFromUrl(dataUrl);
       sprite._character._customBitmap = bitmap;

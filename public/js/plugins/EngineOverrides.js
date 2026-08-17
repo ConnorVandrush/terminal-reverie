@@ -140,7 +140,6 @@ Sprite_Character.prototype.updateFrame = function () {
   }
   _Sprite_Character_updateFrame.call(this);
 };
-
 // Override ImageManager.loadCharacter to prevent loading character sprites from disk
 const _loadCharacter = ImageManager.loadCharacter;
 ImageManager.loadCharacter = function (filename) {
@@ -152,8 +151,6 @@ ImageManager.loadCharacter = function (filename) {
   }
   return _loadCharacter.call(this, filename);
 };
-//SceneManager._scene._spriteset._characterSprites
-
 const _ImageManager_loadBitmapFromUrl = ImageManager.loadBitmapFromUrl;
 ImageManager.loadBitmapFromUrl = function (url) {
   // Detect real URLs or data URLs
@@ -166,7 +163,6 @@ ImageManager.loadBitmapFromUrl = function (url) {
     // Fall back to the original behavior
     return _ImageManager_loadBitmapFromUrl.call(this, url);
   }
-
   // --- Your custom URL loader ---
   const bitmap = new Bitmap();
   const image = new Image();
@@ -381,5 +377,28 @@ Sprite_Actor.prototype.update = function () {
     this.showSelectionArrow();
   } else {
     this.hideSelectionArrow();
+  }
+};
+
+// Battler Sprite
+const _Sprite_Actor_setBattler = Sprite_Actor.prototype.setBattler;
+Sprite_Actor.prototype.setBattler = function (battler) {
+  _Sprite_Actor_setBattler.call(this, battler);
+  this.applyCustomBattlerBitmap();
+};
+const _Sprite_Actor_updateBitmap = Sprite_Actor.prototype.updateBitmap;
+Sprite_Actor.prototype.updateBitmap = function () {
+  _Sprite_Actor_updateBitmap.call(this);
+  this.applyCustomBattlerBitmap();
+};
+Sprite_Actor.prototype.applyCustomBattlerBitmap = function () {
+  const actor = this._actor;
+
+  if (!actor || !actor._customBattlerBitmap) {
+    return;
+  }
+
+  if (this._mainSprite.bitmap !== actor._customBattlerBitmap) {
+    this._mainSprite.bitmap = actor._customBattlerBitmap;
   }
 };

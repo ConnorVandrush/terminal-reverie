@@ -110,9 +110,16 @@ class ClientSpriteManager {
     return imageData;
   }
 
-  async generateBase64pngSpritesheet(appearance) {
-    const width = 144;
-    const height = 192;
+  async generateBase64pngSpritesheet(appearance, mode) {
+    let width;
+    let height;
+    if (mode === "Overworld") {
+      width = 144;
+      height = 192;
+    } else if (mode === "Battler") {
+      width = 576;
+      height = 384;
+    }
 
     const canvas = document.createElement("canvas");
 
@@ -126,28 +133,30 @@ class ClientSpriteManager {
 
     let imageData = ctx.createImageData(width, height);
 
+    const suffix = mode; // "Overworld" or "Battler"
+
     const layers = [
       {
         name: "skin",
-        data: this.appearanceData.get(appearance.skin.type),
+        data: this.appearanceData.get(`${appearance.skin.type}${suffix}`),
         palette: appearance.skin.palette,
       },
 
       {
         name: "eyes",
-        data: this.appearanceData.get(appearance.eyes.type),
+        data: this.appearanceData.get(`${appearance.eyes.type}${suffix}`),
         palette: appearance.eyes.palette,
       },
 
       {
         name: "clothing",
-        data: this.appearanceData.get(appearance.clothing.type),
+        data: this.appearanceData.get(`${appearance.clothing.type}${suffix}`),
         palette: appearance.clothing.palette,
       },
 
       {
         name: "hair",
-        data: this.appearanceData.get(appearance.hair.style),
+        data: this.appearanceData.get(`${appearance.hair.style}${suffix}`),
         palette: appearance.hair.palette,
       },
     ];
@@ -165,7 +174,7 @@ class ClientSpriteManager {
     return canvas.toDataURL("image/png");
   }
 
-  async designCharacterSprite(imgSrc) {
+  async designCharacterSprite(imgSrc, mode) {
     const design =
       window.clientAPI.getReactState().PartySlice.characterSpriteDesign;
 
@@ -216,7 +225,7 @@ class ClientSpriteManager {
       type: "PartySlice/setCreateCharacterAppearance",
       payload: appearance,
     });
-    return this.generateBase64pngSpritesheet(appearance);
+    return this.generateBase64pngSpritesheet(appearance, mode);
   }
 }
 
