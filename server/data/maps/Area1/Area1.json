@@ -18840,7 +18840,7 @@
       "troops": [
         {
           "troopId": 1,
-          "percentMilleChance": 0,
+          "percentMilleChance": 100000,
           "description": "Goblin*1"
         },
         {
@@ -18850,7 +18850,7 @@
         },
         {
           "troopId": 3,
-          "percentMilleChance": 100000,
+          "percentMilleChance": 0,
           "description": "Goblin*8"
         }
       ]

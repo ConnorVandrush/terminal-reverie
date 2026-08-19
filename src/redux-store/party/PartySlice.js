@@ -87,6 +87,13 @@ const PartySlice = createSlice({
     clientLeaveParty(state, action) {
       //emit handled in PartySliceEitters
     },
+    setPlayerHp(state, action) {
+      const { playerIndex, currentHp } = action.payload;
+
+      if (state.partyMembers[playerIndex]) {
+        state.partyMembers[playerIndex].currentHp = currentHp;
+      }
+    },
   },
 });
 
@@ -106,5 +113,6 @@ export const {
   serverDeliverPartyInvite,
   clientAcceptPartyInvite,
   clientLeaveParty,
+  setPlayerHp,
 } = PartySlice.actions;
 export default PartySlice.reducer;

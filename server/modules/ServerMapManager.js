@@ -327,12 +327,12 @@ export default class ServerMapManager {
     const serverEnemyData = [];
     const rmmzEnemyData = troopData.members.map((member) => {
       const enemyName = this.enemies.get(member.enemyId).name;
-      const instanceId = crypto.randomUUID();
+      const enemyInstanceId = crypto.randomUUID();
       const enemyInstance = eval(`new ${enemyName}()`);
-      enemyInstance.enemyInstanceId = instanceId;
+      enemyInstance.enemyInstanceId = enemyInstanceId;
       serverEnemyData.push(enemyInstance);
       return {
-        instanceId,
+        enemyInstanceId,
         member,
         enemy: this.enemies.get(member.enemyId),
       };
@@ -344,6 +344,7 @@ export default class ServerMapManager {
             enemyInstanceId: enemy.enemyInstanceId,
             name: enemy.name,
             maxHp: enemy.maxHp,
+            currentHp: enemy.maxHp,
           }
         : null;
     });

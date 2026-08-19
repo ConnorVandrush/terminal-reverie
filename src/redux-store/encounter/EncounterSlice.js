@@ -33,6 +33,13 @@ const EncounterSlice = createSlice({
     addReadOutMessage(state, action) {
       state.readOutMessages.push(action.payload);
     },
+    setPlayerHp(state, action) {
+      const { playerIndex, currentHp } = action.payload;
+
+      if (state.partyMembers[playerIndex]) {
+        state.partyMembers[playerIndex].currentHp = currentHp;
+      }
+    },
   },
 });
 

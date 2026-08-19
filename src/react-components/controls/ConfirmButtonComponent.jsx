@@ -26,13 +26,16 @@ export default function ConirmButtonComponent() {
       targetId: enemies[selectedEncounterTarget.index].enemyInstanceId,
       action: encounterActionMap[selectedEncounterAction],
     };
-
     if (payload) {
       window.clientAPI.dispatchToReact({
         type: "EncounterSlice/clientSubmitEncounterAction",
         payload,
       });
     }
+    window.clientAPI.dispatchToReact({
+      type: "BottomPanelSlice/setBottomPanel",
+      payload: "EncounterReadOutComponent",
+    });
 
     Input.virtualClick("ok");
   }

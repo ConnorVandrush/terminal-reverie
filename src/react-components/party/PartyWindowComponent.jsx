@@ -47,6 +47,7 @@ export default function PartyWindowComponent() {
       <div className={styles.buttonRow}>
         {partySize === 1 && (
           <button
+            data-testid="partyJoinInviteButton"
             onClick={() =>
               dispatch(setCenterPanel("PartyInvitesWindowComponent"))
             }

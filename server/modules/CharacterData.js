@@ -67,6 +67,8 @@ export default class CharacterData {
   Strike(target) {
     if (target.isDead) {
       return {
+        combatantId: this.enemyInstanceId ?? this.characterId,
+        targetId: target.enemyInstanceId ?? target.characterId,
         action: "Strike",
         message: `${this.name} missed ${target.name}.`,
       };
@@ -74,6 +76,8 @@ export default class CharacterData {
     const damage = this.equipment.weapon.baseDamage;
     target.currentHp -= damage;
     return {
+      combatantId: this.enemyInstanceId ?? this.characterId,
+      targetId: target.enemyInstanceId ?? target.characterId,
       action: "Strike",
       damage: damage,
       message: `${target.name} took ${damage} damage.`,

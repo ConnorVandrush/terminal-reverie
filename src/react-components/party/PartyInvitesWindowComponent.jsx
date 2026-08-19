@@ -36,11 +36,17 @@ export default function PartyInvitesWindowComponent() {
     <div className={styles.PartyInvitesWindowComponent}>
       <div className={styles.inputRow}>
         <input
+          data-testid="sendPartyInviteInput"
           type="text"
           placeholder="Type name of player..."
           ref={characterToInviteToParty}
         />
-        <button onClick={handleClientSendPartyInvite}>Invite</button>
+        <button
+          data-testid="sendPartyInviteButton"
+          onClick={handleClientSendPartyInvite}
+        >
+          Invite
+        </button>
         <button
           onClick={() => dispatch(setCenterPanel("PartyWindowComponent"))}
         >
@@ -62,6 +68,7 @@ export default function PartyInvitesWindowComponent() {
             <div key={senderId} className={styles.inviteRow}>
               {senderName} has invited you.
               <button
+                data-testid="acceptPartyInviteButton"
                 onClick={() => handleClientAcceptPartyInvite(Number(senderId))}
               >
                 Accept

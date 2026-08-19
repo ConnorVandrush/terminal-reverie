@@ -24,7 +24,7 @@ export default function PartyButtonComponent() {
 
   return (
     <button
-      data-testid="invite-to-party-button"
+      data-testid="partyButton"
       className={styles.chatButton}
       onClick={togglePartyWindow}
     />

@@ -4,8 +4,8 @@ export default class Goblin extends Enemy {
   constructor() {
     super();
     this.name = "Goblin";
-    this.maxHp = 30;
-    this.currentHp = 30;
+    this.maxHp = 20;
+    this.currentHp = 20;
     this.experienceReward = 20;
     this.baseDamage = 10;
   }
