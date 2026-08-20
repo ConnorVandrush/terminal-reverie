@@ -4,10 +4,14 @@ class ClientEncounterManager {
   }
 
   findCombatant(id) {
-    const actor = $gameParty.members().find((actor) => actor.actorId() === id);
+    const actor = $gameParty
+      .members()
+      .find((actor) => actor.characterId === id);
+
     if (actor) {
       return actor;
     }
+
     const enemy = $gameTroop
       .members()
       .find((enemy) => enemy.enemyInstanceId === id);
@@ -78,18 +82,36 @@ class ClientEncounterManager {
       }
     });
 
+    const deadEnemyIndexes = [];
+
     $gameTroop.members().forEach((enemy, index) => {
       const enemyData = enemies[index];
 
       if (!enemyData) return;
 
       if (enemyData.currentHp <= 0) {
-        console.log("dead");
         enemy.setHp(0);
         enemy.addState(enemy.deathStateId());
         enemy.performCollapse();
+        window.clientAPI.dispatchToReact({
+          type: "EncounterSlice/addEncounterMessage",
+          payload: `${enemyData.name} was defeated.`,
+        });
+
+        deadEnemyIndexes.push(index);
       }
     });
+
+    // Remove from highest index to lowest so the indexes
+    // don't shift before we remove the remaining dead enemies.
+    deadEnemyIndexes
+      .sort((a, b) => b - a)
+      .forEach((enemyIndex) => {
+        window.clientAPI.dispatchToReact({
+          type: "EncounterSlice/removeEnemy",
+          payload: enemyIndex,
+        });
+      });
   }
 
   async serverStartEncounter(
@@ -109,6 +131,7 @@ class ClientEncounterManager {
       partyMembers.map(async (member, index) => {
         const actorId = index + 1;
         const actor = $gameActors.actor(actorId);
+        actor.characterId = member.characterId;
         const sprite =
           await window.clientAPI.spriteManager.generateBase64pngSpritesheet(
             member.appearance,
@@ -177,12 +200,13 @@ class ClientEncounterManager {
 
     for (const result of roundResults) {
       await this[result.action](result);
+      await this.wait(2000);
     }
   }
 
   async Strike(result) {
     window.clientAPI.dispatchToReact({
-      type: "encounterSlice/addReadOutMessage",
+      type: "EncounterSlice/addEncounterMessage",
       payload: result.message,
     });
     const combatant = this.findCombatant(result.combatantId);
@@ -201,9 +225,8 @@ class ClientEncounterManager {
     target.gainHp(-result.damage);
     target.startDamagePopup();
     target.performDamage();
-    await this.wait(300);
+    await this.wait(500);
     this.checkIfDead();
-    await this.wait(2000);
   }
 }
 

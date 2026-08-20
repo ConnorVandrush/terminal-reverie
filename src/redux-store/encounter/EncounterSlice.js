@@ -8,7 +8,7 @@ const EncounterSlice = createSlice({
     selectedAction: null,
     selectedActionType: null,
     turnOrder: [],
-    readOutMessages: [],
+    EncounterMessages: [],
   },
   reducers: {
     setEnemyData(state, action) {
@@ -26,12 +26,15 @@ const EncounterSlice = createSlice({
     },
     clientSubmitEncounterAction(state, action) {
       // emit handled in EncounterSliceEmitters.js
+      state.selectedAction = null;
+      state.selectedActionType = null;
+      state.target = null;
     },
     setTurnOrder(state, action) {
       state.turnOrder = action.payload;
     },
-    addReadOutMessage(state, action) {
-      state.readOutMessages.push(action.payload);
+    addEncounterMessage(state, action) {
+      state.EncounterMessages.push(action.payload);
     },
     setPlayerHp(state, action) {
       const { playerIndex, currentHp } = action.payload;
@@ -39,6 +42,9 @@ const EncounterSlice = createSlice({
       if (state.partyMembers[playerIndex]) {
         state.partyMembers[playerIndex].currentHp = currentHp;
       }
+    },
+    removeEnemy(state, action) {
+      state.enemies.splice(action.payload, 1);
     },
   },
 });
@@ -50,6 +56,7 @@ export const {
   setSelectedActionType,
   clientSubmitEncounterAction,
   setTurnOrder,
-  addReadOutMessage,
+  addEncounterMessage,
+  removeEnemy,
 } = EncounterSlice.actions;
 export default EncounterSlice.reducer;

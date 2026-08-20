@@ -80,7 +80,7 @@ export default class CharacterData {
       targetId: target.enemyInstanceId ?? target.characterId,
       action: "Strike",
       damage: damage,
-      message: `${target.name} took ${damage} damage.`,
+      message: `${this.name} dealt ${damage} damage to ${target.name}.`,
     };
   }
 }

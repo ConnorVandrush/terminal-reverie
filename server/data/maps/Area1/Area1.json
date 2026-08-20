@@ -1,4 +1,29 @@
 {
+  "encounters": {
+    "0": {
+      "encounterPercentChance": 0
+    },
+    "1": {
+      "encounterPercentChance": 20,
+      "troops": [
+        {
+          "troopId": 1,
+          "percentMilleChance": 0,
+          "description": "Goblin*1"
+        },
+        {
+          "troopId": 2,
+          "percentMilleChance": 0,
+          "description": "Goblin*2"
+        },
+        {
+          "troopId": 3,
+          "percentMilleChance": 100000,
+          "description": "Goblin*8"
+        }
+      ]
+    }
+  },
   "autoplayBgm": false,
   "autoplayBgs": false,
   "battleback1Name": "",
@@ -18830,30 +18855,5 @@
       "x": 133,
       "y": 134
     }
-  ],
-  "encounters": {
-    "0": {
-      "encounterPercentChance": 0
-    },
-    "1": {
-      "encounterPercentChance": 20,
-      "troops": [
-        {
-          "troopId": 1,
-          "percentMilleChance": 100000,
-          "description": "Goblin*1"
-        },
-        {
-          "troopId": 2,
-          "percentMilleChance": 0,
-          "description": "Goblin*2"
-        },
-        {
-          "troopId": 3,
-          "percentMilleChance": 0,
-          "description": "Goblin*8"
-        }
-      ]
-    }
-  }
+  ]
 }

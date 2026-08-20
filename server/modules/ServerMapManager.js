@@ -324,40 +324,74 @@ export default class ServerMapManager {
   serverStartEncounter(troopId, characterData) {
     const troopData = this.troops.get(troopId);
     if (!troopData) return;
+
     const serverEnemyData = [];
+
     const rmmzEnemyData = troopData.members.map((member) => {
-      const enemyName = this.enemies.get(member.enemyId).name;
+      const enemyData = this.enemies.get(member.enemyId);
+      const enemyName = enemyData.name;
+
       const enemyInstanceId = crypto.randomUUID();
       const enemyInstance = eval(`new ${enemyName}()`);
+
       enemyInstance.enemyInstanceId = enemyInstanceId;
+
       serverEnemyData.push(enemyInstance);
+
       return {
         enemyInstanceId,
         member,
-        enemy: this.enemies.get(member.enemyId),
+        enemy: enemyData,
       };
     });
+
+    // Track how many of each enemy type we've encountered.
+    const enemyNameCounters = {};
+
     const reactEnemyData = Array.from({ length: 8 }, (_, index) => {
       const enemy = serverEnemyData[index];
-      return enemy
-        ? {
-            enemyInstanceId: enemy.enemyInstanceId,
-            name: enemy.name,
-            maxHp: enemy.maxHp,
-            currentHp: enemy.maxHp,
-          }
-        : null;
+
+      if (!enemy) return null;
+
+      // Save the original enemy name before modifying it.
+      const baseName = enemy.name;
+
+      if (!enemyNameCounters[baseName]) {
+        enemyNameCounters[baseName] = 0;
+      }
+
+      const suffix = String.fromCharCode(
+        "A".charCodeAt(0) + enemyNameCounters[baseName],
+      );
+
+      enemyNameCounters[baseName]++;
+
+      // Update the actual server-side enemy instance name.
+      enemy.name = `${baseName} ${suffix}`;
+
+      return {
+        enemyInstanceId: enemy.enemyInstanceId,
+        name: enemy.name,
+        maxHp: enemy.maxHp,
+        currentHp: enemy.maxHp,
+      };
     });
+
     const partyMembers = this.serverAPI.playerManager
       .getPartyMemberData(characterData.partyMemberIds)
       .filter((m) => m != null);
+
     const newEncounter = new Encounter(partyMembers, serverEnemyData);
+
     this.serverAPI.encounterManager.activeEncounters.set(
       characterData.characterId,
       newEncounter,
     );
+
     newEncounter.determineTurnOrder();
+
     const firstTurnOrder = newEncounter.turnOrder;
+
     this.serverAPI.serverManager.authNamespace
       .to(characterData.partyRoom)
       .emit("serverStartEncounter", {

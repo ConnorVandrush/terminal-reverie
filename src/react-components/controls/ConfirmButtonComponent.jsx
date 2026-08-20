@@ -1,7 +1,9 @@
-import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import styles from "./ConfirmButtonComponent.module.css";
+
+import { setBottomPanel } from "@store/ui/BottomPanelSlice";
+import { clientSubmitEncounterAction } from "@store/encounter/EncounterSlice";
 
 export default function ConirmButtonComponent() {
   const dispatch = useDispatch();
@@ -15,27 +17,14 @@ export default function ConirmButtonComponent() {
   const enemies = useSelector((state) => state.EncounterSlice.enemies);
 
   function confirm() {
-    const encounterActionMap = {
-      Strike: "Strike",
-      Flee: "Flee",
-      Focus: "Focus",
-      Equip: "Equip",
-    };
-
-    const payload = {
-      targetId: enemies[selectedEncounterTarget.index].enemyInstanceId,
-      action: encounterActionMap[selectedEncounterAction],
-    };
-    if (payload) {
-      window.clientAPI.dispatchToReact({
-        type: "EncounterSlice/clientSubmitEncounterAction",
-        payload,
-      });
+    if (selectedEncounterAction && selectedEncounterTarget) {
+      const payload = {
+        targetId: enemies[selectedEncounterTarget.index].enemyInstanceId,
+        action: selectedEncounterAction,
+      };
+      dispatch(clientSubmitEncounterAction(payload));
+      dispatch(setBottomPanel("EncounterMessageComponent"));
     }
-    window.clientAPI.dispatchToReact({
-      type: "BottomPanelSlice/setBottomPanel",
-      payload: "EncounterReadOutComponent",
-    });
 
     Input.virtualClick("ok");
   }
