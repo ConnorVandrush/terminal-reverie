@@ -9,6 +9,7 @@ export default function EncounterTurnOrderComponent() {
   const enemies = useSelector((state) => state.EncounterSlice.enemies);
   const turnOrder = useSelector((state) => state.EncounterSlice.turnOrder);
   const currentTarget = useSelector((state) => state.EncounterSlice.target);
+  const roundNumber = useSelector((state) => state.EncounterSlice.roundNumber);
 
   function handleSelectTarget(side, index) {
     if (currentTarget?.side === side && currentTarget?.index === index) {
@@ -54,6 +55,7 @@ export default function EncounterTurnOrderComponent() {
 
   return (
     <div className={styles.encounterTurnOrderComponentStyle}>
+      R{roundNumber} Turn Order
       {orderedCombatants.map((combatant) => (
         <div key={`${combatant.side}-${combatant.index}`}>
           <button

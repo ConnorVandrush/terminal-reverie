@@ -11,13 +11,13 @@ export default class ServerInventoryManager {
     }
   }
 
-  getEquipmentData(equipmentId) {
-    const itemData = this.items.get(equipmentId);
+  getItemData(itemId) {
+    const itemData = this.items.get(itemId);
 
     if (!itemData) return null;
 
     return {
-      id: equipmentId,
+      id: itemId,
       ...itemData,
     };
   }

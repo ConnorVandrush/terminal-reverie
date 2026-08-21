@@ -4,6 +4,10 @@ export default class Enemy {
     this.enemyInstanceId = null;
   }
 
+  randomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   randomElement(arr) {
     const idx = Math.floor(Math.random() * arr.length);
     return arr[idx];

@@ -7,7 +7,7 @@ export default function EncounterMessageComponent() {
   const messagesEndRef = useRef();
 
   const encounterMessages = useSelector(
-    (state) => state.EncounterSlice.EncounterMessages,
+    (state) => state.EncounterSlice.encounterMessages,
   );
 
   useEffect(() => {

@@ -463,7 +463,6 @@ export default class ServerMapManager {
                 const room = this.serverAPI.serverManager.authNamespace.to(
                   member.location.map,
                 );
-
                 room.emit("serverRemoteCharacterMoved", {
                   characterId: member.characterId,
                   newLocation: member.location,

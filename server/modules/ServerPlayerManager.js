@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
+import CharacterData from "./CharacterData.js";
 
 import PlayerAccounts from "./PlayerAccountModel.js";
 
@@ -95,7 +96,7 @@ export default class ServerPlayerManager {
         user.characterData.equipment,
       )) {
         user.characterData.equipment[slot] =
-          this.serverAPI.inventoryManager.getEquipmentData(Number(equipmentId));
+          this.serverAPI.inventoryManager.getItemData(Number(equipmentId));
       }
       user.markModified("characterData");
       await user.save();
@@ -107,13 +108,23 @@ export default class ServerPlayerManager {
 
   async login(user, socket, cb) {
     try {
-      const characterData = user.characterData;
+      const characterData = new CharacterData();
+
+      Object.assign(characterData, user.characterData);
+
       const JWT = user.JWT;
+
       this.charactersOnline.set(user.playerId, characterData);
       this.characterNamesOnline.set(characterData.name, characterData);
+
       characterData.partyRoom = "partyRoom" + user.playerId;
       characterData.partyMemberIds.push(user.playerId);
-      return cb({ success: true, JWT, characterData });
+
+      return cb({
+        success: true,
+        JWT,
+        characterData,
+      });
     } catch (error) {
       console.log(error);
       throw new Error("An error occurred during login.");

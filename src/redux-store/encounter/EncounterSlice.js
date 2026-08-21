@@ -8,7 +8,8 @@ const EncounterSlice = createSlice({
     selectedAction: null,
     selectedActionType: null,
     turnOrder: [],
-    EncounterMessages: [],
+    encounterMessages: [],
+    roundNumber: null,
   },
   reducers: {
     setEnemyData(state, action) {
@@ -34,7 +35,10 @@ const EncounterSlice = createSlice({
       state.turnOrder = action.payload;
     },
     addEncounterMessage(state, action) {
-      state.EncounterMessages.push(action.payload);
+      state.encounterMessages.push(action.payload);
+    },
+    clearEncounterMessages(state, action) {
+      state.encounterMessages = [];
     },
     setPlayerHp(state, action) {
       const { playerIndex, currentHp } = action.payload;
@@ -45,6 +49,12 @@ const EncounterSlice = createSlice({
     },
     removeEnemy(state, action) {
       state.enemies.splice(action.payload, 1);
+    },
+    setRoundNumber(state, action) {
+      state.roundNumber = action.payload;
+    },
+    incrementRoundNumber(state, action) {
+      state.roundNumber++;
     },
   },
 });
@@ -57,6 +67,8 @@ export const {
   clientSubmitEncounterAction,
   setTurnOrder,
   addEncounterMessage,
+  clearEncounterMessages,
   removeEnemy,
+  setRoundNumber,
 } = EncounterSlice.actions;
 export default EncounterSlice.reducer;

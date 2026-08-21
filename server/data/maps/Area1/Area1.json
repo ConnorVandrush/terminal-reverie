@@ -13,12 +13,12 @@
         },
         {
           "troopId": 2,
-          "percentMilleChance": 0,
+          "percentMilleChance": 100000,
           "description": "Goblin*2"
         },
         {
           "troopId": 3,
-          "percentMilleChance": 100000,
+          "percentMilleChance": 0,
           "description": "Goblin*8"
         }
       ]

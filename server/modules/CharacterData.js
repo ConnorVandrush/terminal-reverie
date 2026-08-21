@@ -12,7 +12,7 @@ export default class CharacterData {
     this.gold = 0;
     this.maxHp = 100;
     this.currentHp = 100;
-    this.inventory = {}; //{ "itemId": { "qty":, "itemInfo": } }
+    this.inventory = {}; //{ "itemId": { "qty":, "itemData": } }
     this.equipment = {
       weapon: "37",
       armor: "38",

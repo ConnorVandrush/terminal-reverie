@@ -23,7 +23,9 @@ class ClientEncounterManager {
     const state = window.clientAPI.getReactState();
 
     if (target.isEnemy()) {
-      const enemyIndex = $gameTroop.members().indexOf(target);
+      const enemyIndex = state.EncounterSlice.enemies.findIndex(
+        (enemyData) => enemyData?.enemyInstanceId === target.enemyInstanceId,
+      );
 
       if (enemyIndex === -1) return;
 
@@ -64,46 +66,61 @@ class ClientEncounterManager {
     }
   }
 
-  checkIfDead() {
+  async checkIfDead() {
     const state = window.clientAPI.getReactState();
 
     const players = state.PartySlice.partyMembers;
     const enemies = state.EncounterSlice.enemies;
 
+    // Players
     $gameParty.members().forEach((member, index) => {
       const playerData = players[index];
 
       if (!playerData) return;
 
-      if (playerData.currentHp <= 0) {
+      if (playerData.currentHp <= 0 && !member.isDead()) {
         member.setHp(0);
         member.addState(member.deathStateId());
         member.performCollapse();
       }
     });
 
+    // Enemies
     const deadEnemyIndexes = [];
 
-    $gameTroop.members().forEach((enemy, index) => {
-      const enemyData = enemies[index];
+    $gameTroop.members().forEach((enemy) => {
+      const enemyData = enemies.find(
+        (data) => data?.enemyInstanceId === enemy.enemyInstanceId,
+      );
 
       if (!enemyData) return;
 
-      if (enemyData.currentHp <= 0) {
+      if (enemyData.currentHp <= 0 && !enemy.isDead()) {
         enemy.setHp(0);
         enemy.addState(enemy.deathStateId());
         enemy.performCollapse();
+
         window.clientAPI.dispatchToReact({
           type: "EncounterSlice/addEncounterMessage",
           payload: `${enemyData.name} was defeated.`,
         });
 
-        deadEnemyIndexes.push(index);
+        const reactIndex = enemies.findIndex(
+          (data) => data?.enemyInstanceId === enemy.enemyInstanceId,
+        );
+
+        if (reactIndex !== -1) {
+          deadEnemyIndexes.push(reactIndex);
+        }
       }
     });
 
-    // Remove from highest index to lowest so the indexes
-    // don't shift before we remove the remaining dead enemies.
+    // Give the RPG Maker collapse animations time to play
+    if (deadEnemyIndexes.length > 0) {
+      await this.wait(800);
+    }
+
+    // Now remove them from React
     deadEnemyIndexes
       .sort((a, b) => b - a)
       .forEach((enemyIndex) => {
@@ -182,6 +199,10 @@ class ClientEncounterManager {
       payload: firstTurnOrder,
     });
     window.clientAPI.dispatchToReact({
+      type: "EncounterSlice/setRoundNumber",
+      payload: 1,
+    });
+    window.clientAPI.dispatchToReact({
       type: "BottomPanelSlice/setBottomPanel",
       payload: "EncounterActionComponent",
     });
@@ -195,13 +216,74 @@ class ClientEncounterManager {
     });
   }
 
-  async serverEncounterRoundResults(roundResults) {
+  async serverEncounterRoundResults(
+    roundResults,
+    turnOrder,
+    encounterResult,
+    drops,
+  ) {
     await this.wait(500);
 
     for (const result of roundResults) {
       await this[result.action](result);
       await this.wait(2000);
     }
+
+    if (encounterResult === "victory") {
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/clearEncounterMessages",
+      });
+
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/addEncounterMessage",
+        payload: "You are victorious!",
+      });
+
+      await this.wait(1000);
+
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/addEncounterMessage",
+        payload: `You gained ${drops.gold} gold.`,
+      });
+
+      await this.wait(1000);
+
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/addEncounterMessage",
+        payload: `You gained ${drops.exp} experience.`,
+      });
+
+      for (const item of drops.items) {
+        await this.wait(1000);
+
+        window.clientAPI.dispatchToReact({
+          type: "EncounterSlice/addEncounterMessage",
+          payload: `You received ${item.name}.`,
+        });
+      }
+
+      await this.wait(1000);
+
+      window.clientAPI.dispatchToReact({
+        type: "EncounterSlice/clearAllDrops",
+      });
+
+      return;
+    }
+
+    window.clientAPI.dispatchToReact({
+      type: "BottomPanelSlice/setBottomPanel",
+      payload: "EncounterActionComponent",
+    });
+
+    window.clientAPI.dispatchToReact({
+      type: "EncounterSlice/incrementRoundNumber",
+    });
+
+    window.clientAPI.dispatchToReact({
+      type: "EncounterSlice/setTurnOrder",
+      payload: turnOrder,
+    });
   }
 
   async Strike(result) {
@@ -209,24 +291,33 @@ class ClientEncounterManager {
       type: "EncounterSlice/addEncounterMessage",
       payload: result.message,
     });
+
     const combatant = this.findCombatant(result.combatantId);
     const target = this.findCombatant(result.targetId);
+
     this.syncCombatantToReact(target, result);
+
     await this.wait(300);
+
     if (combatant.isActor()) {
       combatant.performAttack();
     } else {
       const enemySprite = BattleManager._spriteset._enemySprites.find(
         (sprite) => sprite._enemy === combatant,
       );
-      enemySprite.startEffect("whiten");
+
+      enemySprite?.startEffect("whiten");
     }
+
     await this.wait(300);
+
     target.gainHp(-result.damage);
     target.startDamagePopup();
     target.performDamage();
+
     await this.wait(500);
-    this.checkIfDead();
+
+    await this.checkIfDead();
   }
 }
 

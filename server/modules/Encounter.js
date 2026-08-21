@@ -8,7 +8,9 @@ export default class Encounter {
     this.enemies = enemies;
     this.combatantActions = new Map(); // combatantId -> { targetId, action }
     this.turnOrder = [];
-    this.roundResults = [];
+    this.goldDrop = null;
+    this.expDrop = null;
+    this.itemDrop = [];
   }
 
   hydrateCharacter(raw) {
@@ -79,6 +81,41 @@ export default class Encounter {
     });
   }
 
+  checkForWinner() {
+    const allCharactersDead = this.characters.every((c) => c.isDead);
+    const allEnemiesDead = this.enemies.every((e) => e.isDead);
+
+    if (allCharactersDead && allEnemiesDead) {
+      return true;
+    } else if (allCharactersDead) {
+      return true;
+    } else if (allEnemiesDead) {
+      this.calculateEncounterDrops();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  calculateEncounterDrops() {
+    let totalGold = 0;
+    let totalExp = 0;
+    let allItems = [];
+
+    this.enemies.forEach((enemy) => {
+      totalGold += enemy.goldDrop ?? 0;
+      totalExp += enemy.expDrop ?? 0;
+
+      if (Array.isArray(enemy.itemDrop)) {
+        allItems.push(...enemy.itemDrop);
+      }
+    });
+
+    this.goldDrop = totalGold;
+    this.expDrop = totalExp;
+    this.itemDrop = allItems;
+  }
+
   processRound() {
     this.roundResults = [];
     this.getEnemyActions();
@@ -86,7 +123,17 @@ export default class Encounter {
       this.processAction(combatantId);
       this.updateCombatantsStatus();
     });
+    if (this.checkForWinner()) {
+      return {
+        roundResults: this.roundResults,
+        encounterDrops: true,
+      };
+    }
     this.determineTurnOrder();
-    return this.roundResults;
+    this.combatantActions = new Map();
+    return {
+      roundResults: this.roundResults,
+      encounterDrops: false,
+    };
   }
 }
