@@ -70,5 +70,6 @@ export const {
   clearEncounterMessages,
   removeEnemy,
   setRoundNumber,
+  incrementRoundNumber,
 } = EncounterSlice.actions;
 export default EncounterSlice.reducer;

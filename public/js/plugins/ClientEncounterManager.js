@@ -216,6 +216,29 @@ class ClientEncounterManager {
     });
   }
 
+  endEncounter() {
+    window.clientAPI.uiState = null;
+
+    window.clientAPI.dispatchToReact({
+      type: "BottomPanelSlice/setBottomPanel",
+      payload: null,
+    });
+
+    window.clientAPI.dispatchToReact({
+      type: "CenterPanelSlice/setCenterPanel",
+      payload: null,
+    });
+
+    window.clientAPI.dispatchToReact({
+      type: "RightPanelSlice/setRightPanel",
+      payload: "ControlsComponent",
+    });
+
+    if (SceneManager._scene instanceof Scene_Battle) {
+      SceneManager.pop();
+    }
+  }
+
   async serverEncounterRoundResults(
     roundResults,
     turnOrder,
@@ -268,6 +291,8 @@ class ClientEncounterManager {
         type: "EncounterSlice/clearAllDrops",
       });
 
+      this.endEncounter();
+
       return;
     }
 
@@ -295,10 +320,12 @@ class ClientEncounterManager {
     const combatant = this.findCombatant(result.combatantId);
     const target = this.findCombatant(result.targetId);
 
-    this.syncCombatantToReact(target, result);
+    // Check this BEFORE applying any damage.
+    const targetWasAlreadyDead = target.isDead();
 
     await this.wait(300);
 
+    // Always play the attacker's animation.
     if (combatant.isActor()) {
       combatant.performAttack();
     } else {
@@ -311,7 +338,17 @@ class ClientEncounterManager {
 
     await this.wait(300);
 
+    // Target was already dead earlier in the turn.
+    if (targetWasAlreadyDead) {
+      return;
+    }
+
+    // Target was alive when attacked.
+    this.syncCombatantToReact(target, result);
+
     target.gainHp(-result.damage);
+
+    // Play target animation even if this attack kills them.
     target.startDamagePopup();
     target.performDamage();
 

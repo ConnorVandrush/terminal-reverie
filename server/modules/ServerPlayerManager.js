@@ -179,14 +179,13 @@ export default class ServerPlayerManager {
         socket.join(partyLeaderData.partyRoom);
       }
       setTimeout(() => {
-        partyLeaderData.canMove = true;
+        member.canMove = true;
       }, 3000);
     }
   }
 
   joinParty(partyLeaderId, joiningCharacterId, cb) {
     const partyLeaderData = this.charactersOnline.get(partyLeaderId);
-    const joiningCharacterData = this.charactersOnline.get(joiningCharacterId);
     if (!this.checkOrthogonalAdjacency(partyLeaderId, joiningCharacterId)) {
       return cb({
         success: false,

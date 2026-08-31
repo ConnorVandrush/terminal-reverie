@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-import path from "path";
 import express from "express";
 import { Server } from "socket.io";
 import mongoose from "mongoose";

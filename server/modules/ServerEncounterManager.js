@@ -96,9 +96,26 @@ export default class EncounterManager {
           if (encounterDrops) {
             rewards = this.divvyDrops(encounter);
 
+            encounter.characters.forEach((character) => {
+              const characterData =
+                this.serverAPI.playerManager.charactersOnline.get(
+                  character.characterId,
+                );
+
+              if (!characterData) {
+                console.warn(
+                  `Could not find character ${character.characterId} after encounter`,
+                );
+                return;
+              }
+
+              characterData.canAct = true;
+              characterData.currentHp = Math.max(characterData.currentHp, 1);
+              characterData.isDead = false;
+            });
+
             this.activeEncounters.delete(partyLeaderId);
           }
-
           encounter.characters.forEach((character) => {
             this.serverAPI.serverManager.authNamespace
               .to(character.socketId)

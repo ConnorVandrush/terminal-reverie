@@ -306,18 +306,40 @@ export default class ServerMapManager {
   }
 
   rollForEncounter(characterData) {
-    const map = this.maps.get(characterData.location.map);
-    const regionId = this.getRegion(
-      characterData.location.map,
-      characterData.location.x,
-      characterData.location.y,
-    );
-    const region = map.encounters.get(regionId);
-    if (!region) return null;
-    const roll = Math.floor(Math.random() * 100) + 1;
-    if (roll >= region.encounterPercentChance) {
+    if (!characterData?.location) {
       return null;
     }
+
+    // Only the party leader can trigger an encounter.
+    if (characterData.partyMemberIds?.[0] !== characterData.characterId) {
+      return null;
+    }
+
+    const { map: mapName, x, y } = characterData.location;
+
+    const map = this.maps.get(mapName);
+
+    if (!map) {
+      return null;
+    }
+
+    if (x < 0 || y < 0 || x >= map.mapData.width || y >= map.mapData.height) {
+      return null;
+    }
+
+    const regionId = this.getRegion(mapName, x, y);
+    const region = map.encounters.get(regionId);
+
+    if (!region) {
+      return null;
+    }
+
+    const roll = Math.floor(Math.random() * 100) + 1;
+
+    if (roll > region.encounterPercentChance) {
+      return null;
+    }
+
     return this.rollEncounter(region.troops);
   }
 
@@ -381,6 +403,10 @@ export default class ServerMapManager {
       .getPartyMemberData(characterData.partyMemberIds)
       .filter((m) => m != null);
 
+    partyMembers.forEach((character) => {
+      character.canMove = false;
+    });
+
     const newEncounter = new Encounter(partyMembers, serverEnemyData);
 
     this.serverAPI.encounterManager.activeEncounters.set(
@@ -428,59 +454,116 @@ export default class ServerMapManager {
             this.serverAPI.playerManager.charactersOnline.get(
               socket.characterId,
             );
-          if (!characterData.canMove || !characterData.canTransfer) {
+
+          if (
+            !characterData ||
+            characterData.partyMemberIds[0] !== socket.characterId
+          ) {
             return cb({
               success: false,
             });
           }
-          characterData.canMove = false;
-          const result = this.canCharacterMove(characterData, direction);
-          if (!result.success) {
-            cb({ success: false });
-          } else {
-            if (characterData.partyMemberIds.length === 1) {
-              characterData.location = result.newLocation;
-              this.serverAPI.serverManager.authNamespace
-                .to(characterData.location.map)
-                .except(socket.id)
-                .emit("serverRemoteCharacterMoved", {
-                  characterId: characterData.characterId,
-                  newLocation: result.newLocation,
-                });
-            } else {
-              const partyMembers = characterData.partyMemberIds.map((id) =>
-                this.serverAPI.playerManager.charactersOnline.get(id),
-              );
-              const oldLocations = partyMembers.map((member) => ({
-                ...member.location,
-              }));
-              partyMembers[0].location = result.newLocation;
-              for (let i = 1; i < partyMembers.length; i++) {
-                partyMembers[i].location = oldLocations[i - 1];
-              }
-              const leaderId = partyMembers[0].characterId;
-              for (const member of partyMembers) {
-                const room = this.serverAPI.serverManager.authNamespace.to(
-                  member.location.map,
-                );
-                room.emit("serverRemoteCharacterMoved", {
-                  characterId: member.characterId,
-                  newLocation: member.location,
-                });
-              }
-            }
-            cb({ success: true, newLocation: result.newLocation });
+
+          const partyMembers = characterData.partyMemberIds.map((id) =>
+            this.serverAPI.playerManager.charactersOnline.get(id),
+          );
+
+          // Make sure all party members exist and are able to move/transfer.
+          const canPartyMove = partyMembers.every(
+            (member) => member && member.canMove,
+          );
+
+          if (!canPartyMove) {
+            return cb({
+              success: false,
+            });
           }
-          const troopId = this.rollForEncounter(characterData);
-          if (troopId) {
-            this.serverStartEncounter(troopId, characterData);
-            return;
+
+          // Lock the entire party while movement is being processed.
+          for (const member of partyMembers) {
+            member.canMove = false;
+          }
+
+          const result = this.canCharacterMove(characterData, direction);
+
+          if (!result.success) {
+            // Unlock the entire party if movement failed.
+            for (const member of partyMembers) {
+              member.canMove = true;
+            }
+
+            return cb({
+              success: false,
+            });
+          }
+
+          if (partyMembers.length === 1) {
+            // Solo movement
+            characterData.location = result.newLocation;
+
+            this.serverAPI.serverManager.authNamespace
+              .to(characterData.location.map)
+              .except(socket.id)
+              .emit("serverRemoteCharacterMoved", {
+                characterId: characterData.characterId,
+                newLocation: result.newLocation,
+              });
           } else {
-            setTimeout(() => (characterData.canMove = true), 50);
-          } // simple movement rate limit
+            // Party movement
+            const oldLocations = partyMembers.map((member) => ({
+              ...member.location,
+            }));
+
+            // Leader moves into the new location.
+            partyMembers[0].location = result.newLocation;
+
+            // Everyone else follows the previous position of the
+            // member in front of them.
+            for (let i = 1; i < partyMembers.length; i++) {
+              partyMembers[i].location = oldLocations[i - 1];
+            }
+
+            // Notify clients of every party member's new location.
+            for (const member of partyMembers) {
+              const room = this.serverAPI.serverManager.authNamespace.to(
+                member.location.map,
+              );
+
+              room.emit("serverRemoteCharacterMoved", {
+                characterId: member.characterId,
+                newLocation: member.location,
+              });
+            }
+          }
+
+          cb({
+            success: true,
+            newLocation: result.newLocation,
+          });
+
+          // Check for an encounter after the movement succeeds.
+          if (characterData.partyMemberIds[0] === socket.characterId) {
+            const troopId = this.rollForEncounter(characterData);
+
+            if (troopId) {
+              this.serverStartEncounter(troopId, characterData);
+              return;
+            }
+          }
+
+          // Simple movement rate limit.
+          setTimeout(() => {
+            for (const member of partyMembers) {
+              member.canMove = true;
+            }
+          }, 50);
         } catch (error) {
-          console.log(error);
-          cb({ error: error.message });
+          console.error(error);
+
+          cb({
+            success: false,
+            error: error.message,
+          });
         }
       });
 
@@ -495,6 +578,7 @@ export default class ServerMapManager {
         )
           this.serverAPI.playerManager.assembleParty(socket.characterId);
         characterData.canTransfer = false;
+        characterData.canMove = false;
         const location = characterData.location;
         const eventData = this.getEventData(
           location.map,
@@ -521,6 +605,7 @@ export default class ServerMapManager {
           socket.characterId,
         );
         characterData.canTransfer = true;
+        characterData.canMove = true;
       });
 
       socket.on("clientSendChatMessage", (message) => {
@@ -539,7 +624,7 @@ export default class ServerMapManager {
               });
           }
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       });
     });

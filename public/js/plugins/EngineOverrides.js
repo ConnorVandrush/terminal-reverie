@@ -80,6 +80,12 @@ DataManager.loadMapData = function (mapId) {
   _DataManager_loadMapData.call(this, mapId);
 };
 
+// Disable RPG Maker's built-in random encounters.
+// Encounters are handled entirely by ClientEncounterManager/server.
+Game_Player.prototype.executeEncounter = function () {
+  return false;
+};
+
 // Save original SceneManager.pop function, it's disabled during battles
 window._pop = SceneManager.pop;
 // Hook into Scene_Map to notify server map has finished loading
