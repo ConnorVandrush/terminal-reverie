@@ -112,6 +112,20 @@ export default class EncounterManager {
               characterData.canAct = true;
               characterData.currentHp = Math.max(characterData.currentHp, 1);
               characterData.isDead = false;
+
+              const socket =
+                this.serverAPI.serverManager.authNamespace.sockets.get(
+                  characterData.socketId,
+                );
+
+              if (socket) {
+                socket.emit(
+                  "serverSyncPartyData",
+                  this.serverAPI.playerManager.getPartyMemberData(
+                    characterData.partyMemberIds,
+                  ),
+                );
+              }
             });
 
             this.activeEncounters.delete(partyLeaderId);

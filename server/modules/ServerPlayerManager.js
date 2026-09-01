@@ -205,7 +205,7 @@ export default class ServerPlayerManager {
     this.serverAPI.serverManager.authNamespace
       .to(partyLeaderData.partyRoom)
       .emit(
-        "characterJoinedOrLeftParty",
+        "serverSyncPartyData",
         this.getPartyMemberData(partyLeaderData.partyMemberIds),
       );
   }
@@ -222,7 +222,7 @@ export default class ServerPlayerManager {
     this.serverAPI.serverManager.authNamespace
       .to(partyLeaderData.partyRoom)
       .emit(
-        "characterJoinedOrLeftParty",
+        "serverSyncPartyData",
         this.getPartyMemberData(partyLeaderData.partyMemberIds),
       );
     characterData.partyMemberIds = [characterId];
@@ -230,9 +230,21 @@ export default class ServerPlayerManager {
     this.serverAPI.serverManager.authNamespace
       .to(characterData.partyRoom)
       .emit(
-        "characterJoinedOrLeftParty",
+        "serverSyncPartyData",
         this.getPartyMemberData(partyLeaderData.partyMemberIds),
       );
+  }
+
+  serverSyncPartyData(socket) {
+    const characterData = this.charactersOnline.get(socket.characterId);
+
+    if (!characterData) {
+      return;
+    }
+
+    const partyData = this.getPartyMemberData(characterData.partyMemberIds);
+
+    socket.emit("serverSyncPartyData", partyData);
   }
 
   startListeners() {

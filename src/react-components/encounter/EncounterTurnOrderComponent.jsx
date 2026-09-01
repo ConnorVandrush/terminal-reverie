@@ -17,12 +17,7 @@ export default function EncounterTurnOrderComponent() {
       return;
     }
 
-    dispatch(
-      setEncounterTarget({
-        side,
-        index,
-      }),
-    );
+    dispatch(setEncounterTarget({ side, index }));
   }
 
   const combatants = [];
@@ -35,6 +30,8 @@ export default function EncounterTurnOrderComponent() {
       index,
       id: member.characterId,
       name: member.name,
+      currentHp: member.currentHp,
+      maxHp: member.maxHp,
     });
   });
 
@@ -68,6 +65,13 @@ export default function EncounterTurnOrderComponent() {
             onClick={() => handleSelectTarget(combatant.side, combatant.index)}
           >
             {combatant.name}
+
+            {combatant.side === "ally" && (
+              <>
+                <br />
+                {combatant.currentHp}/{combatant.maxHp}
+              </>
+            )}
           </button>
         </div>
       ))}

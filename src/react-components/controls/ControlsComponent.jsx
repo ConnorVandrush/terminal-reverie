@@ -7,10 +7,12 @@ import CancelButtonComponent from "./CancelButtonComponent";
 import PartyButtonComponent from "./PartyButtonComponent";
 import TradeButtonComponent from "./TradeButtonComponent";
 import InventoryButtonComponent from "./InventoryButtonComponent";
+import CharacterStatusButtonComponent from "./CharacterStatusButtonComponent";
 
 export default function ControlsComponent() {
   return (
     <div className={styles.controlsComponentStyle}>
+      <CharacterStatusButtonComponent />
       <InventoryButtonComponent />
       <MovementButtonComponent direction="Up" />
       <MovementButtonComponent direction="Left" />

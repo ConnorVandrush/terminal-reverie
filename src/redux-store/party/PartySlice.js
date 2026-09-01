@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
 const PartySlice = createSlice({
   name: "PartySlice",
@@ -116,3 +116,16 @@ export const {
   setPlayerHp,
 } = PartySlice.actions;
 export default PartySlice.reducer;
+
+export const getPlayerCharacterData = createSelector(
+  // Input selectors
+  [(state) => state.PartySlice.partyMembers],
+  // Output selector (memoized)
+  (partyMembers) => {
+    const playerCharacterId = window.clientAPI.playerManager.playerCharacterId;
+
+    return partyMembers.find(
+      (member) => member && member.characterId === playerCharacterId,
+    );
+  },
+);

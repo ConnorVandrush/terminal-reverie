@@ -4,6 +4,7 @@ import styles from "./RightPanelComponent.module.css";
 import ColorCharacterComponent from "@components/login/ColorCharacterComponent";
 import InventoryComponent from "@components/inventory/InventoryComponent";
 import EncounterTurnOrderComponent from "@components/encounter/EncounterTurnOrderComponent";
+import CharacterStatusComponent from "@components/party/CharacterStatusComponent";
 
 export default function RightPanel() {
   const rightPanel = useSelector((state) => state.RightPanelSlice.rightPanel);
@@ -12,6 +13,7 @@ export default function RightPanel() {
       ColorCharacterComponent: <ColorCharacterComponent />,
       InventoryComponent: <InventoryComponent />,
       EncounterTurnOrderComponent: <EncounterTurnOrderComponent />,
+      CharacterStatusComponent: <CharacterStatusComponent />,
     })[rightPanel] || null;
 
   return <div className={styles.rightPanel}>{renderRightPanel()}</div>;

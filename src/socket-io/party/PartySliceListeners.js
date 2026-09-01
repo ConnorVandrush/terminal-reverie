@@ -8,17 +8,14 @@ export default function PartySliceListeners(store) {
     store.dispatch(serverDeliverPartyInvite(data));
   });
 
-  window.clientAPI.authNamespace.on(
-    "characterJoinedOrLeftParty",
-    (partyMembers) => {
-      partyMembers.forEach((characterData, memberIndex) => {
-        store.dispatch(
-          setPartyMemberCharacterData({
-            memberIndex,
-            characterData,
-          }),
-        );
-      });
-    },
-  );
+  window.clientAPI.authNamespace.on("serverSyncPartyData", (partyMembers) => {
+    partyMembers.forEach((characterData, memberIndex) => {
+      store.dispatch(
+        setPartyMemberCharacterData({
+          memberIndex,
+          characterData,
+        }),
+      );
+    });
+  });
 }

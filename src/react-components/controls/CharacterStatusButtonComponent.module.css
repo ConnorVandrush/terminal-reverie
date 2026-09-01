@@ -1,4 +1,4 @@
-.inventoryButton {
+.CharacterStatusButton {
   width: 75%;
   height: 75%;
   background-color: #1a1a1a; /* active green */
@@ -16,18 +16,18 @@
     transform 0.1s ease,
     box-shadow 0.1s ease;
 
-  grid-area: "two";
+  grid-area: "one";
 }
 
 /* Pressed: “retro pop‑in” */
-.inventoryButton:active {
+.CharacterStatusButton:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #000000;
 }
 
 /* Optional: icon inside the button */
-.inventoryButton::before {
-  content: "🎒"; /* or swap for an SVG */
+.CharacterStatusButton::before {
+  content: "📊"; /* or swap for an SVG */
   font-size: 200%;
   line-height: 1;
 }
