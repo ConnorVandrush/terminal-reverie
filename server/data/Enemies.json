@@ -31,7 +31,7 @@
       { "code": 22, "dataId": 1, "value": 0.05 },
       { "code": 31, "dataId": 1, "value": 0 }
     ],
-    "gold": 5,
+    "mani": 5,
     "name": "Goblin",
     "note": "",
     "params": [200, 0, 25, 20, 20, 20, 20, 20]
@@ -67,7 +67,7 @@
       { "code": 22, "dataId": 1, "value": 0.05 },
       { "code": 31, "dataId": 1, "value": 0 }
     ],
-    "gold": 8,
+    "mani": 8,
     "name": "Gnome",
     "note": "",
     "params": [250, 0, 20, 25, 20, 20, 20, 20]
@@ -96,7 +96,7 @@
       { "code": 22, "dataId": 1, "value": 0.1 },
       { "code": 31, "dataId": 1, "value": 0 }
     ],
-    "gold": 8,
+    "mani": 8,
     "name": "Crow",
     "note": "",
     "params": [250, 50, 25, 20, 20, 20, 25, 20]
@@ -133,7 +133,7 @@
       { "code": 31, "dataId": 1, "value": 0 },
       { "code": 11, "dataId": 2, "value": 2 }
     ],
-    "gold": 15,
+    "mani": 15,
     "name": "Treant",
     "note": "",
     "params": [500, 50, 30, 20, 30, 30, 30, 30]
@@ -177,7 +177,7 @@
       { "code": 31, "dataId": 1, "value": 0 },
       { "code": 63, "dataId": 1, "value": 1 }
     ],
-    "gold": 50,
+    "mani": 50,
     "name": "Hi_monster",
     "note": "",
     "params": [1000, 50, 40, 20, 40, 40, 40, 40]

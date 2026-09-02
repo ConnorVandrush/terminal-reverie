@@ -5,6 +5,7 @@ import CreateCharacterButtonsComponent from "@components/login/CreateCharacterBu
 import ChatWindowComponent from "@components/chat/ChatWindowComponent";
 import EncounterActionComponent from "@components/encounter/EncounterActionComponent";
 import EncounterMessageComponent from "@components/encounter/EncounterMessageComponent";
+import ItemDescriptionComponent from "@components/inventory/ItemDescriptionComponent";
 
 export default function BottomPanel() {
   const bottomPanel = useSelector(
@@ -17,6 +18,7 @@ export default function BottomPanel() {
       ChatWindowComponent: <ChatWindowComponent />,
       EncounterActionComponent: <EncounterActionComponent />,
       EncounterMessageComponent: <EncounterMessageComponent />,
+      ItemDescriptionComponent: <ItemDescriptionComponent />,
     })[bottomPanel] || null;
 
   return (

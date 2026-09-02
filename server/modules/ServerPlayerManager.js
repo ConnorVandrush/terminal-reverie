@@ -89,7 +89,7 @@ export default class ServerPlayerManager {
       user.characterData.location.y = 128;
       user.characterData.location.d = 2;
       user.characterData.location.map = "Area1";
-      user.characterData.gold = 100;
+      user.characterData.mani = 100;
       user.characterData.isDead = false;
       user.newCharacter = false;
       for (const [slot, equipmentId] of Object.entries(
@@ -116,6 +116,8 @@ export default class ServerPlayerManager {
 
       this.charactersOnline.set(user.playerId, characterData);
       this.characterNamesOnline.set(characterData.name, characterData);
+
+      this.serverAPI.inventoryManager.addItemToInventory(user.playerId, 5);
 
       characterData.partyRoom = "partyRoom" + user.playerId;
       characterData.partyMemberIds.push(user.playerId);

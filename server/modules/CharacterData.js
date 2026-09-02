@@ -9,7 +9,7 @@ export default class CharacterData {
     this.freeSteps = 0;
     this.level = 1;
     this.experience = 0;
-    this.gold = 0;
+    this.mani = 0;
     this.maxHp = 100;
     this.currentHp = 100;
     this.inventory = {}; //{ "itemId": { "qty":, "itemData": } }

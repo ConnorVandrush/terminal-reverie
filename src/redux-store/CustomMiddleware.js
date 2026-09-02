@@ -6,6 +6,7 @@ import ChatSliceListeners from "@io/chat/ChatSliceListeners";
 import PartySliceListeners from "@io/party/PartySliceListeners";
 import EncounterSliceEmitters from "@io/encounter/EncounterSliceEmitters";
 import EncounterSliceListeners from "@io/encounter/EncounterSliceListeners";
+import InventorySliceEmitters from "@io/inventory/InventorySliceEmitters";
 
 export const CustomMiddleware = (store) => {
   let initialized = false;
@@ -29,6 +30,7 @@ export const CustomMiddleware = (store) => {
     ChatSliceEmitters(store, action);
     PartySliceEmitters(store, action);
     EncounterSliceEmitters(store, action);
+    InventorySliceEmitters(store, action);
 
     return next(action);
   };

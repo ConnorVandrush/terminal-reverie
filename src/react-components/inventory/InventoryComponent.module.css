@@ -1,0 +1,33 @@
+.InventoryComponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.InventoryComponent h3 {
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+/* Scrollable list container */
+.scrollArea {
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Match encounter action button look by using ONLY layout rules */
+.itemButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected {
+  border-color: red;
+}

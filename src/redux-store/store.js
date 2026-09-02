@@ -9,6 +9,7 @@ import BottomPanelReducer from "./ui/BottomPanelSlice";
 import PartySliceReducer from "./party/PartySlice";
 import ChatSliceReducer from "./chat/ChatSlice";
 import EncounterSliceReducer from "./encounter/EncounterSlice";
+import InventorySliceReducer from "./inventory/InventorySlice";
 
 export const Store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const Store = configureStore({
     PartySlice: PartySliceReducer,
     ChatSlice: ChatSliceReducer,
     EncounterSlice: EncounterSliceReducer,
+    InventorySlice: InventorySliceReducer,
   },
   middleware: (getDefault) => getDefault().concat(CustomMiddleware),
 });

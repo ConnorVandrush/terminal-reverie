@@ -8,11 +8,6 @@ class ClientPlayerManager {
     this.playerCharacterId;
   }
 
-  getPlayerCharacterData() {
-    const members = window.clientAPI.getReactState().PartySlice.partyMembers;
-    return members.find((m) => m && m.characterId === this.playerCharacterId);
-  }
-
   transferToMap(mapData, tileset, charactersOnMap, location) {
     $dataTilesets[mapData.tilesetId] = structuredClone(tileset);
     const map = structuredClone(mapData);

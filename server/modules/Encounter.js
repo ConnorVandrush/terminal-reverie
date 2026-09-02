@@ -8,7 +8,7 @@ export default class Encounter {
     this.enemies = enemies;
     this.combatantActions = new Map(); // combatantId -> { targetId, action }
     this.turnOrder = [];
-    this.goldDrop = null;
+    this.maniDrop = null;
     this.expDrop = null;
     this.itemDrop = [];
   }
@@ -98,12 +98,12 @@ export default class Encounter {
   }
 
   calculateEncounterDrops() {
-    let totalGold = 0;
+    let totalMani = 0;
     let totalExp = 0;
     let allItems = [];
 
     this.enemies.forEach((enemy) => {
-      totalGold += enemy.goldDrop ?? 0;
+      totalMani += enemy.maniDrop ?? 0;
       totalExp += enemy.expDrop ?? 0;
 
       if (Array.isArray(enemy.itemDrop)) {
@@ -111,7 +111,7 @@ export default class Encounter {
       }
     });
 
-    this.goldDrop = totalGold;
+    this.maniDrop = totalMani;
     this.expDrop = totalExp;
     this.itemDrop = allItems;
   }

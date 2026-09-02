@@ -9,12 +9,12 @@ export default function CharacterStatusComponent() {
   return (
     <div className={styles.CharacterStatusComponent}>
       <div>{playerCharacterData.name}</div>
-      <div>Lv:{playerCharacterData.level}</div>
-      <div>Xp:{playerCharacterData.experience}</div>
+      <div>LV:{playerCharacterData.level}</div>
+      <div>XP:{playerCharacterData.experience}</div>
       <div>
-        Hp:{playerCharacterData.currentHp}/{playerCharacterData.maxHp}
+        HP:{playerCharacterData.currentHp}/{playerCharacterData.maxHp}
       </div>
-      <div>Gp:{playerCharacterData.gold}</div>
+      <div>M$:{playerCharacterData.mani}</div>
     </div>
   );
 }

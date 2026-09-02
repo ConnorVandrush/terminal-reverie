@@ -266,7 +266,7 @@ class ClientEncounterManager {
 
       window.clientAPI.dispatchToReact({
         type: "EncounterSlice/addEncounterMessage",
-        payload: `You gained ${drops.gold} gold.`,
+        payload: `You gained ${drops.mani} mani.`,
       });
 
       await this.wait(1000);

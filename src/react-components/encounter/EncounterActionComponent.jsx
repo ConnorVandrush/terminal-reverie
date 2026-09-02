@@ -5,11 +5,12 @@ import {
   setSelectedAction,
   setSelectedActionType,
 } from "@store/encounter/EncounterSlice";
+import { getPlayerCharacterData } from "@store/party/PartySlice";
 
 export default function EncounterActionComponent() {
   const dispatch = useDispatch();
 
-  const characterData = window.clientAPI.playerManager.getPlayerCharacterData();
+  const characterData = useSelector(getPlayerCharacterData);
 
   const selectedActionType = useSelector(
     (state) => state.EncounterSlice.selectedActionType,
