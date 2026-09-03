@@ -67,10 +67,8 @@ const PartySlice = createSlice({
     setCharacterSpritePreview(state, action) {
       state.characterSpritePreview = action.payload;
     },
-    setPartyMemberCharacterData(state, action) {
-      const { memberIndex, characterData } = action.payload;
-
-      state.partyMembers[memberIndex] = characterData;
+    setPartyMembers(state, action) {
+      state.partyMembers = action.payload;
     },
     serverDeliverPartyInvite(state, action) {
       state.partyInvites[action.payload.senderId] = action.payload.senderName;
@@ -103,7 +101,6 @@ export const {
   setCharacterSpriteDesign,
   randomizeCharacterSpriteDesign,
   setCharacterSpritePreview,
-  setPartyMemberCharacterData,
   addPartyInvite,
   removePartyInvite,
   clientSendPartyInvite,
@@ -114,18 +111,28 @@ export const {
   clientAcceptPartyInvite,
   clientLeaveParty,
   setPlayerHp,
+  setPartyMembers,
 } = PartySlice.actions;
 export default PartySlice.reducer;
 
 export const getPlayerCharacterData = createSelector(
-  // Input selectors
   [(state) => state.PartySlice.partyMembers],
-  // Output selector (memoized)
   (partyMembers) => {
     const playerCharacterId = window.clientAPI.playerManager.playerCharacterId;
 
-    return partyMembers.find(
+    const player = partyMembers.find(
       (member) => member && member.characterId === playerCharacterId,
     );
+
+    console.log(
+      "SELECTOR:",
+      partyMembers.map((member) => member?.characterId),
+      "looking for:",
+      playerCharacterId,
+      "found:",
+      player?.characterId,
+    );
+
+    return player;
   },
 );

@@ -133,14 +133,6 @@ export default class ServerPlayerManager {
     }
   }
 
-  getPartyMemberData(partyMemberIds) {
-    return Array.from({ length: 4 }, (_, index) => {
-      const memberId = partyMemberIds[index];
-
-      return this.charactersOnline.get(memberId) ?? null;
-    });
-  }
-
   checkOrthogonalAdjacency(characterId1, characterId2) {
     const p1 = this.charactersOnline.get(characterId1);
     const p2 = this.charactersOnline.get(characterId2);
@@ -158,6 +150,13 @@ export default class ServerPlayerManager {
     return (
       (dx === 0 && dy === 0) || (dx === 1 && dy === 0) || (dx === 0 && dy === 1)
     );
+  }
+
+  getPartyMemberData(partyMemberIds) {
+    return Array.from({ length: 4 }, (_, index) => {
+      const memberId = partyMemberIds[index];
+      return this.charactersOnline.get(memberId) ?? null;
+    });
   }
 
   assembleParty(partyLeaderId) {
@@ -204,12 +203,7 @@ export default class ServerPlayerManager {
     }
     partyLeaderData.partyMemberIds.push(joiningCharacterId);
     this.assembleParty(partyLeaderId);
-    this.serverAPI.serverManager.authNamespace
-      .to(partyLeaderData.partyRoom)
-      .emit(
-        "serverSyncPartyData",
-        this.getPartyMemberData(partyLeaderData.partyMemberIds),
-      );
+    this.serverSyncPartyData(partyLeaderData.characterId);
   }
 
   leaveParty(characterId) {
@@ -217,36 +211,35 @@ export default class ServerPlayerManager {
     const newParty = characterData.partyMemberIds.filter(
       (x) => x !== characterId,
     );
+    for (const memberId of characterData.partyMemberIds) {
+      const member = this.charactersOnline.get(memberId);
+      const socket = this.serverAPI.serverManager.authNamespace.sockets.get(
+        member.socketId,
+      );
+      if (socket) {
+        socket.leave(characterData.partyRoom);
+      }
+    }
     const partyLeaderData = this.charactersOnline.get(newParty[0]);
     partyLeaderData.partyMemberIds = newParty;
     partyLeaderData.partyRoom = "partyRoom" + partyLeaderData.characterId;
-    this.assembleParty(newParty[0]);
-    this.serverAPI.serverManager.authNamespace
-      .to(partyLeaderData.partyRoom)
-      .emit(
-        "serverSyncPartyData",
-        this.getPartyMemberData(partyLeaderData.partyMemberIds),
-      );
+    this.assembleParty(partyLeaderData.characterId);
+    this.serverSyncPartyData(partyLeaderData.characterId);
     characterData.partyMemberIds = [characterId];
     characterData.partyRoom = "partyRoom" + characterId;
-    this.serverAPI.serverManager.authNamespace
-      .to(characterData.partyRoom)
-      .emit(
-        "serverSyncPartyData",
-        this.getPartyMemberData(partyLeaderData.partyMemberIds),
-      );
+    this.assembleParty(characterData.characterId);
+    this.serverSyncPartyData(characterData.characterId);
   }
 
-  serverSyncPartyData(socket) {
-    const characterData = this.charactersOnline.get(socket.characterId);
-
+  serverSyncPartyData(characterId) {
+    const characterData = this.charactersOnline.get(characterId);
     if (!characterData) {
       return;
     }
-
     const partyData = this.getPartyMemberData(characterData.partyMemberIds);
-
-    socket.emit("serverSyncPartyData", partyData);
+    this.serverAPI.serverManager.authNamespace
+      .to(characterData.partyRoom)
+      .emit("serverSyncPartyData", partyData);
   }
 
   startListeners() {

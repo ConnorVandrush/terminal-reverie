@@ -1,6 +1,6 @@
 import {
   serverDeliverPartyInvite,
-  setPartyMemberCharacterData,
+  setPartyMembers,
 } from "@store/party/PartySlice";
 
 export default function PartySliceListeners(store) {
@@ -9,13 +9,12 @@ export default function PartySliceListeners(store) {
   });
 
   window.clientAPI.authNamespace.on("serverSyncPartyData", (partyMembers) => {
-    partyMembers.forEach((characterData, memberIndex) => {
-      store.dispatch(
-        setPartyMemberCharacterData({
-          memberIndex,
-          characterData,
-        }),
-      );
-    });
+    console.log(
+      "SYNC:",
+      partyMembers.map((member) => member?.characterId),
+    );
+    console.log("PLAYER:", window.clientAPI.playerManager.playerCharacterId);
+
+    store.dispatch(setPartyMembers(partyMembers));
   });
 }

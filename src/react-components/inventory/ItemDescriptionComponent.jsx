@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import styles from "./ItemDescriptionComponent.module.css";
 import { clientUseSelectedItem } from "@store/inventory/InventorySlice";
 import { getPlayerCharacterData } from "@store/party/PartySlice";
+import { setBottomPanel } from "@store/ui/BottomPanelSlice";
 
 export default function ItemDescriptionComponent() {
   const dispatch = useDispatch();

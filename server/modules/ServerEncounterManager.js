@@ -112,23 +112,14 @@ export default class EncounterManager {
               characterData.currentHp = Math.max(characterData.currentHp, 1);
               characterData.isDead = false;
 
-              const socket =
-                this.serverAPI.serverManager.authNamespace.sockets.get(
-                  characterData.socketId,
-                );
-
-              if (socket) {
-                socket.emit(
-                  "serverSyncPartyData",
-                  this.serverAPI.playerManager.getPartyMemberData(
-                    characterData.partyMemberIds,
-                  ),
-                );
-              }
+              this.serverAPI.playerManager.serverSyncPartyData(
+                character.characterId,
+              );
             });
 
             this.activeEncounters.delete(partyLeaderId);
           }
+
           encounter.characters.forEach((character) => {
             this.serverAPI.serverManager.authNamespace
               .to(character.socketId)

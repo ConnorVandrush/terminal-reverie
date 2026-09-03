@@ -147,7 +147,106 @@ export default class ServerInventoryManager {
 
     return {
       success: true,
-      characterData,
+    };
+  }
+
+  unequipItem(characterId, slot) {
+    const characterData =
+      this.serverAPI.playerManager.charactersOnline.get(characterId);
+
+    if (!characterData) {
+      return {
+        success: false,
+        error: "Character data not found",
+      };
+    }
+
+    const validSlots = [
+      "weapon",
+      "armor",
+      "accessory",
+      "item1",
+      "item2",
+      "item3",
+    ];
+
+    if (!validSlots.includes(slot)) {
+      return {
+        success: false,
+        error: "Invalid equipment slot",
+      };
+    }
+
+    const equippedItem = characterData.equipment?.[slot];
+
+    if (!equippedItem) {
+      return {
+        success: false,
+        error: "Nothing is equipped in that slot",
+      };
+    }
+
+    // Empty/default equipment IDs.
+    const emptyEquipmentIds = {
+      weapon: 37,
+      armor: 38,
+      accessory: 39,
+      item1: 40,
+      item2: 40,
+      item3: 40,
+    };
+
+    // If the slot already contains the empty/default item,
+    // there is nothing to unequip.
+    if (typeof equippedItem === "string" || typeof equippedItem === "number") {
+      return {
+        success: false,
+        error: "Nothing is equipped in that slot",
+      };
+    }
+
+    const itemId = equippedItem.id;
+
+    if (itemId == null) {
+      return {
+        success: false,
+        error: "Equipped item has no item ID",
+      };
+    }
+
+    // Make sure inventory exists.
+    if (!characterData.inventory) {
+      characterData.inventory = {};
+    }
+
+    const inventoryKey = String(itemId);
+    const inventoryEntry = characterData.inventory[inventoryKey];
+
+    // Return the equipped item to inventory.
+    if (inventoryEntry) {
+      inventoryEntry.qty += 1;
+    } else {
+      characterData.inventory[inventoryKey] = {
+        qty: 1,
+        itemData: equippedItem,
+      };
+    }
+
+    // Restore the empty equipment item.
+    const emptyItemId = emptyEquipmentIds[slot];
+    const emptyItemData = this.getItemData(emptyItemId);
+
+    if (!emptyItemData) {
+      return {
+        success: false,
+        error: `Missing empty equipment item ${emptyItemId}`,
+      };
+    }
+
+    characterData.equipment[slot] = emptyItemData;
+
+    return {
+      success: true,
     };
   }
 
@@ -155,19 +254,12 @@ export default class ServerInventoryManager {
     this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
       socket.on("clientUseSelectedItem", (payload) => {
         this.equipItem(socket.characterId, payload);
+        this.serverAPI.playerManager.serverSyncPartyData(socket.characterId);
+      });
 
-        const characterData = this.serverAPI.playerManager.charactersOnline.get(
-          socket.characterId,
-        );
-
-        this.serverAPI.serverManager.authNamespace
-          .to(characterData.partyRoom)
-          .emit(
-            "serverSyncPartyData",
-            this.serverAPI.playerManager.getPartyMemberData(
-              characterData.partyMemberIds,
-            ),
-          );
+      socket.on("clientUnequipItem", (payload) => {
+        this.unequipItem(socket.characterId, payload);
+        this.serverAPI.playerManager.serverSyncPartyData(socket.characterId);
       });
     });
   }
