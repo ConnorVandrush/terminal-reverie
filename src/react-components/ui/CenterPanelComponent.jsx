@@ -5,7 +5,7 @@ import SpritesheetDisplayComponent from "@components/login/SpritesheetDisplayCom
 import PartyWindowComponent from "@components/party/PartyWindowComponent";
 import PartyInvitesWindowComponent from "@components/party/PartyInvitesWindowComponent";
 import EncounterWindowComponent from "@components/encounter/EncounterWindowComponent";
-
+import ShopComponent from "@components/shop/ShopComponent";
 export default function CenterPanel() {
   const centerPanel = useSelector(
     (state) => state.CenterPanelSlice.centerPanel,
@@ -26,6 +26,7 @@ export default function CenterPanel() {
       PartyWindowComponent: <PartyWindowComponent />,
       PartyInvitesWindowComponent: <PartyInvitesWindowComponent />,
       EncounterWindowComponent: <EncounterWindowComponent />,
+      ShopComponent: <ShopComponent />,
     })[centerPanel] || null;
 
   return (

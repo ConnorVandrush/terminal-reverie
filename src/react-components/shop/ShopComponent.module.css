@@ -1,0 +1,36 @@
+.ShopComponent {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ShopHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.Inventories {
+  display: flex;
+  flex-direction: row;
+  flex: 8;
+}
+
+.ShopInventory,
+.PlayerInventory {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 2%;
+  gap: 2%;
+}
+
+.Title {
+  align-self: center;
+}
+
+.selected {
+  border-color: red;
+}

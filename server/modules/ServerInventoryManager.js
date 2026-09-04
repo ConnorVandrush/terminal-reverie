@@ -1,21 +1,24 @@
 import items from "../data/Items.json" with { type: "json" };
+import shops from "../data/Shops.json" with { type: "json" };
 
 export default class ServerInventoryManager {
   constructor(serverAPI) {
     this.serverAPI = serverAPI;
-    this.items = new Map();
+    this.items = new Map(); // itemId > itemData
+    this.shops = new Map(); // shopName > { "itemId": {"cost": cost,}, }
 
     for (const [id, item] of Object.entries(items)) {
       if (id === "tags") continue;
       this.items.set(Number(id), item);
     }
+    for (const [shopName, shopItems] of Object.entries(shops)) {
+      this.shops.set(shopName, shopItems);
+    }
   }
 
   getItemData(itemId) {
     const itemData = this.items.get(itemId);
-
     if (!itemData) return null;
-
     return itemData;
   }
 
@@ -250,16 +253,60 @@ export default class ServerInventoryManager {
     };
   }
 
+  buildShopInventory(shopData) {
+    const result = {};
+
+    for (const [itemId, priceInfo] of Object.entries(shopData)) {
+      const itemInfo = this.items.get(Number(itemId));
+
+      if (!itemInfo) continue;
+
+      result[itemId] = {
+        ...itemInfo,
+        cost: priceInfo.cost,
+      };
+    }
+
+    return result;
+  }
+
   startListeners() {
     this.serverAPI.serverManager.authNamespace.on("connection", (socket) => {
       socket.on("clientUseSelectedItem", (payload) => {
-        this.equipItem(socket.characterId, payload);
+        const result = this.equipItem(socket.characterId, payload);
+        if (!result.success) {
+          return;
+        }
         this.serverAPI.playerManager.serverSyncPartyData(socket.characterId);
       });
 
       socket.on("clientUnequipItem", (payload) => {
-        this.unequipItem(socket.characterId, payload);
+        const result = this.unequipItem(socket.characterId, payload);
+        if (!result.success) {
+          return;
+        }
         this.serverAPI.playerManager.serverSyncPartyData(socket.characterId);
+      });
+
+      socket.on("clientRequestOpenShop", (cb) => {
+        const characterData = this.serverAPI.playerManager.charactersOnline.get(
+          socket.characterId,
+        );
+        characterData.canMove = false;
+        const location = characterData.location;
+        const shopName = this.serverAPI.mapManager.getEventData(
+          location.map,
+          location.x,
+          location.y,
+        ).note;
+        if (this.shops.has(shopName)) {
+          const shopInventory = this.buildShopInventory(
+            this.shops.get(shopName),
+          );
+          cb({ success: true, shopInventory });
+        } else {
+          cb({ success: false, message: "Failed to open shop." });
+        }
       });
     });
   }

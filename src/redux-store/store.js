@@ -10,6 +10,7 @@ import PartySliceReducer from "./party/PartySlice";
 import ChatSliceReducer from "./chat/ChatSlice";
 import EncounterSliceReducer from "./encounter/EncounterSlice";
 import InventorySliceReducer from "./inventory/InventorySlice";
+import ShopSliceReducer from "./shop/ShopSlice";
 
 export const Store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const Store = configureStore({
     ChatSlice: ChatSliceReducer,
     EncounterSlice: EncounterSliceReducer,
     InventorySlice: InventorySliceReducer,
+    ShopSlice: ShopSliceReducer,
   },
   middleware: (getDefault) => getDefault().concat(CustomMiddleware),
 });

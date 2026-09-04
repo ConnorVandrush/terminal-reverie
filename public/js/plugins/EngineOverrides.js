@@ -408,3 +408,13 @@ Sprite_Actor.prototype.applyCustomBattlerBitmap = function () {
     this._mainSprite.bitmap = actor._customBattlerBitmap;
   }
 };
+
+// Replace RMMZ shop interface with our own
+const _Game_Interpreter_command302 = Game_Interpreter.prototype.command302;
+Game_Interpreter.prototype.command302 = function (params) {
+  window.clientAPI.playerManager.characterCanMove = false;
+  window.clientAPI.dispatchToReact({
+    type: "ShopSlice/clientRequestOpenShop",
+  });
+  return true; // skip original behavior
+};

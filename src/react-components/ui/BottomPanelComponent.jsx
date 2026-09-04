@@ -6,7 +6,7 @@ import ChatWindowComponent from "@components/chat/ChatWindowComponent";
 import EncounterActionComponent from "@components/encounter/EncounterActionComponent";
 import EncounterMessageComponent from "@components/encounter/EncounterMessageComponent";
 import ItemDescriptionComponent from "@components/inventory/ItemDescriptionComponent";
-
+import SelectedShopItemComponent from "@components/shop/SelectedShopItemComponent";
 export default function BottomPanel() {
   const bottomPanel = useSelector(
     (state) => state.BottomPanelSlice.bottomPanel,
@@ -19,6 +19,7 @@ export default function BottomPanel() {
       EncounterActionComponent: <EncounterActionComponent />,
       EncounterMessageComponent: <EncounterMessageComponent />,
       ItemDescriptionComponent: <ItemDescriptionComponent />,
+      SelectedShopItemComponent: <SelectedShopItemComponent />,
     })[bottomPanel] || null;
 
   return (

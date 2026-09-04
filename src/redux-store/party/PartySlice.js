@@ -119,20 +119,9 @@ export const getPlayerCharacterData = createSelector(
   [(state) => state.PartySlice.partyMembers],
   (partyMembers) => {
     const playerCharacterId = window.clientAPI.playerManager.playerCharacterId;
-
     const player = partyMembers.find(
       (member) => member && member.characterId === playerCharacterId,
     );
-
-    console.log(
-      "SELECTOR:",
-      partyMembers.map((member) => member?.characterId),
-      "looking for:",
-      playerCharacterId,
-      "found:",
-      player?.characterId,
-    );
-
     return player;
   },
 );
